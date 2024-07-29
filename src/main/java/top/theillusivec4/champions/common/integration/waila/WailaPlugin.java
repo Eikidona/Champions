@@ -1,15 +1,15 @@
 package top.theillusivec4.champions.common.integration.waila;
 
-import java.awt.Rectangle;
-import java.lang.reflect.InvocationTargetException;
 import mcp.mobius.waila.api.event.WailaRenderEvent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.client.ChampionsOverlay;
-import top.theillusivec4.champions.client.ClientEventHandler;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
+
+import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 
 @SuppressWarnings("all")
 public class WailaPlugin {

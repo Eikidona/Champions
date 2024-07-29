@@ -139,8 +139,8 @@ public class Champions {
         LootItemChampionPropertyCondition.INSTANCE);
       DispenseItemBehavior dispenseBehavior = (source, stack) -> {
         Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
-        Optional<EntityType<?>> entitytype = ChampionEggItem.getType(stack);
-        entitytype.ifPresent(type -> {
+        Optional<EntityType<?>> entityType = ChampionEggItem.getType(stack);
+        entityType.ifPresent(type -> {
           Entity entity = type.create(source.getLevel(), stack.getTag(), null,
             source.getPos().relative(direction), MobSpawnType.DISPENSER, true,
             direction != Direction.UP);
