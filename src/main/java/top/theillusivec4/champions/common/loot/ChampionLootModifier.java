@@ -1,7 +1,7 @@
 package top.theillusivec4.champions.common.loot;
 
-import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -14,10 +14,10 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 import net.minecraftforge.common.util.FakePlayer;
 import top.theillusivec4.champions.api.IChampion;
@@ -32,6 +32,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public class ChampionLootModifier extends LootModifier {
+  public static final Codec<ChampionLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, ChampionLootModifier::new));
 
   public ChampionLootModifier(LootItemCondition[] conditions) {
     super(conditions);
@@ -62,25 +63,24 @@ public class ChampionLootModifier extends LootModifier {
       if (ChampionsConfig.lootSource != ConfigEnums.LootSource.CONFIG) {
         LootTable lootTable = serverWorld.getServer().getLootData()
           .getLootTable(new ResourceLocation(RegistryReference.CHAMPION_LOOT));
-        LootContext.Builder lootcontext$builder = new LootContext.Builder(new LootParams.Builder(serverWorld)
-          .withLuck(entity.level().getRandom().nextFloat())
+        LootParams.Builder lootParamsBuilder = new LootParams.Builder(serverWorld)
           .withParameter(LootContextParams.THIS_ENTITY, entity)
           .withParameter(LootContextParams.ORIGIN, entity.position())
           .withParameter(LootContextParams.DAMAGE_SOURCE, damageSource)
           .withOptionalParameter(LootContextParams.KILLER_ENTITY, damageSource.getEntity())
-          .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY,
-            damageSource.getDirectEntity()).create(LootContextParamSet.builder().build()));
+          .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, damageSource.getDirectEntity())
+          .withLuck(context.getLuck());
 
         if (entity instanceof LivingEntity livingEntity) {
           LivingEntity attackingEntity = livingEntity.getKillCredit();
 
           if (attackingEntity instanceof Player) {
-            lootcontext$builder = lootcontext$builder
+            lootParamsBuilder = lootParamsBuilder
               .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, (Player) attackingEntity)
               .withLuck(((Player) attackingEntity).getLuck());
           }
         }
-        lootTable.getRandomItemsRaw(lootcontext$builder.create(LootContextParamSets.ENTITY.getAllowed()),
+        lootTable.getRandomItemsRaw(lootParamsBuilder.create(LootContextParamSets.ENTITY),
           generatedLoot::add);
       }
 
@@ -96,17 +96,9 @@ public class ChampionLootModifier extends LootModifier {
     return generatedLoot;
   }
 
-  public static class Serializer extends GlobalLootModifierSerializer<ChampionLootModifier> {
-
-    @Override
-    public ChampionLootModifier read(ResourceLocation name, JsonObject object,
-                                     LootItemCondition[] conditions) {
-      return new ChampionLootModifier(conditions);
-    }
-
-    @Override
-    public JsonObject write(ChampionLootModifier instance) {
-      return makeConditions(instance.conditions);
-    }
+  @Override
+  public Codec<? extends IGlobalLootModifier> codec() {
+    return CODEC;
   }
+
 }

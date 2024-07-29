@@ -21,7 +21,6 @@ import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.AffixManager;
 import top.theillusivec4.champions.common.affix.core.AffixManager.AffixSettings;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
-import top.theillusivec4.champions.common.integration.gamestages.GameStagesPlugin;
 import top.theillusivec4.champions.common.integration.scalinghealth.ScalingHealthPlugin;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.rank.RankManager;
@@ -87,11 +86,11 @@ public class ChampionBuilder {
         .map(entitySettings1 -> entitySettings1.canApply(affix)).orElse(true) && settings
         .map(affixSettings -> affixSettings.canApply(champion)).orElse(true) && affix
         .canApply(champion);
-    }).collect(Collectors.toList())));
+    }).toList()));
     List<IAffix> randomList = new ArrayList<>();
     validAffixes.forEach((k, v) -> randomList.addAll(v));
 
-    while (randomList.size() > 0 && affixesToAdd.size() < size) {
+    while (!randomList.isEmpty() && affixesToAdd.size() < size) {
       int randomIndex = RAND.nextInt(randomList.size());
       IAffix randomAffix = randomList.get(randomIndex);
 
@@ -142,11 +141,10 @@ public class ChampionBuilder {
       float chance = rank.getChance();
 
       if (Champions.scalingHealthLoaded) {
-        chance += ScalingHealthPlugin.getSpawnIncrease(rank.getTier(), livingEntity);
+        chance += (float) ScalingHealthPlugin.getSpawnIncrease(rank.getTier(), livingEntity);
       }
 
-      if (RAND.nextFloat() < chance && (!Champions.gameStagesLoaded ||
-        GameStagesPlugin.hasTierStage(rank.getTier(), livingEntity))) {
+      if (RAND.nextFloat() < chance) {
         result = rank;
       } else {
         return result;

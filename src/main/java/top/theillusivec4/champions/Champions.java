@@ -91,6 +91,7 @@ public class Champions {
 
   public Champions() {
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+    ChampionsRegistry.register(FMLJavaModLoadingContext.get().getModEventBus());
     ModLoadingContext.get().registerConfig(Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
     ModLoadingContext.get().registerConfig(Type.SERVER, ChampionsConfig.SERVER_SPEC);
     createServerConfig(ChampionsConfig.RANKS_SPEC, "ranks");
