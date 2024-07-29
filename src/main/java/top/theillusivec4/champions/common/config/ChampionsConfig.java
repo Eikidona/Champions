@@ -24,7 +24,6 @@ import top.theillusivec4.champions.common.config.ConfigEnums.LootSource;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
 import top.theillusivec4.champions.common.config.EntitiesConfig.EntityConfig;
 import top.theillusivec4.champions.common.config.RanksConfig.RankConfig;
-import top.theillusivec4.champions.common.integration.scalinghealth.ScalingHealthPlugin;
 
 public class ChampionsConfig {
 
@@ -715,11 +714,6 @@ public class ChampionsConfig {
     reflectiveMinPercent = SERVER.reflectiveMinPercent.get();
 
     woundingChance = SERVER.woundingChance.get();
-
-    if (Champions.scalingHealthLoaded) {
-      scalingHealthSpawnModifiers = SERVER.scalingHealthSpawnModifiers.get();
-      ScalingHealthPlugin.buildModifiers();
-    }
   }
 }
 

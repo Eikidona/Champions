@@ -1,5 +1,5 @@
 {
-  "item.champions.egg": "Champion Egg",
+  "item.champions.champions_egg": "Champion Egg",
   "item.champions.egg.tooltip": "Random Affixes",
   "argument.champions.affix.unknown": "Unknown affix %s",
   "commands.champions.summon.success": "Summoned new %s",

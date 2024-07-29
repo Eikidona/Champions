@@ -1,5 +1,5 @@
 {
-  "item.champions.egg": "Яйцо Чемпионского Моба",
+  "item.champions.champions_egg": "Яйцо Чемпионского Моба",
   "item.champions.egg.tooltip": "Моб с случайными усиливающими особенностями",
   "argument.champions.affix.unknown": "Неизвестная особенность %s",
   "commands.champions.summon.success": "Призван новый %s",
@@ -27,7 +27,7 @@
   "affix.champions.wounding": "Убойный",
   "affix.champions.shielding": "Укрепленный",
   "affix.champions.arctic": "Снежный",
-  "affix.champions.enkindling": "Раскалённый"
+  "affix.champions.enkindling": "Раскалённый",
   "advancements.champions.kill_a_champion.title": "Охотник на Чемпионов",
   "advancements.champions.kill_a_champion.description": "Убейте чемпионского моба",
   "stat.champions.champion_mobs_killed": "Убито чемпионских мобов"

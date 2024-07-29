@@ -1,14 +1,6 @@
 package top.theillusivec4.champions.common.util;
 
 import com.google.common.collect.ImmutableSortedMap;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.stream.Collectors;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -21,10 +13,11 @@ import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.AffixManager;
 import top.theillusivec4.champions.common.affix.core.AffixManager.AffixSettings;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
-import top.theillusivec4.champions.common.integration.scalinghealth.ScalingHealthPlugin;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.util.EntityManager.EntitySettings;
+
+import java.util.*;
 
 public class ChampionBuilder {
 
@@ -116,7 +109,7 @@ public class ChampionBuilder {
         "No rank configuration found! Please check the 'champions-ranks.toml' file in the 'serverconfigs'.");
       return RankManager.getLowestRank();
     }
-    Integer[] tierRange = new Integer[] {null, null};
+    Integer[] tierRange = new Integer[]{null, null};
     EntityManager.getSettings(livingEntity.getType()).ifPresent(entitySettings -> {
       tierRange[0] = entitySettings.minTier;
       tierRange[1] = entitySettings.maxTier;
@@ -140,9 +133,9 @@ public class ChampionBuilder {
       }
       float chance = rank.getChance();
 
-      if (Champions.scalingHealthLoaded) {
-        chance += (float) ScalingHealthPlugin.getSpawnIncrease(rank.getTier(), livingEntity);
-      }
+//      if (Champions.scalingHealthLoaded) {
+//        chance += (float) ScalingHealthPlugin.getSpawnIncrease(rank.getTier(), livingEntity);
+//      }
 
       if (RAND.nextFloat() < chance) {
         result = rank;
