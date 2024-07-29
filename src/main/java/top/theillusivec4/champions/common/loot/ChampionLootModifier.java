@@ -80,7 +80,7 @@ public class ChampionLootModifier extends LootModifier {
               .withLuck(((Player) attackingEntity).getLuck());
           }
         }
-        lootTable.getRandomItemsRaw(lootParamsBuilder.create(LootContextParamSets.ENTITY),
+        lootTable.getRandomItems(lootParamsBuilder.create(LootContextParamSets.ENTITY),
           generatedLoot::add);
       }
 

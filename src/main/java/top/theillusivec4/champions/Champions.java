@@ -21,6 +21,7 @@ package top.theillusivec4.champions;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
@@ -71,6 +72,8 @@ import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.registry.RegistryReference;
 import top.theillusivec4.champions.common.stat.ChampionsStats;
 import top.theillusivec4.champions.common.util.EntityManager;
+import top.theillusivec4.champions.server.command.AffixArgument;
+import top.theillusivec4.champions.server.command.AffixArgumentInfo;
 import top.theillusivec4.champions.server.command.ChampionSelectorOptions;
 import top.theillusivec4.champions.server.command.ChampionsCommand;
 
@@ -87,28 +90,22 @@ public class Champions {
   public static final IChampionsApi API = ChampionsApiImpl.getInstance();
 
   public static boolean scalingHealthLoaded = false;
-  public static boolean gameStagesLoaded = false;
 
   public Champions() {
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
-    ChampionsRegistry.register(FMLJavaModLoadingContext.get().getModEventBus());
     ModLoadingContext.get().registerConfig(Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
     ModLoadingContext.get().registerConfig(Type.SERVER, ChampionsConfig.SERVER_SPEC);
     createServerConfig(ChampionsConfig.RANKS_SPEC, "ranks");
     createServerConfig(ChampionsConfig.AFFIXES_SPEC, "affixes");
     createServerConfig(ChampionsConfig.ENTITIES_SPEC, "entities");
-    gameStagesLoaded = ModList.get().isLoaded("gamestages");
 
-    if (gameStagesLoaded) {
-      ModLoadingContext.get()
-        .registerConfig(Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
-    }
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::config);
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::registerCaps);
     MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
+    ChampionsRegistry.register(eventBus);
     scalingHealthLoaded = ModList.get().isLoaded("scalinghealth");
   }
 
@@ -158,26 +155,7 @@ public class Champions {
         return stack;
       };
       DispenserBlock.registerBehavior(ChampionsRegistry.CHAMPION_EGG_ITEM.get(), dispenseBehavior);
-//      ArgumentTypes.register(Champions.MODID + ":affix", AffixArgument.class,
-//        new ArgumentSerializer<>() {
-//          @Override
-//          public void serializeToNetwork(@Nonnull final AffixArgument argument,
-//                                         @Nonnull final FriendlyByteBuf buffer) {
-//            // NO-OP
-//          }
-//
-//          @Nonnull
-//          @Override
-//          public AffixArgument deserializeFromNetwork(@Nonnull final FriendlyByteBuf buffer) {
-//            return new AffixArgument();
-//          }
-//
-//          @Override
-//          public void serializeToJson(@Nonnull final AffixArgument argument,
-//                                      @Nonnull final JsonObject json) {
-//            // NO-OP
-//          }
-//        });
+      ArgumentTypeInfos.registerByClass(AffixArgument.class, new AffixArgumentInfo());
     });
   }
 

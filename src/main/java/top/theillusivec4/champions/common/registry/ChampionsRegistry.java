@@ -29,8 +29,8 @@ public class ChampionsRegistry {
   public static RegistryObject<EntityType<? extends ArcticBulletEntity>> ARCTIC_BULLET;
   public static RegistryObject<ChampionEggItem> CHAMPION_EGG_ITEM;
   public static RegistryObject<SimpleParticleType> RANK_PARTICLE_TYPE;
-  public static RegistryObject<ParalysisEffect> PARALYSIS_PARTICLE_TYPE;
-  public static RegistryObject<WoundEffect> WOUND_PARTICLE_TYPE;
+  public static RegistryObject<ParalysisEffect> PARALYSIS_EFFECT_TYPE;
+  public static RegistryObject<WoundEffect> WOUND_EFFECT_TYPE;
 
   public static void registerItems(IEventBus bus) {
     CHAMPION_EGG_ITEM = EGG.register("champion_egg", ChampionEggItem::new);
@@ -39,13 +39,13 @@ public class ChampionsRegistry {
 
 
   public static void registerParticles(IEventBus bus) {
-//    RANK_PARTICLE_TYPE = PARTICLE_TYPE.register("rank", () -> new RankParticle());
+    RANK_PARTICLE_TYPE = PARTICLE_TYPE.register("rank", () -> new SimpleParticleType(true));
     PARTICLE_TYPE.register(bus);
   }
 
   public static void registerMobEffects(IEventBus bus) {
-    PARALYSIS_PARTICLE_TYPE = MOB_EFFECT.register("paralysis", ParalysisEffect::new);
-    WOUND_PARTICLE_TYPE = MOB_EFFECT.register("wound", WoundEffect::new);
+    PARALYSIS_EFFECT_TYPE = MOB_EFFECT.register("paralysis", ParalysisEffect::new);
+    WOUND_EFFECT_TYPE = MOB_EFFECT.register("wound", WoundEffect::new);
     MOB_EFFECT.register(bus);
   }
 

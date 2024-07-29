@@ -720,11 +720,6 @@ public class ChampionsConfig {
       scalingHealthSpawnModifiers = SERVER.scalingHealthSpawnModifiers.get();
       ScalingHealthPlugin.buildModifiers();
     }
-
-    if (Champions.gameStagesLoaded) {
-      entityStages = STAGE.entityStages.get();
-      tierStages = STAGE.tierStages.get();
-    }
   }
 }
 
