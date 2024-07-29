@@ -42,43 +42,28 @@ public class ReflectiveAffix extends BasicAffix {
       if (source.is(REFLECTION_DAMAGE) || (source.getEntity() instanceof LivingEntity && source.typeHolder().is(DamageTypes.THORNS))) {
         return newAmount;
       }
-      DamageSource newSource = new DamageSources(champion.getLivingEntity().getServer().registryAccess()).magic();
+      DamageSources newSources = new DamageSources(champion.getLivingEntity().level().registryAccess());
+      DamageSource newSource = newSources.magic();
       //newSource.setThorns();
       float min = (float) ChampionsConfig.reflectiveMinPercent;
-
+      float damage = (float) Math.min(amount * (sourceEntity.getRandom().nextFloat() * (ChampionsConfig.reflectiveMaxPercent - min) + min), ChampionsConfig.reflectiveMax);
       if (source.is(DamageTypes.IN_FIRE)||source.is(DamageTypes.ON_FIRE)) {
         if (source.getEntity() instanceof LivingEntity living)
           living.setSecondsOnFire(champion.getLivingEntity().getRemainingFireTicks());
       }
 
-      if (source.is(DamageTypes.MOB_PROJECTILE)) {
-
+      if (source.is(DamageTypes.EXPLOSION)) {
+        newSource = newSources.explosion(sourceEntity,source.getDirectEntity());
       }
 
-//      if (source.isExplosion()) {
-//        newSource.setExplosion();
-//      }
-//
-//      if (source.isMagic()) {
-//        newSource.setMagic();
-//      }
-//
-//      if (source.isDamageHelmet()) {
-//        newSource.damageHelmet();
-//      }
-//
-//      if (source.isBypassArmor()) {
-//        newSource.bypassArmor();
-//      }
+      if (source.is(DamageTypes.MAGIC)) {
+        newSource = newSources.magic();
+      }
 
-//      if (source.scalesWithDifficulty()) {
-//        newSource.scalesWithDifficulty();
-//      }
+      if (source.scalesWithDifficulty()) {
+        newSource.scalesWithDifficulty();
+      }
 
-//      if (source.isBypassInvul()) {
-//        newSource.bypa();
-//      }
-      float damage = (float) Math.min(amount * (sourceEntity.getRandom().nextFloat() * (ChampionsConfig.reflectiveMaxPercent - min) + min), ChampionsConfig.reflectiveMax);
       sourceEntity.hurt(newSource, damage);
     }
     return newAmount;

@@ -161,10 +161,6 @@ public class Champions {
     MinecraftForge.EVENT_BUS.register(new ClientAffixEventsHandler());
     Minecraft.getInstance().getItemColors()
       .register(ChampionEggItem::getColor, ChampionsRegistry.CHAMPION_EGG_ITEM.get());
-
-//    evt.enqueueWork(() -> {
-//      OverlayRegistry.registerOverlayTop("Champions Health Bar", new ChampionsOverlay());
-//    });
   }
 
   private void registerCaps(final RegisterCapabilitiesEvent evt) {

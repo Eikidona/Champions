@@ -83,7 +83,7 @@ public class ChampionBuilder {
     List<IAffix> randomList = new ArrayList<>();
     validAffixes.forEach((k, v) -> randomList.addAll(v));
 
-    while (!randomList.isEmpty() && affixesToAdd.size() < size) {
+    while (randomList.size() > 0 && affixesToAdd.size() < size) {
       int randomIndex = RAND.nextInt(randomList.size());
       IAffix randomAffix = randomList.get(randomIndex);
 

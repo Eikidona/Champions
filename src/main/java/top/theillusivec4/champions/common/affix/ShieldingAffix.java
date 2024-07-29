@@ -1,6 +1,5 @@
 package top.theillusivec4.champions.common.affix;
 
-import java.util.Random;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
@@ -23,15 +22,15 @@ public class ShieldingAffix extends BasicAffix {
   public void onClientUpdate(IChampion champion) {
     LivingEntity livingEntity = champion.getLivingEntity();
     AffixData.BooleanData shielding =
-        AffixData.getData(champion, this.getIdentifier(), AffixData.BooleanData.class);
+      AffixData.getData(champion, this.getIdentifier(), AffixData.BooleanData.class);
     RandomSource random = livingEntity.getRandom();
 
     if (shielding.mode) {
       livingEntity.level().addParticle(ParticleTypes.ENTITY_EFFECT,
-          livingEntity.position().x + (random.nextFloat() - 0.5D) * livingEntity.getBbWidth(),
-          livingEntity.position().y + random.nextFloat() * livingEntity.getBbHeight(),
-          livingEntity.position().z + (random.nextFloat() - 0.5D) * livingEntity.getBbWidth(),
-          1.0F, 1.0F, 1.0F);
+        livingEntity.position().x + (random.nextFloat() - 0.5D) * livingEntity.getBbWidth(),
+        livingEntity.position().y + random.nextFloat() * livingEntity.getBbHeight(),
+        livingEntity.position().z + (random.nextFloat() - 0.5D) * livingEntity.getBbWidth(),
+        1.0F, 1.0F, 1.0F);
     }
   }
 
@@ -41,7 +40,7 @@ public class ShieldingAffix extends BasicAffix {
 
     if (livingEntity.tickCount % 40 == 0 && livingEntity.getRandom().nextFloat() < 0.5F) {
       AffixData.BooleanData shielding =
-          AffixData.getData(champion, this.getIdentifier(), AffixData.BooleanData.class);
+        AffixData.getData(champion, this.getIdentifier(), AffixData.BooleanData.class);
       shielding.mode = !shielding.mode;
       shielding.saveData();
       this.sync(champion);
@@ -51,7 +50,7 @@ public class ShieldingAffix extends BasicAffix {
   @Override
   public void readSyncTag(IChampion champion, CompoundTag tag) {
     AffixData.BooleanData shielding =
-        AffixData.getData(champion, this.getIdentifier(), AffixData.BooleanData.class);
+      AffixData.getData(champion, this.getIdentifier(), AffixData.BooleanData.class);
     shielding.readFromNBT(tag);
     shielding.saveData();
   }
@@ -59,17 +58,17 @@ public class ShieldingAffix extends BasicAffix {
   @Override
   public CompoundTag writeSyncTag(IChampion champion) {
     return AffixData.getData(champion, this.getIdentifier(), AffixData.BooleanData.class)
-        .writeToNBT();
+      .writeToNBT();
   }
 
   @Override
   public boolean onAttacked(IChampion champion, DamageSource source, float amount) {
-    DamageSource outOfWorld = new DamageSources(source.getEntity().level().registryAccess()).fellOutOfWorld();
+    DamageSource outOfWorld = new DamageSources(champion.getLivingEntity().level().registryAccess()).fellOutOfWorld();
     if (source == outOfWorld) {
       return true;
     }
     AffixData.BooleanData shielding =
-        AffixData.getData(champion, this.getIdentifier(), AffixData.BooleanData.class);
+      AffixData.getData(champion, this.getIdentifier(), AffixData.BooleanData.class);
 
     if (shielding.mode) {
       champion.getLivingEntity().playSound(SoundEvents.PLAYER_ATTACK_NODAMAGE, 1.0F, 1.0F);
