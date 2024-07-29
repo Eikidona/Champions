@@ -1,8 +1,8 @@
 package top.theillusivec4.champions.common.loot;
 
 import com.google.gson.JsonObject;
-import java.util.List;
-import javax.annotation.Nonnull;
+import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -12,11 +12,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.LootModifier;
 import net.minecraftforge.common.util.FakePlayer;
 import top.theillusivec4.champions.api.IChampion;
@@ -27,6 +28,9 @@ import top.theillusivec4.champions.common.config.ConfigLoot;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.registry.RegistryReference;
 
+import javax.annotation.Nonnull;
+import java.util.List;
+
 public class ChampionLootModifier extends LootModifier {
 
   public ChampionLootModifier(LootItemCondition[] conditions) {
@@ -35,7 +39,7 @@ public class ChampionLootModifier extends LootModifier {
 
   @Nonnull
   @Override
-  public List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
+  public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
     Entity entity = context.getParamOrNull(LootContextParams.THIS_ENTITY);
 
     if (entity == null) {
@@ -47,25 +51,25 @@ public class ChampionLootModifier extends LootModifier {
       return generatedLoot;
     }
 
-    if (!entity.getLevel().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT) ||
+    if (!entity.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT) ||
       (!ChampionsConfig.fakeLoot && damageSource.getDirectEntity() instanceof FakePlayer)) {
       return generatedLoot;
     }
     ChampionCapability.getCapability(entity).ifPresent(champion -> {
       IChampion.Server serverChampion = champion.getServer();
-      ServerLevel serverWorld = (ServerLevel) entity.getLevel();
+      ServerLevel serverWorld = (ServerLevel) entity.level();
 
       if (ChampionsConfig.lootSource != ConfigEnums.LootSource.CONFIG) {
-        LootTable lootTable = serverWorld.getServer().getLootTables()
-          .get(new ResourceLocation(RegistryReference.CHAMPION_LOOT));
-        LootContext.Builder lootcontext$builder = (new LootContext.Builder(serverWorld)
-          .withRandom(entity.level.getRandom())
+        LootTable lootTable = serverWorld.getServer().getLootData()
+          .getLootTable(new ResourceLocation(RegistryReference.CHAMPION_LOOT));
+        LootContext.Builder lootcontext$builder = new LootContext.Builder(new LootParams.Builder(serverWorld)
+          .withLuck(entity.level().getRandom().nextFloat())
           .withParameter(LootContextParams.THIS_ENTITY, entity)
           .withParameter(LootContextParams.ORIGIN, entity.position())
           .withParameter(LootContextParams.DAMAGE_SOURCE, damageSource)
           .withOptionalParameter(LootContextParams.KILLER_ENTITY, damageSource.getEntity())
           .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY,
-            damageSource.getDirectEntity()));
+            damageSource.getDirectEntity()).create(LootContextParamSet.builder().build()));
 
         if (entity instanceof LivingEntity livingEntity) {
           LivingEntity attackingEntity = livingEntity.getKillCredit();
@@ -76,7 +80,7 @@ public class ChampionLootModifier extends LootModifier {
               .withLuck(((Player) attackingEntity).getLuck());
           }
         }
-        lootTable.getRandomItemsRaw(lootcontext$builder.create(LootContextParamSets.ENTITY),
+        lootTable.getRandomItemsRaw(lootcontext$builder.create(LootContextParamSets.ENTITY.getAllowed()),
           generatedLoot::add);
       }
 

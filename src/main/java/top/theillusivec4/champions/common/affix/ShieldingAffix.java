@@ -4,7 +4,9 @@ import java.util.Random;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.LivingEntity;
 import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
@@ -22,10 +24,10 @@ public class ShieldingAffix extends BasicAffix {
     LivingEntity livingEntity = champion.getLivingEntity();
     AffixData.BooleanData shielding =
         AffixData.getData(champion, this.getIdentifier(), AffixData.BooleanData.class);
-    Random random = livingEntity.getRandom();
+    RandomSource random = livingEntity.getRandom();
 
     if (shielding.mode) {
-      livingEntity.getLevel().addParticle(ParticleTypes.ENTITY_EFFECT,
+      livingEntity.level().addParticle(ParticleTypes.ENTITY_EFFECT,
           livingEntity.position().x + (random.nextFloat() - 0.5D) * livingEntity.getBbWidth(),
           livingEntity.position().y + random.nextFloat() * livingEntity.getBbHeight(),
           livingEntity.position().z + (random.nextFloat() - 0.5D) * livingEntity.getBbWidth(),
@@ -62,8 +64,8 @@ public class ShieldingAffix extends BasicAffix {
 
   @Override
   public boolean onAttacked(IChampion champion, DamageSource source, float amount) {
-
-    if (source == DamageSource.OUT_OF_WORLD) {
+    DamageSource outOfWorld = new DamageSources(source.getEntity().level().registryAccess()).fellOutOfWorld();
+    if (source == outOfWorld) {
       return true;
     }
     AffixData.BooleanData shielding =

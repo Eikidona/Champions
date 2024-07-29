@@ -19,7 +19,7 @@ public class AdaptableAffix extends BasicAffix {
     DamageData damageData = AffixData.getData(champion, this.getIdentifier(), DamageData.class);
 
     if (damageData.name.equalsIgnoreCase(type)) {
-      newAmount -= amount * ChampionsConfig.adaptableDamageReductionIncrement * damageData.count;
+      newAmount -= (float) (amount * ChampionsConfig.adaptableDamageReductionIncrement * damageData.count);
       damageData.count++;
     } else {
       damageData.name = type;

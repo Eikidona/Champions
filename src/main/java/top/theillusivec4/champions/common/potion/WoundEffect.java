@@ -8,6 +8,5 @@ public class WoundEffect extends MobEffect {
 
   public WoundEffect() {
     super(MobEffectCategory.HARMFUL, 0x8d0037);
-    this.setRegistryName(RegistryReference.WOUND);
   }
 }

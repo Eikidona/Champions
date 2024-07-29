@@ -20,26 +20,17 @@
 package top.theillusivec4.champions;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
-import com.google.gson.JsonObject;
-import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
-import java.util.Optional;
-import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
-import net.minecraft.commands.synchronization.ArgumentSerializer;
-import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
@@ -63,7 +54,6 @@ import org.apache.logging.log4j.Logger;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.api.IChampionsApi;
 import top.theillusivec4.champions.api.impl.ChampionsApiImpl;
-import top.theillusivec4.champions.client.ChampionsOverlay;
 import top.theillusivec4.champions.client.ClientEventHandler;
 import top.theillusivec4.champions.client.affix.ClientAffixEventsHandler;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
@@ -81,9 +71,13 @@ import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.registry.RegistryReference;
 import top.theillusivec4.champions.common.stat.ChampionsStats;
 import top.theillusivec4.champions.common.util.EntityManager;
-import top.theillusivec4.champions.server.command.AffixArgument;
 import top.theillusivec4.champions.server.command.ChampionSelectorOptions;
 import top.theillusivec4.champions.server.command.ChampionsCommand;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
 
 @Mod(Champions.MODID)
 public class Champions {
@@ -117,6 +111,22 @@ public class Champions {
     scalingHealthLoaded = ModList.get().isLoaded("scalinghealth");
   }
 
+  private static void createServerConfig(ForgeConfigSpec spec, String suffix) {
+    String fileName = "champions-" + suffix + ".toml";
+    ModLoadingContext.get().registerConfig(Type.SERVER, spec, fileName);
+    File defaults = new File(FMLPaths.GAMEDIR.get() + "/defaultconfigs/" + fileName);
+
+    if (!defaults.exists()) {
+      try {
+        FileUtils.copyInputStreamToFile(
+          Objects.requireNonNull(Champions.class.getClassLoader().getResourceAsStream(fileName)),
+          defaults);
+      } catch (IOException e) {
+        LOGGER.error("Error creating default config for " + fileName);
+      }
+    }
+  }
+
   private void setup(final FMLCommonSetupEvent evt) {
     ChampionCapability.register();
     NetworkHandler.register();
@@ -124,16 +134,16 @@ public class Champions {
     evt.enqueueWork(() -> {
       ChampionsStats.setup();
       ChampionSelectorOptions.setup();
-      Registry.register(Registry.LOOT_CONDITION_TYPE,
+      Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE,
         new ResourceLocation(RegistryReference.IS_CHAMPION), EntityIsChampion.type);
-      Registry.register(Registry.LOOT_CONDITION_TYPE,
+      Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE,
         new ResourceLocation(RegistryReference.CHAMPION_PROPERTIES),
         LootItemChampionPropertyCondition.INSTANCE);
       DispenseItemBehavior dispenseBehavior = (source, stack) -> {
         Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
         Optional<EntityType<?>> entitytype = ChampionEggItem.getType(stack);
         entitytype.ifPresent(type -> {
-          Entity entity = type.create(source.getLevel(), stack.getTag(), null, null,
+          Entity entity = type.create(source.getLevel(), stack.getTag(), null,
             source.getPos().relative(direction), MobSpawnType.DISPENSER, true,
             direction != Direction.UP);
 
@@ -146,27 +156,27 @@ public class Champions {
         });
         return stack;
       };
-      DispenserBlock.registerBehavior(ChampionsRegistry.EGG, dispenseBehavior);
-      ArgumentTypes.register(Champions.MODID + ":affix", AffixArgument.class,
-        new ArgumentSerializer<>() {
-          @Override
-          public void serializeToNetwork(@Nonnull final AffixArgument argument,
-                                         @Nonnull final FriendlyByteBuf buffer) {
-            // NO-OP
-          }
-
-          @Nonnull
-          @Override
-          public AffixArgument deserializeFromNetwork(@Nonnull final FriendlyByteBuf buffer) {
-            return new AffixArgument();
-          }
-
-          @Override
-          public void serializeToJson(@Nonnull final AffixArgument argument,
-                                      @Nonnull final JsonObject json) {
-            // NO-OP
-          }
-        });
+      DispenserBlock.registerBehavior(ChampionsRegistry.CHAMPION_EGG_ITEM.get(), dispenseBehavior);
+//      ArgumentTypes.register(Champions.MODID + ":affix", AffixArgument.class,
+//        new ArgumentSerializer<>() {
+//          @Override
+//          public void serializeToNetwork(@Nonnull final AffixArgument argument,
+//                                         @Nonnull final FriendlyByteBuf buffer) {
+//            // NO-OP
+//          }
+//
+//          @Nonnull
+//          @Override
+//          public AffixArgument deserializeFromNetwork(@Nonnull final FriendlyByteBuf buffer) {
+//            return new AffixArgument();
+//          }
+//
+//          @Override
+//          public void serializeToJson(@Nonnull final AffixArgument argument,
+//                                      @Nonnull final JsonObject json) {
+//            // NO-OP
+//          }
+//        });
     });
   }
 
@@ -175,14 +185,14 @@ public class Champions {
     MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
     MinecraftForge.EVENT_BUS.register(new ClientAffixEventsHandler());
     Minecraft.getInstance().getItemColors()
-      .register(ChampionEggItem::getColor, ChampionsRegistry.EGG);
+      .register(ChampionEggItem::getColor, ChampionsRegistry.CHAMPION_EGG_ITEM.get());
 
     if (ModList.get().isLoaded("waila")) {
       WailaPlugin.setup();
     }
-    evt.enqueueWork(() -> {
-      OverlayRegistry.registerOverlayTop("Champions Health Bar", new ChampionsOverlay());
-    });
+//    evt.enqueueWork(() -> {
+//      OverlayRegistry.registerOverlayTop("Champions Health Bar", new ChampionsOverlay());
+//    });
   }
 
   private void registerCaps(final RegisterCapabilitiesEvent evt) {
@@ -216,22 +226,6 @@ public class Champions {
         }
       } else if (evt.getConfig().getType() == Type.CLIENT) {
         ClientChampionsConfig.bake();
-      }
-    }
-  }
-
-  private static void createServerConfig(ForgeConfigSpec spec, String suffix) {
-    String fileName = "champions-" + suffix + ".toml";
-    ModLoadingContext.get().registerConfig(Type.SERVER, spec, fileName);
-    File defaults = new File(FMLPaths.GAMEDIR.get() + "/defaultconfigs/" + fileName);
-
-    if (!defaults.exists()) {
-      try {
-        FileUtils.copyInputStreamToFile(
-          Objects.requireNonNull(Champions.class.getClassLoader().getResourceAsStream(fileName)),
-          defaults);
-      } catch (IOException e) {
-        LOGGER.error("Error creating default config for " + fileName);
       }
     }
   }

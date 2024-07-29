@@ -28,7 +28,7 @@ public class ChampionHelper {
 
   public static boolean checkPotential(final LivingEntity livingEntity) {
     return isValidEntity(livingEntity) &&
-      isValidDimension(livingEntity.getLevel().dimension().location()) &&
+      isValidDimension(livingEntity.level().dimension().location()) &&
       !nearActiveBeacon(livingEntity) &&
       (!Champions.gameStagesLoaded || GameStagesPlugin.hasEntityStage(livingEntity));
   }
@@ -41,7 +41,7 @@ public class ChampionHelper {
   }
 
   private static boolean isValidEntity(final LivingEntity livingEntity) {
-    ResourceLocation rl = livingEntity.getType().getRegistryName();
+    ResourceLocation rl = livingEntity.getType().getDefaultLootTable();
 
     if (rl == null) {
       return false;
@@ -74,7 +74,7 @@ public class ChampionHelper {
     Set<BlockPos> toRemove = new HashSet<>();
 
     for (BlockPos pos : BEACON_POS) {
-      Level level = livingEntity.getLevel();
+      Level level = livingEntity.level();
 
       if (!level.isLoaded(pos)) {
         continue;

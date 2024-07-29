@@ -663,11 +663,11 @@ public class ChampionsConfig {
     infestedPerHealth = SERVER.infestedPerHealth.get();
     infestedInterval = SERVER.infestedInterval.get();
 
-    EntityType<?> type = ForgeRegistries.ENTITIES
+    EntityType<?> type = ForgeRegistries.ENTITY_TYPES
       .getValue(new ResourceLocation(SERVER.infestedParasite.get()));
     infestedParasite = type != null ? type : EntityType.SILVERFISH;
 
-    type = ForgeRegistries.ENTITIES
+    type = ForgeRegistries.ENTITY_TYPES
       .getValue(new ResourceLocation(SERVER.infestedEnderParasite.get()));
     infestedEnderParasite = type != null ? type : EntityType.ENDERMITE;
 

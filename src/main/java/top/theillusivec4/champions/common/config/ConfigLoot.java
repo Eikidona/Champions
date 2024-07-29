@@ -1,20 +1,21 @@
 package top.theillusivec4.champions.common.config;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.Champions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class ConfigLoot {
 
-  private static final Random RAND = new Random();
+  private static final RandomSource RAND = RandomSource.create();
   private static final Map<Integer, List<Data>> DROPS = new HashMap<>();
 
   public static List<ItemStack> getLootDrops(int tier) {
@@ -62,21 +63,21 @@ public class ConfigLoot {
         int weight = 1;
 
         if (parsed.length < 2) {
-          Champions.LOGGER.error(s + " needs at least a tier and an item name");
+          Champions.LOGGER.error("{} needs at least a tier and an item name", s);
           continue;
         }
 
         try {
           tier = Integer.parseInt(parsed[0]);
         } catch (NumberFormatException e) {
-          Champions.LOGGER.error(parsed[0] + " is not a valid tier");
+          Champions.LOGGER.error("{} is not a valid tier", parsed[0]);
           continue;
         }
 
         Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(parsed[1]));
 
         if (item == null) {
-          Champions.LOGGER.error("Item not found! " + parsed[1]);
+          Champions.LOGGER.error("Item not found! {}", parsed[1]);
           continue;
         }
 
@@ -85,7 +86,7 @@ public class ConfigLoot {
           try {
             amount = Integer.parseInt(parsed[2]);
           } catch (NumberFormatException e) {
-            Champions.LOGGER.error(parsed[2] + " is not a valid stack amount");
+            Champions.LOGGER.error("{} is not a valid stack amount", parsed[2]);
           }
 
           if (parsed.length > 3) {
@@ -98,14 +99,14 @@ public class ConfigLoot {
               try {
                 weight = Integer.parseInt(parsed[4]);
               } catch (NumberFormatException e) {
-                Champions.LOGGER.error(parsed[4] + " is not a valid weight");
+                Champions.LOGGER.error("{} is not a valid weight", parsed[4]);
               }
             }
           }
         }
         stack = new ItemStack(item, amount);
         result.computeIfAbsent(tier, list -> new ArrayList<>())
-            .add(new Data(stack, enchant, weight));
+          .add(new Data(stack, enchant, weight));
       }
     }
     DROPS.clear();

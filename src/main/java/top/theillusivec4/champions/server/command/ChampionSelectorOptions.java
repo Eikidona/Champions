@@ -2,10 +2,6 @@ package top.theillusivec4.champions.server.command;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.commands.arguments.selector.options.EntitySelectorOptions;
@@ -13,19 +9,24 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.rank.Rank;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class ChampionSelectorOptions {
 
   public static void setup() {
     EntitySelectorOptions.register("champions", ChampionSelectorOptions::championsArgument,
       entitySelectorParser -> true,
-      new TranslatableComponent("argument.entity.options.champions.description"));
+      Component.translatable("argument.entity.options.champions.description"));
   }
 
   private static void championsArgument(EntitySelectorParser parser) throws CommandSyntaxException {

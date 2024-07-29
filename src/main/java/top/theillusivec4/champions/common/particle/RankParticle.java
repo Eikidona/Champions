@@ -14,9 +14,9 @@ public class RankParticle extends TextureSheetParticle {
   private static final Random RANDOM = new Random();
   private final SpriteSet spriteSet;
 
-  private RankParticle(ClientLevel p_i51008_1_, double p_i51008_2_, double p_i51008_4_,
-                       double p_i51008_6_, double p_i51008_8_, double p_i51008_10_,
-                       double p_i51008_12_, SpriteSet spriteSet) {
+  public RankParticle(ClientLevel p_i51008_1_, double p_i51008_2_, double p_i51008_4_,
+                      double p_i51008_6_, double p_i51008_8_, double p_i51008_10_,
+                      double p_i51008_12_, SpriteSet spriteSet) {
     super(p_i51008_1_, p_i51008_2_, p_i51008_4_, p_i51008_6_, 0.5D - RANDOM.nextDouble(),
         p_i51008_10_, 0.5D - RANDOM.nextDouble());
     this.spriteSet = spriteSet;

@@ -1,16 +1,6 @@
 package top.theillusivec4.champions.common.util;
 
 import com.google.common.collect.ImmutableSortedMap;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -23,6 +13,8 @@ import top.theillusivec4.champions.common.affix.core.AffixManager;
 import top.theillusivec4.champions.common.integration.scalinghealth.ScalingHealthPlugin;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.rank.RankManager;
+
+import java.util.*;
 
 public class ChampionData {
 
@@ -109,11 +101,11 @@ public class ChampionData {
         .map(entitySettings1 -> entitySettings1.canApply(affix)).orElse(true) && settings
         .map(affixSettings -> affixSettings.canApply(champion)).orElse(true) && affix
         .canApply(champion);
-    }).collect(Collectors.toList())));
+    }).toList()));
     List<IAffix> randomList = new ArrayList<>();
     validAffixes.forEach((k, v) -> randomList.addAll(v));
 
-    while (randomList.size() > 0 && affixes.size() < total) {
+    while (!randomList.isEmpty() && affixes.size() < total) {
       int randomIndex = RAND.nextInt(randomList.size());
       IAffix randomAffix = randomList.get(randomIndex);
 
@@ -138,7 +130,7 @@ public class ChampionData {
         "No rank configuration found! Please check the 'champions-ranks.toml' file in the 'serverconfigs'.");
       return RankManager.getLowestRank();
     }
-    Integer[] tierRange = new Integer[] {min, max};
+    Integer[] tierRange = new Integer[]{min, max};
     Integer firstTier = tierRange[0] != null ? tierRange[0] : ranks.firstKey();
     int maxTier = tierRange[1] != null ? tierRange[1] : -1;
     Iterator<Integer> iter = ranks.navigableKeySet().tailSet(firstTier, false).iterator();
@@ -159,7 +151,7 @@ public class ChampionData {
       float chance = rank.getChance();
 
       if (Champions.scalingHealthLoaded) {
-        chance += ScalingHealthPlugin.getSpawnIncrease(rank.getTier(), livingEntity);
+        chance += (float) ScalingHealthPlugin.getSpawnIncrease(rank.getTier(), livingEntity);
       }
 
       if (RAND.nextFloat() < chance) {

@@ -93,7 +93,7 @@ public class AffixManager {
       if (mobList != null) {
 
         for (String s : mobList) {
-          EntityType<?> type = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(s));
+          EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(s));
 
           if (type != null) {
             this.mobList.add(type);

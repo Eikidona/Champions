@@ -1,7 +1,5 @@
 package top.theillusivec4.champions.common.entity;
 
-import javax.annotation.Nonnull;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -11,18 +9,22 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
+
+import javax.annotation.Nonnull;
 
 public class ArcticBulletEntity extends BaseBulletEntity {
 
   public ArcticBulletEntity(Level level) {
-    super(ChampionsRegistry.ARCTIC_BULLET, level);
+    super(ChampionsRegistry.ARCTIC_BULLET.get(), level);
   }
 
   public ArcticBulletEntity(Level level, LivingEntity livingEntity, @Nonnull Entity entity, Direction.Axis axis) {
-    super(ChampionsRegistry.ARCTIC_BULLET, level, livingEntity, entity, axis);
+    super(ChampionsRegistry.ARCTIC_BULLET.get(), level, livingEntity, entity, axis);
+  }
+
+  public ArcticBulletEntity(EntityType<? extends ArcticBulletEntity> entityEntityType, Level level) {
+    super(entityEntityType, level);
   }
 
   @Override

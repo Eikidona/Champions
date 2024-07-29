@@ -1,19 +1,5 @@
 package top.theillusivec4.champions.common.capability;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import javax.annotation.Nonnull;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -38,11 +24,14 @@ import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.util.ChampionHelper;
 
+import javax.annotation.Nonnull;
+import java.util.*;
+
 public class ChampionCapability {
 
   public static final Capability<IChampion> CHAMPION_CAP =
-      CapabilityManager.get(new CapabilityToken<>() {
-      });
+    CapabilityManager.get(new CapabilityToken<>() {
+    });
 
   public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "champion");
 
@@ -103,9 +92,9 @@ public class ChampionCapability {
 
     public static class Server implements IChampion.Server {
 
+      private final Map<String, CompoundTag> data = new HashMap<>();
       private Rank rank = null;
       private List<IAffix> affixes = new ArrayList<>();
-      private final Map<String, CompoundTag> data = new HashMap<>();
 
       @Override
       public Optional<Rank> getRank() {
@@ -140,10 +129,10 @@ public class ChampionCapability {
 
     public static class Client implements IChampion.Client {
 
-      private Tuple<Integer, Integer> rank = null;
       private final List<IAffix> affixes = new ArrayList<>();
       private final Map<String, IAffix> idToAffix = new HashMap<>();
       private final Map<String, CompoundTag> data = new HashMap<>();
+      private Tuple<Integer, Integer> rank = null;
 
       @Override
       public Optional<Tuple<Integer, Integer>> getRank() {

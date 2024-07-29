@@ -42,9 +42,9 @@ public class ChampionsApiImpl implements IChampionsApi {
   @Override
   public void registerAffix(IAffix affix) {
     String id = affix.getIdentifier();
-
+    // check if affixes already registered
     if (affixes.containsKey(id)) {
-      LOGGER.error("Skipping affix with duplicate identifier " + id);
+      LOGGER.error("Skipping affix with duplicate identifier {}", id);
       return;
     }
     affixes.put(id, affix);
@@ -53,7 +53,7 @@ public class ChampionsApiImpl implements IChampionsApi {
 
   @Override
   public void registerAffixes(IAffix... affixes) {
-
+    // register all need registers affixes
     for (IAffix affix : affixes) {
       this.registerAffix(affix);
     }

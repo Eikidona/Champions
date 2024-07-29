@@ -1,17 +1,22 @@
 package top.theillusivec4.champions.common.affix;
 
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.EntityDamageSource;
+import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 
 public class ReflectiveAffix extends BasicAffix {
-  private static final String REFLECTION_DAMAGE = "reflection";
+  private static final ResourceKey<DamageType> REFLECTION_DAMAGE = ResourceKey.create(ResourceKey.createRegistryKey(new ResourceLocation(Champions.MODID, "reflection")), new ResourceLocation(Champions.MODID, "reflection"));
 
   public ReflectiveAffix() {
     super("reflective", AffixCategory.OFFENSE, true);
@@ -19,8 +24,8 @@ public class ReflectiveAffix extends BasicAffix {
 
   @SubscribeEvent
   public void onDamageEvent(LivingDamageEvent evt) {
-    if (!ChampionsConfig.reflectiveLethal && evt.getSource().getMsgId().equals(REFLECTION_DAMAGE)) {
-      LivingEntity living = evt.getEntityLiving();
+    if (!ChampionsConfig.reflectiveLethal && evt.getSource().is(REFLECTION_DAMAGE)) {
+      LivingEntity living = evt.getEntity();
       float currentDamage = evt.getAmount();
 
       if (currentDamage >= living.getHealth()) {
@@ -34,50 +39,46 @@ public class ReflectiveAffix extends BasicAffix {
 
     if (source.getDirectEntity() instanceof LivingEntity sourceEntity) {
 
-      if (source.getMsgId().equals(REFLECTION_DAMAGE) ||
-        (source instanceof EntityDamageSource && ((EntityDamageSource) source).isThorns())) {
+      if (source.is(REFLECTION_DAMAGE) || (source.getEntity() instanceof LivingEntity && source.typeHolder().is(DamageTypes.THORNS))) {
         return newAmount;
       }
-      EntityDamageSource newSource =
-        new EntityDamageSource(REFLECTION_DAMAGE, champion.getLivingEntity());
-      newSource.setThorns();
+      DamageSource newSource = new DamageSources(champion.getLivingEntity().getServer().registryAccess()).magic();
+      //newSource.setThorns();
       float min = (float) ChampionsConfig.reflectiveMinPercent;
 
-      if (source.isFire()) {
-        newSource.setIsFire();
+      if (source.is(DamageTypes.IN_FIRE)||source.is(DamageTypes.ON_FIRE)) {
+        if (source.getEntity() instanceof LivingEntity living)
+          living.setSecondsOnFire(champion.getLivingEntity().getRemainingFireTicks());
       }
 
-      if (source.isProjectile()) {
-        newSource.setProjectile();
+      if (source.is(DamageTypes.MOB_PROJECTILE)) {
+
       }
 
-      if (source.isExplosion()) {
-        newSource.setExplosion();
-      }
+//      if (source.isExplosion()) {
+//        newSource.setExplosion();
+//      }
+//
+//      if (source.isMagic()) {
+//        newSource.setMagic();
+//      }
+//
+//      if (source.isDamageHelmet()) {
+//        newSource.damageHelmet();
+//      }
+//
+//      if (source.isBypassArmor()) {
+//        newSource.bypassArmor();
+//      }
 
-      if (source.isMagic()) {
-        newSource.setMagic();
-      }
+//      if (source.scalesWithDifficulty()) {
+//        newSource.scalesWithDifficulty();
+//      }
 
-      if (source.isDamageHelmet()) {
-        newSource.damageHelmet();
-      }
-
-      if (source.isBypassArmor()) {
-        newSource.bypassArmor();
-      }
-
-      if (source.scalesWithDifficulty()) {
-        newSource.setScalesWithDifficulty();
-      }
-
-      if (source.isBypassInvul()) {
-        newSource.bypassInvul();
-      }
-      float damage = (float) Math.min(
-        amount *
-          (sourceEntity.getRandom().nextFloat() * (ChampionsConfig.reflectiveMaxPercent - min)
-            + min), ChampionsConfig.reflectiveMax);
+//      if (source.isBypassInvul()) {
+//        newSource.bypa();
+//      }
+      float damage = (float) Math.min(amount * (sourceEntity.getRandom().nextFloat() * (ChampionsConfig.reflectiveMaxPercent - min) + min), ChampionsConfig.reflectiveMax);
       sourceEntity.hurt(newSource, damage);
     }
     return newAmount;

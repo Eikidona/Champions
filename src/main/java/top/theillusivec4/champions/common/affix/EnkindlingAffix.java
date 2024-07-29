@@ -42,7 +42,7 @@ public class EnkindlingAffix extends GoalAffix {
 
       if (livingentity != null && livingentity.isAlive()) {
         return BasicAffix.canTarget(this.mobEntity, livingentity, true)
-            && this.mobEntity.getLevel().getDifficulty() != Difficulty.PEACEFUL;
+            && this.mobEntity.level().getDifficulty() != Difficulty.PEACEFUL;
       } else {
         return false;
       }
@@ -56,7 +56,7 @@ public class EnkindlingAffix extends GoalAffix {
     @Override
     public void tick() {
 
-      if (this.mobEntity.getLevel().getDifficulty() != Difficulty.PEACEFUL) {
+      if (this.mobEntity.level().getDifficulty() != Difficulty.PEACEFUL) {
         --this.attackTime;
         LivingEntity livingentity = this.mobEntity.getTarget();
 
@@ -68,8 +68,8 @@ public class EnkindlingAffix extends GoalAffix {
             if (this.attackTime <= 0) {
               this.attackTime = ChampionsConfig.enkindlingAttackInterval * 20
                   + this.mobEntity.getRandom().nextInt(10) * 20 / 2;
-              this.mobEntity.level.addFreshEntity(
-                  new EnkindlingBulletEntity(this.mobEntity.getLevel(), this.mobEntity,
+              this.mobEntity.level().addFreshEntity(
+                  new EnkindlingBulletEntity(this.mobEntity.level(), this.mobEntity,
                       livingentity, this.mobEntity.getMotionDirection().getAxis()));
               this.mobEntity.playSound(SoundEvents.SHULKER_SHOOT,
                   2.0F, (this.mobEntity.getRandom().nextFloat() -

@@ -1,10 +1,6 @@
 package top.theillusivec4.champions.common.entity;
 
 import com.google.common.collect.Lists;
-import java.util.List;
-import java.util.UUID;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
@@ -30,6 +26,11 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.UUID;
+
 public abstract class BaseBulletEntity extends Projectile {
 
   @Nullable
@@ -43,12 +44,12 @@ public abstract class BaseBulletEntity extends Projectile {
   @Nullable
   private UUID targetId;
 
-  public BaseBulletEntity(EntityType<? extends BaseBulletEntity> type, Level level) {
+  public BaseBulletEntity(EntityType<? extends Projectile> type, Level level) {
     super(type, level);
     this.noPhysics = true;
   }
 
-  public BaseBulletEntity(EntityType<? extends BaseBulletEntity> type, Level level,
+  public BaseBulletEntity(EntityType<? extends Projectile> type, Level level,
                           LivingEntity livingEntity, @Nonnull Entity entity, Direction.Axis axis) {
     this(type, level);
     this.setOwner(livingEntity);
@@ -119,8 +120,8 @@ public abstract class BaseBulletEntity extends Projectile {
       blockpos = this.blockPosition().below();
     } else {
       d0 = (double) this.finalTarget.getBbHeight() * 0.5D;
-      blockpos = new BlockPos(this.finalTarget.getX(), this.finalTarget.getY() + d0,
-          this.finalTarget.getZ());
+      blockpos = new BlockPos(this.finalTarget.getBlockX(), (int) (this.finalTarget.getBlockY() + d0),
+        this.finalTarget.getBlockZ());
     }
     double d1 = (double) blockpos.getX() + 0.5D;
     double d2 = (double) blockpos.getY() + d0;
@@ -133,28 +134,28 @@ public abstract class BaseBulletEntity extends Projectile {
 
       if (p_37349_ != Direction.Axis.X) {
 
-        if (blockpos1.getX() < blockpos.getX() && this.level.isEmptyBlock(blockpos1.east())) {
+        if (blockpos1.getX() < blockpos.getX() && this.level().isEmptyBlock(blockpos1.east())) {
           list.add(Direction.EAST);
         } else if (blockpos1.getX() > blockpos.getX() &&
-            this.level.isEmptyBlock(blockpos1.west())) {
+          this.level().isEmptyBlock(blockpos1.west())) {
           list.add(Direction.WEST);
         }
       }
 
       if (p_37349_ != Direction.Axis.Y) {
-        if (blockpos1.getY() < blockpos.getY() && this.level.isEmptyBlock(blockpos1.above())) {
+        if (blockpos1.getY() < blockpos.getY() && this.level().isEmptyBlock(blockpos1.above())) {
           list.add(Direction.UP);
         } else if (blockpos1.getY() > blockpos.getY() &&
-            this.level.isEmptyBlock(blockpos1.below())) {
+          this.level().isEmptyBlock(blockpos1.below())) {
           list.add(Direction.DOWN);
         }
       }
 
       if (p_37349_ != Direction.Axis.Z) {
-        if (blockpos1.getZ() < blockpos.getZ() && this.level.isEmptyBlock(blockpos1.south())) {
+        if (blockpos1.getZ() < blockpos.getZ() && this.level().isEmptyBlock(blockpos1.south())) {
           list.add(Direction.SOUTH);
         } else if (blockpos1.getZ() > blockpos.getZ() &&
-            this.level.isEmptyBlock(blockpos1.north())) {
+          this.level().isEmptyBlock(blockpos1.north())) {
           list.add(Direction.NORTH);
         }
       }
@@ -163,7 +164,7 @@ public abstract class BaseBulletEntity extends Projectile {
 
       if (list.isEmpty()) {
 
-        for (int i = 5; !this.level.isEmptyBlock(blockpos1.relative(direction)) && i > 0; --i) {
+        for (int i = 5; !this.level().isEmptyBlock(blockpos1.relative(direction)) && i > 0; --i) {
           direction = Direction.getRandom(this.random);
         }
       } else {
@@ -207,7 +208,7 @@ public abstract class BaseBulletEntity extends Projectile {
 
   public void checkDespawn() {
 
-    if (this.level.getDifficulty() == Difficulty.PEACEFUL) {
+    if (this.level().getDifficulty() == Difficulty.PEACEFUL) {
       this.discard();
     }
   }
@@ -215,10 +216,10 @@ public abstract class BaseBulletEntity extends Projectile {
   public void tick() {
     super.tick();
 
-    if (!this.level.isClientSide) {
+    if (!this.level().isClientSide) {
 
       if (this.finalTarget == null && this.targetId != null) {
-        this.finalTarget = ((ServerLevel) this.level).getEntity(this.targetId);
+        this.finalTarget = ((ServerLevel) this.level()).getEntity(this.targetId);
 
         if (this.finalTarget == null) {
           this.targetId = null;
@@ -226,7 +227,7 @@ public abstract class BaseBulletEntity extends Projectile {
       }
 
       if (this.finalTarget == null || !this.finalTarget.isAlive() ||
-          this.finalTarget instanceof Player && this.finalTarget.isSpectator()) {
+        this.finalTarget instanceof Player && this.finalTarget.isSpectator()) {
 
         if (!this.isNoGravity()) {
           this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.04D, 0.0D));
@@ -237,14 +238,14 @@ public abstract class BaseBulletEntity extends Projectile {
         this.targetDeltaZ = Mth.clamp(this.targetDeltaZ * 1.025D, -1.0D, 1.0D);
         Vec3 vec3 = this.getDeltaMovement();
         this.setDeltaMovement(
-            vec3.add((this.targetDeltaX - vec3.x) * 0.2D, (this.targetDeltaY - vec3.y) * 0.2D,
-                (this.targetDeltaZ - vec3.z) * 0.2D));
+          vec3.add((this.targetDeltaX - vec3.x) * 0.2D, (this.targetDeltaY - vec3.y) * 0.2D,
+            (this.targetDeltaZ - vec3.z) * 0.2D));
       }
 
-      HitResult hitresult = ProjectileUtil.getHitResult(this, this::canHitEntity);
+      HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
 
       if (hitresult.getType() != HitResult.Type.MISS &&
-          !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
+        !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
         this.onHit(hitresult);
       }
     }
@@ -253,9 +254,9 @@ public abstract class BaseBulletEntity extends Projectile {
     this.setPos(this.getX() + vec31.x, this.getY() + vec31.y, this.getZ() + vec31.z);
     ProjectileUtil.rotateTowardsMovement(this, 0.5F);
 
-    if (this.level.isClientSide) {
-      this.level.addParticle(this.getParticle(), this.getX() - vec31.x,
-          this.getY() - vec31.y + 0.15D, this.getZ() - vec31.z, 0.0D, 0.0D, 0.0D);
+    if (this.level().isClientSide) {
+      this.level().addParticle(this.getParticle(), this.getX() - vec31.x,
+        this.getY() - vec31.y + 0.15D, this.getZ() - vec31.z, 0.0D, 0.0D, 0.0D);
     } else if (this.finalTarget != null && !this.finalTarget.isRemoved()) {
 
       if (this.flightSteps > 0) {
@@ -263,7 +264,7 @@ public abstract class BaseBulletEntity extends Projectile {
 
         if (this.flightSteps == 0) {
           this.selectNextMoveDirection(
-              this.currentMoveDirection == null ? null : this.currentMoveDirection.getAxis());
+            this.currentMoveDirection == null ? null : this.currentMoveDirection.getAxis());
         }
       }
 
@@ -271,14 +272,14 @@ public abstract class BaseBulletEntity extends Projectile {
         BlockPos blockpos = this.blockPosition();
         Direction.Axis direction$axis = this.currentMoveDirection.getAxis();
 
-        if (this.level.loadedAndEntityCanStandOn(blockpos.relative(this.currentMoveDirection),
-            this)) {
+        if (this.level().loadedAndEntityCanStandOn(blockpos.relative(this.currentMoveDirection),
+          this)) {
           this.selectNextMoveDirection(direction$axis);
         } else {
           BlockPos blockpos1 = this.finalTarget.blockPosition();
           if (direction$axis == Direction.Axis.X && blockpos.getX() == blockpos1.getX() ||
-              direction$axis == Direction.Axis.Z && blockpos.getZ() == blockpos1.getZ() ||
-              direction$axis == Direction.Axis.Y && blockpos.getY() == blockpos1.getY()) {
+            direction$axis == Direction.Axis.Z && blockpos.getZ() == blockpos1.getZ() ||
+            direction$axis == Direction.Axis.Y && blockpos.getY() == blockpos1.getY()) {
             this.selectNextMoveDirection(direction$axis);
           }
         }
@@ -287,8 +288,8 @@ public abstract class BaseBulletEntity extends Projectile {
 
   }
 
-  protected boolean canHitEntity(@Nonnull Entity p_37341_) {
-    return super.canHitEntity(p_37341_) && !p_37341_.noPhysics;
+  protected boolean canHitEntity(@Nonnull Entity pTarget) {
+    return super.canHitEntity(pTarget) && !pTarget.noPhysics;
   }
 
   public boolean isOnFire() {
@@ -312,11 +313,13 @@ public abstract class BaseBulletEntity extends Projectile {
     }
   }
 
-  protected void onHitBlock(@Nonnull BlockHitResult p_37343_) {
-    super.onHitBlock(p_37343_);
-    ((ServerLevel) this.level).sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(),
+  protected void onHitBlock(@Nonnull BlockHitResult hitResult) {
+    super.onHitBlock(hitResult);
+    if (this.level() instanceof ServerLevel serverLevel) {
+      serverLevel.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(),
         this.getZ(), 2, 0.2D, 0.2D, 0.2D, 0.0D);
-    this.playSound(SoundEvents.SHULKER_BULLET_HIT, 1.0F, 1.0F);
+      this.playSound(SoundEvents.SHULKER_BULLET_HIT, 1.0F, 1.0F);
+    }
   }
 
   protected void onHit(@Nonnull HitResult pResult) {
@@ -330,10 +333,10 @@ public abstract class BaseBulletEntity extends Projectile {
 
   public boolean hurt(@Nonnull DamageSource pSource, float pAmount) {
 
-    if (!this.level.isClientSide) {
+    if (this.level() instanceof ServerLevel serverLevel) {
       this.playSound(SoundEvents.SHULKER_BULLET_HURT, 1.0F, 1.0F);
-      ((ServerLevel) this.level).sendParticles(ParticleTypes.CRIT, this.getX(), this.getY(),
-          this.getZ(), 15, 0.2D, 0.2D, 0.2D, 0.0D);
+      serverLevel.sendParticles(ParticleTypes.CRIT, this.getX(), this.getY(),
+        this.getZ(), 15, 0.2D, 0.2D, 0.2D, 0.0D);
       this.discard();
     }
     return true;

@@ -13,7 +13,7 @@ public class ScalingHealthPlugin {
 
   public static double getSpawnIncrease(int tier, LivingEntity livingEntity) {
     double difficulty =
-      livingEntity.getLevel().getCapability(DifficultySourceCapability.INSTANCE).map(
+      livingEntity.level().getCapability(DifficultySourceCapability.INSTANCE).map(
         IDifficultySource::getDifficulty).orElse(0.0F);
     return getSpawnModifier(tier) * difficulty;
   }

@@ -37,7 +37,7 @@ public class EntityManager {
         Champions.LOGGER.error("Missing identifier while building entity settings, skipping...");
         return;
       }
-      EntityType<?> type = ForgeRegistries.ENTITIES
+      EntityType<?> type = ForgeRegistries.ENTITY_TYPES
           .getValue(new ResourceLocation(entityConfig.entity));
 
       if (type == null) {
