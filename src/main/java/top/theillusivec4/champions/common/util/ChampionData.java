@@ -10,7 +10,6 @@ import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.AffixManager;
-import top.theillusivec4.champions.common.integration.scalinghealth.ScalingHealthPlugin;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.rank.RankManager;
 
@@ -150,9 +149,9 @@ public class ChampionData {
       }
       float chance = rank.getChance();
 
-      if (Champions.scalingHealthLoaded) {
-        chance += (float) ScalingHealthPlugin.getSpawnIncrease(rank.getTier(), livingEntity);
-      }
+//      if (Champions.scalingHealthLoaded) {
+//        chance += (float) ScalingHealthPlugin.getSpawnIncrease(rank.getTier(), livingEntity);
+//      }
 
       if (RAND.nextFloat() < chance) {
         result = rank;
