@@ -1,5 +1,5 @@
 {
-  "item.champions.champions_egg": "Яйцо Чемпионского Моба",
+  "item.champions.champion_egg": "Яйцо Чемпионского Моба",
   "item.champions.egg.tooltip": "Моб с случайными усиливающими особенностями",
   "argument.champions.affix.unknown": "Неизвестная особенность %s",
   "commands.champions.summon.success": "Призван новый %s",

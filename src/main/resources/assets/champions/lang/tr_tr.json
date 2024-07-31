@@ -1,5 +1,5 @@
 {
-  "item.champions.champions_egg": "Şampiyon Yumurtası",
+  "item.champions.champion_egg": "Şampiyon Yumurtası",
   "item.champions.egg.tooltip": "Rasgele Özellikli",
   "argument.champions.affix.unknown": "%s - Bilinmeyen özellik",
   "commands.champions.summon.success": "Yeni %s çağrıldı",

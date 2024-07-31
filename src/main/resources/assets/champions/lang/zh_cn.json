@@ -1,5 +1,5 @@
 {
-  "item.champions.champions_egg": "强敌蛋",
+  "item.champions.champion_egg": "强敌蛋",
   "item.champions.egg.tooltip": "随机词缀",
   "argument.champions.affix.unknown": "未知词缀 %s",
   "commands.champions.summon.success": "召唤实体 %s",

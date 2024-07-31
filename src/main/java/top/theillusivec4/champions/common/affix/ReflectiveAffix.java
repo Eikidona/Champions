@@ -47,13 +47,12 @@ public class ReflectiveAffix extends BasicAffix {
       //newSource.setThorns();
       float min = (float) ChampionsConfig.reflectiveMinPercent;
       float damage = (float) Math.min(amount * (sourceEntity.getRandom().nextFloat() * (ChampionsConfig.reflectiveMaxPercent - min) + min), ChampionsConfig.reflectiveMax);
-      if (source.is(DamageTypes.IN_FIRE)||source.is(DamageTypes.ON_FIRE)) {
+      if (source.is(DamageTypes.IN_FIRE) || source.is(DamageTypes.ON_FIRE)) {
         if (source.getEntity() instanceof LivingEntity living)
           living.setSecondsOnFire(champion.getLivingEntity().getRemainingFireTicks());
       }
-
       if (source.is(DamageTypes.EXPLOSION)) {
-        newSource = newSources.explosion(sourceEntity,source.getDirectEntity());
+        newSource = newSources.explosion(sourceEntity, source.getDirectEntity());
       }
 
       if (source.is(DamageTypes.MAGIC)) {

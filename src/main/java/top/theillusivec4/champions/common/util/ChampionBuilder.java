@@ -1,6 +1,7 @@
 package top.theillusivec4.champions.common.util;
 
 import com.google.common.collect.ImmutableSortedMap;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -21,7 +22,7 @@ import java.util.*;
 
 public class ChampionBuilder {
 
-  private static final Random RAND = new Random();
+  private static final RandomSource RAND = RandomSource.createNewThreadLocalInstance();
 
   public static void spawn(final IChampion champion) {
 

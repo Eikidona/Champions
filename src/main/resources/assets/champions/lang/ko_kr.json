@@ -1,5 +1,5 @@
 {
-  "item.champions.champions_egg": "챔피언 생성 알",
+  "item.champions.champion_egg": "챔피언 생성 알",
   "item.champions.egg.tooltip": "무작위 수식어",
   "argument.champions.affix.unknown": "알 수 없는 수식어 %s",
   "commands.champions.summon.success": "새로운 %s을(를) 소환",
