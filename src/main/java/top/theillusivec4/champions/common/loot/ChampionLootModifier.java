@@ -33,6 +33,7 @@ import java.util.List;
 
 public class ChampionLootModifier extends LootModifier {
   public static final Codec<ChampionLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, ChampionLootModifier::new));
+  private static final ThreadLocal<Boolean> IS_PROCESSING = ThreadLocal.withInitial(() -> false);
 
   public ChampionLootModifier(LootItemCondition[] conditions) {
     super(conditions);
@@ -41,59 +42,71 @@ public class ChampionLootModifier extends LootModifier {
   @Nonnull
   @Override
   public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-    Entity entity = context.getParamOrNull(LootContextParams.THIS_ENTITY);
-
-    if (entity == null) {
-      return generatedLoot;
-    }
-    DamageSource damageSource = context.getParamOrNull(LootContextParams.DAMAGE_SOURCE);
-
-    if (damageSource == null) {
+    if (IS_PROCESSING.get()) {
       return generatedLoot;
     }
 
-    if (!entity.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT) ||
-      (!ChampionsConfig.fakeLoot && damageSource.getDirectEntity() instanceof FakePlayer)) {
-      return generatedLoot;
-    }
-    ChampionCapability.getCapability(entity).ifPresent(champion -> {
-      IChampion.Server serverChampion = champion.getServer();
-      ServerLevel serverWorld = (ServerLevel) entity.level();
+    IS_PROCESSING.set(true);
+    try {
+      Entity entity = context.getParamOrNull(LootContextParams.THIS_ENTITY);
 
-      if (ChampionsConfig.lootSource != ConfigEnums.LootSource.CONFIG) {
-        LootTable lootTable = serverWorld.getServer().getLootData()
-          .getLootTable(new ResourceLocation(RegistryReference.CHAMPION_LOOT));
-        LootParams.Builder lootParamsBuilder = new LootParams.Builder(serverWorld)
-          .withParameter(LootContextParams.THIS_ENTITY, entity)
-          .withParameter(LootContextParams.ORIGIN, entity.position())
-          .withParameter(LootContextParams.DAMAGE_SOURCE, damageSource)
-          .withOptionalParameter(LootContextParams.KILLER_ENTITY, damageSource.getEntity())
-          .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, damageSource.getDirectEntity())
-          .withLuck(context.getLuck());
+      if (entity == null) {
+        return generatedLoot;
+      }
+      DamageSource damageSource = context.getParamOrNull(LootContextParams.DAMAGE_SOURCE);
 
-        if (entity instanceof LivingEntity livingEntity) {
-          LivingEntity attackingEntity = livingEntity.getKillCredit();
+      if (damageSource == null) {
+        return generatedLoot;
+      }
 
-          if (attackingEntity instanceof Player) {
-            lootParamsBuilder = lootParamsBuilder
-              .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, (Player) attackingEntity)
-              .withLuck(((Player) attackingEntity).getLuck());
+      if (!entity.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT) ||
+        (!ChampionsConfig.fakeLoot && damageSource.getDirectEntity() instanceof FakePlayer)) {
+        return generatedLoot;
+      }
+
+      ChampionCapability.getCapability(entity).ifPresent(champion -> {
+        IChampion.Server serverChampion = champion.getServer();
+        ServerLevel serverWorld = (ServerLevel) entity.level();
+
+        if (ChampionsConfig.lootSource != ConfigEnums.LootSource.CONFIG) {
+          LootTable lootTable = serverWorld.getServer().getLootData()
+            .getLootTable(new ResourceLocation(RegistryReference.CHAMPION_LOOT));
+          LootParams.Builder lootParamsBuilder = new LootParams.Builder(serverWorld)
+            .withParameter(LootContextParams.THIS_ENTITY, entity)
+            .withParameter(LootContextParams.ORIGIN, entity.position())
+            .withParameter(LootContextParams.DAMAGE_SOURCE, damageSource)
+            .withOptionalParameter(LootContextParams.KILLER_ENTITY, damageSource.getEntity())
+            .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, damageSource.getDirectEntity())
+            .withLuck(context.getLuck());
+
+          if (entity instanceof LivingEntity livingEntity) {
+            LivingEntity attackingEntity = livingEntity.getKillCredit();
+
+            if (attackingEntity instanceof Player) {
+              lootParamsBuilder = lootParamsBuilder
+                .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, (Player) attackingEntity)
+                .withLuck(((Player) attackingEntity).getLuck());
+            }
+          }
+
+          // 使用新的 LootParams 而不是原始的 LootContext
+          LootParams lootParams = lootParamsBuilder.create(LootContextParamSets.ENTITY);
+          lootTable.getRandomItems(lootParams, generatedLoot::add);
+        }
+
+        if (ChampionsConfig.lootSource != ConfigEnums.LootSource.LOOT_TABLE) {
+          List<ItemStack> loot = ConfigLoot
+            .getLootDrops(serverChampion.getRank().map(Rank::getTier).orElse(0));
+
+          if (!loot.isEmpty()) {
+            generatedLoot.addAll(loot);
           }
         }
-        lootTable.getRandomItems(lootParamsBuilder.create(LootContextParamSets.ENTITY),
-          generatedLoot::add);
-      }
-
-      if (ChampionsConfig.lootSource != ConfigEnums.LootSource.LOOT_TABLE) {
-        List<ItemStack> loot = ConfigLoot
-          .getLootDrops(serverChampion.getRank().map(Rank::getTier).orElse(0));
-
-        if (!loot.isEmpty()) {
-          generatedLoot.addAll(loot);
-        }
-      }
-    });
-    return generatedLoot;
+      });
+      return generatedLoot;
+    } finally {
+      IS_PROCESSING.set(false);
+    }
   }
 
   @Override
