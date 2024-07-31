@@ -20,7 +20,6 @@
 package top.theillusivec4.champions;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
-import net.minecraft.client.Minecraft;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -43,7 +42,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig.Type;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -53,8 +51,6 @@ import org.apache.logging.log4j.Logger;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.api.IChampionsApi;
 import top.theillusivec4.champions.api.impl.ChampionsApiImpl;
-import top.theillusivec4.champions.client.ClientEventHandler;
-import top.theillusivec4.champions.client.affix.ClientAffixEventsHandler;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.affix.core.AffixManager;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
@@ -98,7 +94,6 @@ public class Champions {
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::config);
     eventBus.addListener(this::setup);
-    eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::registerCaps);
     MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
     ChampionsRegistry.register(eventBus);
@@ -153,14 +148,6 @@ public class Champions {
       DispenserBlock.registerBehavior(ChampionsRegistry.CHAMPION_EGG_ITEM.get(), dispenseBehavior);
       ArgumentTypeInfos.registerByClass(AffixArgument.class, new AffixArgumentInfo());
     });
-  }
-
-  @SuppressWarnings("unused")
-  private void clientSetup(final FMLClientSetupEvent evt) {
-    MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
-    MinecraftForge.EVENT_BUS.register(new ClientAffixEventsHandler());
-    Minecraft.getInstance().getItemColors()
-      .register(ChampionEggItem::getColor, ChampionsRegistry.CHAMPION_EGG_ITEM.get());
   }
 
   private void registerCaps(final RegisterCapabilitiesEvent evt) {
