@@ -3,19 +3,13 @@ package top.theillusivec4.champions.common.config;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.conversion.ObjectConverter;
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
-import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
-import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
-import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
-import net.minecraftforge.common.ForgeConfigSpec.IntValue;
+import net.minecraftforge.common.ForgeConfigSpec.*;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.champions.Champions;
@@ -24,16 +18,81 @@ import top.theillusivec4.champions.common.config.ConfigEnums.LootSource;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
 import top.theillusivec4.champions.common.config.EntitiesConfig.EntityConfig;
 import top.theillusivec4.champions.common.config.RanksConfig.RankConfig;
+import top.theillusivec4.champions.common.integration.scalinghealth.ScalingHealthPlugin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChampionsConfig {
 
-  private static final String CONFIG_PREFIX = "gui." + Champions.MODID + ".config.";
-
   public static final ForgeConfigSpec SERVER_SPEC;
   public static final ServerConfig SERVER;
-
   public static final ForgeConfigSpec STAGE_SPEC;
   public static final StageConfig STAGE;
+  public static final ForgeConfigSpec RANKS_SPEC;
+  public static final Ranks RANKS;
+  public static final ForgeConfigSpec AFFIXES_SPEC;
+  public static final Affixes AFFIXES;
+  public static final ForgeConfigSpec ENTITIES_SPEC;
+  public static final Entities ENTITIES;
+  private static final String CONFIG_PREFIX = "gui." + Champions.MODID + ".config.";
+  public static List<RankConfig> ranks;
+  public static List<AffixConfig> affixes;
+  public static List<EntityConfig> entities;
+  public static int beaconProtectionRange;
+  public static boolean championSpawners;
+  public static int deathMessageTier;
+  public static List<? extends String> dimensionList;
+  public static Permission dimensionPermission;
+  public static List<? extends String> entitiesList;
+  public static Permission entitiesPermission;
+  public static boolean showHud;
+  public static boolean showParticles;
+  public static boolean enableTOPIntegration;
+  public static boolean fakeLoot;
+  public static LootSource lootSource;
+  public static boolean lootScaling;
+  public static double healthGrowth;
+  public static double attackGrowth;
+  public static double armorGrowth;
+  public static double toughnessGrowth;
+  public static double knockbackResistanceGrowth;
+  public static int experienceGrowth;
+  public static int explosionGrowth;
+  public static double affixTargetRange;
+  public static double adaptableDamageReductionIncrement;
+  public static double adaptableMaxDamageReduction;
+  public static int arcticAttackInterval;
+  public static double dampenedDamageReduction;
+  public static int desecratingCloudInterval;
+  public static int desecratingCloudActivationTime;
+  public static double desecratingCloudRadius;
+  public static int desecratingCloudDuration;
+  public static int enkindlingAttackInterval;
+  public static double hastyMovementBonus;
+  public static int infestedAmount;
+  public static int infestedInterval;
+  public static double infestedPerHealth;
+  public static int infestedTotal;
+  public static EntityType<?> infestedParasite;
+  public static EntityType<?> infestedEnderParasite;
+  public static double paralyzingChance;
+  public static double knockingMultiplier;
+  public static int livelyCooldown;
+  public static double livelyHealAmount;
+  public static double livelyPassiveMultiplier;
+  public static double magneticStrength;
+  public static boolean moltenWaterResistance;
+  public static MobEffectInstance plaguedEffect;
+  public static int plaguedRange;
+  public static double reflectiveMaxPercent;
+  public static double reflectiveMinPercent;
+  public static int reflectiveMax;
+  public static boolean reflectiveLethal;
+  public static double woundingChance;
+  public static List<? extends String> scalingHealthSpawnModifiers;
+  public static List<? extends String> entityStages;
+  public static List<? extends String> tierStages;
 
   static {
     final Pair<ServerConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
@@ -44,6 +103,150 @@ public class ChampionsConfig {
       .configure(StageConfig::new);
     STAGE_SPEC = specPair2.getRight();
     STAGE = specPair2.getLeft();
+  }
+
+  static {
+    final Pair<Ranks, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
+      .configure(Ranks::new);
+    RANKS_SPEC = specPair.getRight();
+    RANKS = specPair.getLeft();
+  }
+
+  static {
+    final Pair<Affixes, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
+      .configure(Affixes::new);
+    AFFIXES_SPEC = specPair.getRight();
+    AFFIXES = specPair.getLeft();
+  }
+
+  static {
+    final Pair<Entities, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
+      .configure(Entities::new);
+    ENTITIES_SPEC = specPair.getRight();
+    ENTITIES = specPair.getLeft();
+  }
+
+  public static void transformRanks(CommentedConfig configData) {
+    RANKS.ranks = new ObjectConverter().toObject(configData, RanksConfig::new);
+    ranks = RANKS.ranks.ranks;
+  }
+
+  public static void transformAffixes(CommentedConfig configData) {
+    AFFIXES.affixes = new ObjectConverter().toObject(configData, AffixesConfig::new);
+    affixes = AFFIXES.affixes.affixes;
+  }
+
+  public static void transformEntities(CommentedConfig configData) {
+    ENTITIES.entities = new ObjectConverter().toObject(configData, EntitiesConfig::new);
+    entities = ENTITIES.entities.entities;
+  }
+
+  public static void bake() {
+    beaconProtectionRange = SERVER.beaconProtectionRange.get();
+    championSpawners = SERVER.championSpawners.get();
+    deathMessageTier = SERVER.deathMessageTier.get();
+    dimensionList = SERVER.dimensionList.get();
+    dimensionPermission = SERVER.dimensionPermission.get();
+    entitiesList = SERVER.entitiesList.get();
+    entitiesPermission = SERVER.entitiesPermission.get();
+    showHud = SERVER.showHud.get();
+    showParticles = SERVER.showParticles.get();
+    enableTOPIntegration = SERVER.enableTOPIntegration.get();
+
+    fakeLoot = SERVER.fakeLoot.get();
+    lootSource = SERVER.lootSource.get();
+    lootScaling = SERVER.lootScaling.get();
+    ConfigLoot.parse(SERVER.lootDrops.get());
+
+    healthGrowth = SERVER.healthGrowth.get();
+    attackGrowth = SERVER.attackGrowth.get();
+    armorGrowth = SERVER.armorGrowth.get();
+    toughnessGrowth = SERVER.toughnessGrowth.get();
+    knockbackResistanceGrowth = SERVER.knockbackResistanceGrowth.get();
+    experienceGrowth = SERVER.experienceGrowth.get();
+    explosionGrowth = SERVER.explosionGrowth.get();
+
+    affixTargetRange = SERVER.affixTargetRange.get();
+
+    adaptableDamageReductionIncrement = SERVER.adaptableDamageReductionIncrement.get();
+    adaptableMaxDamageReduction = SERVER.adaptableMaxDamageReduction.get();
+
+    arcticAttackInterval = SERVER.arcticAttackInterval.get();
+
+    dampenedDamageReduction = SERVER.dampenedDamageReduction.get();
+
+    desecratingCloudActivationTime = SERVER.desecratingCloudActivationTime.get();
+    desecratingCloudDuration = SERVER.desecratingCloudDuration.get();
+    desecratingCloudInterval = SERVER.desecratingCloudInterval.get();
+    desecratingCloudRadius = SERVER.desecratingCloudRadius.get();
+
+    enkindlingAttackInterval = SERVER.enkindlingAttackInterval.get();
+
+    hastyMovementBonus = SERVER.hastyMovementBonus.get();
+
+    infestedAmount = SERVER.infestedAmount.get();
+    infestedTotal = SERVER.infestedTotal.get();
+    infestedPerHealth = SERVER.infestedPerHealth.get();
+    infestedInterval = SERVER.infestedInterval.get();
+
+    EntityType<?> type = ForgeRegistries.ENTITY_TYPES
+      .getValue(new ResourceLocation(SERVER.infestedParasite.get()));
+    infestedParasite = type != null ? type : EntityType.SILVERFISH;
+
+    type = ForgeRegistries.ENTITY_TYPES
+      .getValue(new ResourceLocation(SERVER.infestedEnderParasite.get()));
+    infestedEnderParasite = type != null ? type : EntityType.ENDERMITE;
+
+    paralyzingChance = SERVER.paralyzingChance.get();
+
+    knockingMultiplier = SERVER.knockingMultiplier.get();
+
+    livelyHealAmount = SERVER.livelyHealAmount.get();
+    livelyPassiveMultiplier = SERVER.livelyPassiveMultiplier.get();
+    livelyCooldown = SERVER.livelyCooldown.get();
+
+    magneticStrength = SERVER.magneticStrength.get();
+
+    moltenWaterResistance = SERVER.moltenWaterResistance.get();
+
+    plaguedRange = SERVER.plaguedRange.get();
+
+    try {
+      String[] s = SERVER.plaguedEffect.get().split(";");
+
+      if (s.length < 1) {
+        throw new IllegalArgumentException();
+      }
+      MobEffect effect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(s[0]));
+
+      if (effect == null) {
+        throw new IllegalArgumentException();
+      }
+
+      if (s.length < 2) {
+        plaguedEffect = new MobEffectInstance(effect);
+      } else if (s.length < 3) {
+        plaguedEffect = new MobEffectInstance(effect, Integer.parseInt(s[1]) * 20);
+      } else {
+        plaguedEffect = new MobEffectInstance(effect, Integer.parseInt(s[1]) * 20,
+          Integer.parseInt(s[2]) - 1);
+      }
+    } catch (IllegalArgumentException e) {
+      plaguedEffect = new MobEffectInstance(MobEffects.POISON, 300, 0);
+      Champions.LOGGER.error("Error parsing plaguedEffect config value!");
+    }
+
+    reflectiveLethal = SERVER.reflectiveLethal.get();
+    reflectiveMax = SERVER.reflectiveMax.get();
+    reflectiveMaxPercent = SERVER.reflectiveMaxPercent.get();
+    reflectiveMinPercent = SERVER.reflectiveMinPercent.get();
+
+    woundingChance = SERVER.woundingChance.get();
+
+    if (Champions.scalingHealthLoaded) {
+      scalingHealthSpawnModifiers = SERVER.scalingHealthSpawnModifiers.get();
+      ScalingHealthPlugin.buildModifiers();
+    }
   }
 
   public static class StageConfig {
@@ -460,16 +663,6 @@ public class ChampionsConfig {
     }
   }
 
-  public static final ForgeConfigSpec RANKS_SPEC;
-  public static final Ranks RANKS;
-
-  static {
-    final Pair<Ranks, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
-      .configure(Ranks::new);
-    RANKS_SPEC = specPair.getRight();
-    RANKS = specPair.getLeft();
-  }
-
   public static class Ranks {
 
     public RanksConfig ranks;
@@ -478,16 +671,6 @@ public class ChampionsConfig {
       builder.comment("List of ranks").define("ranks", new ArrayList<>());
       builder.build();
     }
-  }
-
-  public static final ForgeConfigSpec AFFIXES_SPEC;
-  public static final Affixes AFFIXES;
-
-  static {
-    final Pair<Affixes, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
-      .configure(Affixes::new);
-    AFFIXES_SPEC = specPair.getRight();
-    AFFIXES = specPair.getLeft();
   }
 
   public static class Affixes {
@@ -500,16 +683,6 @@ public class ChampionsConfig {
     }
   }
 
-  public static final ForgeConfigSpec ENTITIES_SPEC;
-  public static final Entities ENTITIES;
-
-  static {
-    final Pair<Entities, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
-      .configure(Entities::new);
-    ENTITIES_SPEC = specPair.getRight();
-    ENTITIES = specPair.getLeft();
-  }
-
   public static class Entities {
 
     public EntitiesConfig entities;
@@ -518,202 +691,6 @@ public class ChampionsConfig {
       builder.comment("List of entity configurations").define("entities", new ArrayList<>());
       builder.build();
     }
-  }
-
-  public static List<RankConfig> ranks;
-  public static List<AffixConfig> affixes;
-  public static List<EntityConfig> entities;
-
-  public static void transformRanks(CommentedConfig configData) {
-    RANKS.ranks = new ObjectConverter().toObject(configData, RanksConfig::new);
-    ranks = RANKS.ranks.ranks;
-  }
-
-  public static void transformAffixes(CommentedConfig configData) {
-    AFFIXES.affixes = new ObjectConverter().toObject(configData, AffixesConfig::new);
-    affixes = AFFIXES.affixes.affixes;
-  }
-
-  public static void transformEntities(CommentedConfig configData) {
-    ENTITIES.entities = new ObjectConverter().toObject(configData, EntitiesConfig::new);
-    entities = ENTITIES.entities.entities;
-  }
-
-  public static int beaconProtectionRange;
-  public static boolean championSpawners;
-  public static int deathMessageTier;
-  public static List<? extends String> dimensionList;
-  public static Permission dimensionPermission;
-  public static List<? extends String> entitiesList;
-  public static Permission entitiesPermission;
-  public static boolean showHud;
-  public static boolean showParticles;
-  public static boolean enableTOPIntegration;
-
-  public static boolean fakeLoot;
-  public static LootSource lootSource;
-  public static boolean lootScaling;
-
-  public static double healthGrowth;
-  public static double attackGrowth;
-  public static double armorGrowth;
-  public static double toughnessGrowth;
-  public static double knockbackResistanceGrowth;
-  public static int experienceGrowth;
-  public static int explosionGrowth;
-
-  public static double affixTargetRange;
-
-  public static double adaptableDamageReductionIncrement;
-  public static double adaptableMaxDamageReduction;
-
-  public static int arcticAttackInterval;
-
-  public static double dampenedDamageReduction;
-
-  public static int desecratingCloudInterval;
-  public static int desecratingCloudActivationTime;
-  public static double desecratingCloudRadius;
-  public static int desecratingCloudDuration;
-
-  public static int enkindlingAttackInterval;
-
-  public static double hastyMovementBonus;
-
-  public static int infestedAmount;
-  public static int infestedInterval;
-  public static double infestedPerHealth;
-  public static int infestedTotal;
-  public static EntityType<?> infestedParasite;
-  public static EntityType<?> infestedEnderParasite;
-
-  public static double paralyzingChance;
-
-  public static double knockingMultiplier;
-
-  public static int livelyCooldown;
-  public static double livelyHealAmount;
-  public static double livelyPassiveMultiplier;
-
-  public static double magneticStrength;
-
-  public static boolean moltenWaterResistance;
-
-  public static MobEffectInstance plaguedEffect;
-  public static int plaguedRange;
-
-  public static double reflectiveMaxPercent;
-  public static double reflectiveMinPercent;
-  public static int reflectiveMax;
-  public static boolean reflectiveLethal;
-
-  public static double woundingChance;
-
-  public static List<? extends String> scalingHealthSpawnModifiers;
-  public static List<? extends String> entityStages;
-  public static List<? extends String> tierStages;
-
-  public static void bake() {
-    beaconProtectionRange = SERVER.beaconProtectionRange.get();
-    championSpawners = SERVER.championSpawners.get();
-    deathMessageTier = SERVER.deathMessageTier.get();
-    dimensionList = SERVER.dimensionList.get();
-    dimensionPermission = SERVER.dimensionPermission.get();
-    entitiesList = SERVER.entitiesList.get();
-    entitiesPermission = SERVER.entitiesPermission.get();
-    showHud = SERVER.showHud.get();
-    showParticles = SERVER.showParticles.get();
-    enableTOPIntegration = SERVER.enableTOPIntegration.get();
-
-    fakeLoot = SERVER.fakeLoot.get();
-    lootSource = SERVER.lootSource.get();
-    lootScaling = SERVER.lootScaling.get();
-    ConfigLoot.parse(SERVER.lootDrops.get());
-
-    healthGrowth = SERVER.healthGrowth.get();
-    attackGrowth = SERVER.attackGrowth.get();
-    armorGrowth = SERVER.armorGrowth.get();
-    toughnessGrowth = SERVER.toughnessGrowth.get();
-    knockbackResistanceGrowth = SERVER.knockbackResistanceGrowth.get();
-    experienceGrowth = SERVER.experienceGrowth.get();
-    explosionGrowth = SERVER.explosionGrowth.get();
-
-    affixTargetRange = SERVER.affixTargetRange.get();
-
-    adaptableDamageReductionIncrement = SERVER.adaptableDamageReductionIncrement.get();
-    adaptableMaxDamageReduction = SERVER.adaptableMaxDamageReduction.get();
-
-    arcticAttackInterval = SERVER.arcticAttackInterval.get();
-
-    dampenedDamageReduction = SERVER.dampenedDamageReduction.get();
-
-    desecratingCloudActivationTime = SERVER.desecratingCloudActivationTime.get();
-    desecratingCloudDuration = SERVER.desecratingCloudDuration.get();
-    desecratingCloudInterval = SERVER.desecratingCloudInterval.get();
-    desecratingCloudRadius = SERVER.desecratingCloudRadius.get();
-
-    enkindlingAttackInterval = SERVER.enkindlingAttackInterval.get();
-
-    hastyMovementBonus = SERVER.hastyMovementBonus.get();
-
-    infestedAmount = SERVER.infestedAmount.get();
-    infestedTotal = SERVER.infestedTotal.get();
-    infestedPerHealth = SERVER.infestedPerHealth.get();
-    infestedInterval = SERVER.infestedInterval.get();
-
-    EntityType<?> type = ForgeRegistries.ENTITY_TYPES
-      .getValue(new ResourceLocation(SERVER.infestedParasite.get()));
-    infestedParasite = type != null ? type : EntityType.SILVERFISH;
-
-    type = ForgeRegistries.ENTITY_TYPES
-      .getValue(new ResourceLocation(SERVER.infestedEnderParasite.get()));
-    infestedEnderParasite = type != null ? type : EntityType.ENDERMITE;
-
-    paralyzingChance = SERVER.paralyzingChance.get();
-
-    knockingMultiplier = SERVER.knockingMultiplier.get();
-
-    livelyHealAmount = SERVER.livelyHealAmount.get();
-    livelyPassiveMultiplier = SERVER.livelyPassiveMultiplier.get();
-    livelyCooldown = SERVER.livelyCooldown.get();
-
-    magneticStrength = SERVER.magneticStrength.get();
-
-    moltenWaterResistance = SERVER.moltenWaterResistance.get();
-
-    plaguedRange = SERVER.plaguedRange.get();
-
-    try {
-      String[] s = SERVER.plaguedEffect.get().split(";");
-
-      if (s.length < 1) {
-        throw new IllegalArgumentException();
-      }
-      MobEffect effect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(s[0]));
-
-      if (effect == null) {
-        throw new IllegalArgumentException();
-      }
-
-      if (s.length < 2) {
-        plaguedEffect = new MobEffectInstance(effect);
-      } else if (s.length < 3) {
-        plaguedEffect = new MobEffectInstance(effect, Integer.parseInt(s[1]) * 20);
-      } else {
-        plaguedEffect = new MobEffectInstance(effect, Integer.parseInt(s[1]) * 20,
-          Integer.parseInt(s[2]) - 1);
-      }
-    } catch (IllegalArgumentException e) {
-      plaguedEffect = new MobEffectInstance(MobEffects.POISON, 300, 0);
-      Champions.LOGGER.error("Error parsing plaguedEffect config value!");
-    }
-
-    reflectiveLethal = SERVER.reflectiveLethal.get();
-    reflectiveMax = SERVER.reflectiveMax.get();
-    reflectiveMaxPercent = SERVER.reflectiveMaxPercent.get();
-    reflectiveMinPercent = SERVER.reflectiveMinPercent.get();
-
-    woundingChance = SERVER.woundingChance.get();
   }
 }
 

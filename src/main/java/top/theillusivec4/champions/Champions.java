@@ -36,6 +36,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -43,6 +44,7 @@ import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig.Type;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.io.FileUtils;
@@ -55,6 +57,8 @@ import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.affix.core.AffixManager;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
+import top.theillusivec4.champions.common.integration.gamestages.GameStagesPlugin;
+import top.theillusivec4.champions.common.integration.theoneprobe.TheOneProbePlugin;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
 import top.theillusivec4.champions.common.loot.EntityIsChampion;
 import top.theillusivec4.champions.common.loot.LootItemChampionPropertyCondition;
@@ -82,15 +86,21 @@ public class Champions {
   public static final IChampionsApi API = ChampionsApiImpl.getInstance();
 
   public static boolean scalingHealthLoaded = false;
+  public static boolean gameStagesLoaded = false;
 
   public Champions() {
-//    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
     ModLoadingContext.get().registerConfig(Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
     ModLoadingContext.get().registerConfig(Type.SERVER, ChampionsConfig.SERVER_SPEC);
     createServerConfig(ChampionsConfig.RANKS_SPEC, "ranks");
     createServerConfig(ChampionsConfig.AFFIXES_SPEC, "affixes");
     createServerConfig(ChampionsConfig.ENTITIES_SPEC, "entities");
+    gameStagesLoaded = ModList.get().isLoaded("gamestages");
 
+    if (gameStagesLoaded) {
+      ModLoadingContext.get()
+        .registerConfig(Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
+    }
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::config);
     eventBus.addListener(this::setup);
@@ -103,7 +113,7 @@ public class Champions {
   private static void createServerConfig(ForgeConfigSpec spec, String suffix) {
     String fileName = "champions-" + suffix + ".toml";
     ModLoadingContext.get().registerConfig(Type.SERVER, spec, fileName);
-    File defaults = new File(FMLPaths.GAMEDIR.get() + "/defaultconfigs/" + fileName);
+    File defaults = FMLPaths.GAMEDIR.get().resolve("/defaultconfigs/" + fileName).toFile();
 
     if (!defaults.exists()) {
       try {
@@ -179,7 +189,7 @@ public class Champions {
         }
 
         if (evt instanceof ModConfigEvent.Loading) {
-          ChampionsConfig.bake();
+
 
           // 重建管理器
           if (spec == ChampionsConfig.RANKS_SPEC) {
@@ -188,7 +198,13 @@ public class Champions {
             AffixManager.buildAffixSettings();
           } else if (spec == ChampionsConfig.ENTITIES_SPEC) {
             EntityManager.buildEntitySettings();
+          } else if (spec == ChampionsConfig.STAGE_SPEC && Champions.gameStagesLoaded) {
+            ChampionsConfig.entityStages = ChampionsConfig.STAGE.entityStages.get();
+            ChampionsConfig.tierStages = ChampionsConfig.STAGE.tierStages.get();
+            GameStagesPlugin.buildStages();
           }
+          ChampionsConfig.bake();
+
         }
       }
     } else if (evt.getConfig().getType() == Type.CLIENT) {
@@ -196,5 +212,12 @@ public class Champions {
     }
   }
 
-
+  private void enqueueIMC(final InterModEnqueueEvent event) {
+    // register TheOneProbe integration
+    if (ModList.get().isLoaded("theoneprobe")) {
+      Champions.LOGGER.info("Champions detected TheOneProbe, registering plugin now");
+      InterModComms.sendTo(MODID, "theoneprobe", "getTheOneProbe",
+        TheOneProbePlugin.GetTheOneProbe::new);
+    }
+  }
 }
