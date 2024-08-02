@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -23,7 +24,7 @@ public class ClientEventHandler {
 
   @SubscribeEvent
   public static void registerGuiOverlayEvent(final RegisterGuiOverlaysEvent evt) {
-    evt.registerAboveAll(Champions.MODID + "_health_overlay", new ChampionsOverlay());
+    evt.registerBelow(VanillaGuiOverlay.BOSS_EVENT_PROGRESS.id(), Champions.MODID + "_health_overlay", new ChampionsOverlay());
   }
 
   @SubscribeEvent

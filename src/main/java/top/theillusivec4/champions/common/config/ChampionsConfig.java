@@ -93,34 +93,35 @@ public class ChampionsConfig {
   public static List<? extends String> scalingHealthSpawnModifiers;
   public static List<? extends String> entityStages;
   public static List<? extends String> tierStages;
+  public static List<? extends String> bossBarBlackList;
 
   static {
-    final Pair<ServerConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
+    final Pair<ServerConfig, ForgeConfigSpec> specPair = new Builder()
       .configure(ServerConfig::new);
     SERVER_SPEC = specPair.getRight();
     SERVER = specPair.getLeft();
-    final Pair<StageConfig, ForgeConfigSpec> specPair2 = new ForgeConfigSpec.Builder()
+    final Pair<StageConfig, ForgeConfigSpec> specPair2 = new Builder()
       .configure(StageConfig::new);
     STAGE_SPEC = specPair2.getRight();
     STAGE = specPair2.getLeft();
   }
 
   static {
-    final Pair<Ranks, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
+    final Pair<Ranks, ForgeConfigSpec> specPair = new Builder()
       .configure(Ranks::new);
     RANKS_SPEC = specPair.getRight();
     RANKS = specPair.getLeft();
   }
 
   static {
-    final Pair<Affixes, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
+    final Pair<Affixes, ForgeConfigSpec> specPair = new Builder()
       .configure(Affixes::new);
     AFFIXES_SPEC = specPair.getRight();
     AFFIXES = specPair.getLeft();
   }
 
   static {
-    final Pair<Entities, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
+    final Pair<Entities, ForgeConfigSpec> specPair = new Builder()
       .configure(Entities::new);
     ENTITIES_SPEC = specPair.getRight();
     ENTITIES = specPair.getLeft();
@@ -242,6 +243,7 @@ public class ChampionsConfig {
     reflectiveMinPercent = SERVER.reflectiveMinPercent.get();
 
     woundingChance = SERVER.woundingChance.get();
+    bossBarBlackList = SERVER.bossBarBlackList.get();
 
     if (Champions.scalingHealthLoaded) {
       scalingHealthSpawnModifiers = SERVER.scalingHealthSpawnModifiers.get();
@@ -249,12 +251,23 @@ public class ChampionsConfig {
     }
   }
 
+  private static boolean validateEntityName(final Object obj) {
+    boolean valid = false;
+    if (obj instanceof List<?> entityNameList) {
+      for (var entityName : entityNameList) {
+        ResourceLocation location = new ResourceLocation((String) entityName);
+        valid = ForgeRegistries.ENTITY_TYPES.containsKey(location);
+      }
+    }
+    return valid;
+  }
+
   public static class StageConfig {
 
     public final ConfigValue<List<? extends String>> entityStages;
     public final ConfigValue<List<? extends String>> tierStages;
 
-    public StageConfig(ForgeConfigSpec.Builder builder) {
+    public StageConfig(Builder builder) {
       entityStages = builder
         .comment("""
           A list of entity stages in the format: "stage;modid:entity" or "stage;modid:entity;modid:dimension"
@@ -277,15 +290,15 @@ public class ChampionsConfig {
     public final BooleanValue championSpawners;
     public final IntValue deathMessageTier;
     public final ConfigValue<List<? extends String>> dimensionList;
-    public final EnumValue<ConfigEnums.Permission> dimensionPermission;
+    public final EnumValue<Permission> dimensionPermission;
     public final ConfigValue<List<? extends String>> entitiesList;
-    public final EnumValue<ConfigEnums.Permission> entitiesPermission;
+    public final EnumValue<Permission> entitiesPermission;
     public final BooleanValue showHud;
     public final BooleanValue showParticles;
     public final BooleanValue enableTOPIntegration;
 
     public final BooleanValue fakeLoot;
-    public final EnumValue<ConfigEnums.LootSource> lootSource;
+    public final EnumValue<LootSource> lootSource;
     public final ConfigValue<List<? extends String>> lootDrops;
     public final BooleanValue lootScaling;
 
@@ -343,10 +356,11 @@ public class ChampionsConfig {
     public final BooleanValue reflectiveLethal;
 
     public final DoubleValue woundingChance;
+    public final ConfigValue<List<? extends String>> bossBarBlackList;
 
     public final ConfigValue<List<? extends String>> scalingHealthSpawnModifiers;
 
-    public ServerConfig(ForgeConfigSpec.Builder builder) {
+    public ServerConfig(Builder builder) {
       builder.push("general");
 
       beaconProtectionRange = builder
@@ -386,6 +400,9 @@ public class ChampionsConfig {
       showHud = builder.comment(
           "Set to true to show HUD display for champions, including health, affixes, and tier")
         .translation(CONFIG_PREFIX + "showHud").define("showHud", true);
+      bossBarBlackList = builder.comment(
+          "Set entity id (for example, ['minecraft:end_dragon', 'minecraft:creeper']) to hidden HUD display for champions, including health, affixes, and tier")
+        .translation(CONFIG_PREFIX + "bossBarBlackList").define("bossBarBlackList", List.of(), ChampionsConfig::validateEntityName);
 
       showParticles = builder.comment(
           "Set to true to have champions generate a colored particle effect indicating their rank")
@@ -667,7 +684,7 @@ public class ChampionsConfig {
 
     public RanksConfig ranks;
 
-    public Ranks(ForgeConfigSpec.Builder builder) {
+    public Ranks(Builder builder) {
       builder.comment("List of ranks").define("ranks", new ArrayList<>());
       builder.build();
     }
@@ -677,7 +694,7 @@ public class ChampionsConfig {
 
     public AffixesConfig affixes;
 
-    public Affixes(ForgeConfigSpec.Builder builder) {
+    public Affixes(Builder builder) {
       builder.comment("List of affix configurations").define("affixes", new ArrayList<>());
       builder.build();
     }
@@ -687,7 +704,7 @@ public class ChampionsConfig {
 
     public EntitiesConfig entities;
 
-    public Entities(ForgeConfigSpec.Builder builder) {
+    public Entities(Builder builder) {
       builder.comment("List of entity configurations").define("entities", new ArrayList<>());
       builder.build();
     }
