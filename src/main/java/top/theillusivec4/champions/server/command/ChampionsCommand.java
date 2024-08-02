@@ -121,7 +121,7 @@ public class ChampionsCommand {
       final Entity sourceEntity = source.getEntity();
 
       if (sourceEntity != null) {
-        Entity entity = entityType.create((ServerLevel) sourceEntity.level(), null, null,
+        Entity entity = entityType.create((ServerLevel) sourceEntity.getLevel(), null, null, null,
           pos != null ? pos : new BlockPos(sourceEntity.blockPosition()), MobSpawnType.COMMAND,
           false, false);
 
@@ -129,7 +129,7 @@ public class ChampionsCommand {
           ChampionCapability.getCapability(entity).ifPresent(
             champion -> ChampionBuilder.spawnPreset(champion, tier, new ArrayList<>(affixes)));
           source.getLevel().addFreshEntity(entity);
-          source.sendSuccess(() -> Component.translatable("commands.champions.summon.success",
+          source.sendSuccess(Component.translatable("commands.champions.summon.success",
             Component.translatable("rank.champions.title." + tier).getString() + " " + entity
               .getDisplayName().getString()), false);
         }
@@ -151,7 +151,7 @@ public class ChampionsCommand {
       ChampionEggItem.write(egg, resourceLocation, tier, affixes);
       ItemHandlerHelper.giveItemToPlayer(playerEntity, egg, 1);
       source.sendSuccess(
-        () -> Component.translatable("commands.champions.egg.success", egg.getDisplayName()), false);
+        Component.translatable("commands.champions.egg.success", egg.getDisplayName()), false);
     }
     return Command.SINGLE_SUCCESS;
   }

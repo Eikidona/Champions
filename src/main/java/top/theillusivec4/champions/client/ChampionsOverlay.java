@@ -1,7 +1,7 @@
 package top.theillusivec4.champions.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
@@ -24,7 +24,7 @@ public class ChampionsOverlay implements IGuiOverlay {
   }
 
   @Override
-  public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int width,
+  public void render(ForgeGui gui, PoseStack guiGraphics, float partialTick, int width,
                      int height) {
 
     if (ChampionsConfig.showHud) {

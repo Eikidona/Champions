@@ -1,8 +1,9 @@
 package top.theillusivec4.champions.client.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +25,7 @@ public class HUDHelper {
   private static final ResourceLocation GUI_STAR = new ResourceLocation(Champions.MODID,
     "textures/gui/staricon.png");
 
-  public static boolean renderHealthBar(GuiGraphics guiGraphics, final LivingEntity livingEntity) {
+  public static boolean renderHealthBar(PoseStack matrixStack, final LivingEntity livingEntity) {
     return ChampionCapability.getCapability(livingEntity).map(champion -> {
       IChampion.Client clientChampion = champion.getClient();
       return clientChampion.getRank().map(rank -> {
@@ -52,12 +53,12 @@ public class HUDHelper {
           ChampionsOverlay.startX = xOffset + k;
           ChampionsOverlay.startY = yOffset + 1;
 
-          guiGraphics.blit(GUI_BAR_TEXTURES, xOffset + k, yOffset + j, 0, 60, 182, 5, 256, 256);
+          GuiComponent.blit(matrixStack, xOffset + k, yOffset + j, 0, 60, 182, 5, 256, 256);
           int healthOffset =
             (int) ((livingEntity.getHealth() / livingEntity.getMaxHealth()) * 183.0F);
 
           if (healthOffset > 0) {
-            guiGraphics.blit(GUI_BAR_TEXTURES, xOffset + k, yOffset + j, 0, 65, healthOffset, 5, 256,
+            GuiComponent.blit(matrixStack, xOffset + k, yOffset + j, 0, 65, healthOffset, 5, 256,
               256);
           }
 
@@ -67,17 +68,17 @@ public class HUDHelper {
             int startStarsX = xOffset + i / 2 - 5 - 5 * (num - 1);
 
             for (int tier = 0; tier < num; tier++) {
-              guiGraphics.blit(GUI_STAR, startStarsX, yOffset + 1, 0, 0, 9, 9, 9, 9);
+              GuiComponent.blit(matrixStack, startStarsX, yOffset + 1, 0, 0, 9, 9, 9, 9);
               startStarsX += 10;
             }
           } else {
             int startStarsX = xOffset + i / 2 - 5;
             String count = "x" + num;
-            guiGraphics.blit(GUI_STAR, startStarsX - client.font.width(count) / 2,
+            GuiComponent.blit(matrixStack, startStarsX - client.font.width(count) / 2,
               yOffset + 1, 0, 0, 9, 9, 9, 9);
-            guiGraphics.drawString(client.font, count,
+            client.font.drawShadow(matrixStack, count,
               startStarsX + 10 - client.font.width(count) / 2.0F, yOffset + 2,
-              16777215, true);
+              16777215);
           }
           Component customName = livingEntity.getCustomName();
           String name;
@@ -88,9 +89,9 @@ public class HUDHelper {
           } else {
             name = customName.getString();
           }
-          guiGraphics.drawString(client.font, name,
+          client.font.drawShadow(matrixStack, name,
             xOffset + (float) (i / 2 - client.font.width(name) / 2),
-            yOffset + (float) (j - 9), color, true);
+            yOffset + (float) (j - 9), color);
           RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
           StringBuilder builder = new StringBuilder();
 
@@ -100,9 +101,9 @@ public class HUDHelper {
             builder.append(" ");
           }
           String affixes = builder.toString().trim();
-          guiGraphics.drawString(client.font, affixes,
+          client.font.drawShadow(matrixStack, affixes,
             xOffset + (float) (i / 2 - client.font.width(affixes) / 2),
-            yOffset + (float) (j + 6), 16777215, true);
+            yOffset + (float) (j + 6), 16777215);
           RenderSystem.disableBlend();
           return true;
         }

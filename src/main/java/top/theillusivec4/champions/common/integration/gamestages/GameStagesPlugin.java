@@ -115,7 +115,7 @@ public class GameStagesPlugin {
   }
 
   private static boolean hasRequiredStages(@Nonnull StageInfo info, @Nonnull LivingEntity living) {
-    String dimension = living.level().dimension().location().toString();
+    String dimension = living.level.dimension().location().toString();
     Set<String> stages;
 
     if (info.dimensionalStages.containsKey(dimension)) {
@@ -126,7 +126,7 @@ public class GameStagesPlugin {
 
     if (stages.isEmpty()) {
       return true;
-    } else if (living.level() instanceof ServerLevel serverLevel) {
+    } else if (living.level instanceof ServerLevel serverLevel) {
       return !serverLevel.getPlayers(
           player -> GameStageHelper.hasAllOf(player, stages) && player.distanceTo(living) <= 256)
         .isEmpty();

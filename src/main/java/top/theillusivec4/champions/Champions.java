@@ -24,7 +24,6 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -121,7 +120,7 @@ public class Champions {
           Objects.requireNonNull(Champions.class.getClassLoader().getResourceAsStream(fileName)),
           defaults);
       } catch (IOException e) {
-        LOGGER.error("Error creating default config for " + fileName);
+        LOGGER.error("Error creating default config for {}", fileName);
       }
     }
   }
@@ -133,16 +132,16 @@ public class Champions {
     evt.enqueueWork(() -> {
       ChampionsStats.setup();
       ChampionSelectorOptions.setup();
-      Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE,
+      Registry.register(Registry.LOOT_CONDITION_TYPE,
         new ResourceLocation(RegistryReference.IS_CHAMPION), EntityIsChampion.type);
-      Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE,
+      Registry.register(Registry.LOOT_CONDITION_TYPE,
         new ResourceLocation(RegistryReference.CHAMPION_PROPERTIES),
         LootItemChampionPropertyCondition.INSTANCE);
       DispenseItemBehavior dispenseBehavior = (source, stack) -> {
         Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
         Optional<EntityType<?>> entityType = ChampionEggItem.getType(stack);
         entityType.ifPresent(type -> {
-          Entity entity = type.create(source.getLevel(), stack.getTag(), null,
+          Entity entity = type.create(source.getLevel(), stack.getTag(), null, null,
             source.getPos().relative(direction), MobSpawnType.DISPENSER, true,
             direction != Direction.UP);
 

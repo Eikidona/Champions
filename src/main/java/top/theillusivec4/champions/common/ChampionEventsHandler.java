@@ -54,7 +54,7 @@ public class ChampionEventsHandler {
     Explosion explosion = evt.getExplosion();
     Entity entity = explosion.getExploder();
 
-    if (entity != null && !entity.level().isClientSide()) {
+    if (entity != null && !entity.level.isClientSide()) {
       ChampionCapability.getCapability(entity)
         .ifPresent(champion -> champion.getServer().getRank().ifPresent(rank -> {
           int growth = rank.getGrowthFactor();
@@ -70,7 +70,7 @@ public class ChampionEventsHandler {
   public void onLivingJoinWorld(EntityJoinLevelEvent evt) {
     Entity entity = evt.getEntity();
 
-    if (!entity.level().isClientSide()) {
+    if (!entity.level.isClientSide()) {
       ChampionCapability.getCapability(entity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
         Optional<Rank> maybeRank = serverChampion.getRank();
@@ -92,7 +92,7 @@ public class ChampionEventsHandler {
   public void onLivingUpdate(LivingEvent.LivingTickEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
-    if (livingEntity.level().isClientSide()) {
+    if (livingEntity.level.isClientSide()) {
       ChampionCapability.getCapability(livingEntity).ifPresent(champion -> {
         IChampion.Client clientChampion = champion.getClient();
         clientChampion.getAffixes().forEach(affix -> affix.onClientUpdate(champion));
@@ -103,7 +103,7 @@ public class ChampionEventsHandler {
             float g = (float) ((color >> 8) & 0xFF) / 255f;
             float b = (float) ((color) & 0xFF) / 255f;
 
-            livingEntity.level().addParticle(ChampionsRegistry.RANK_PARTICLE_TYPE.get(),
+            livingEntity.level.addParticle(ChampionsRegistry.RANK_PARTICLE_TYPE.get(),
               livingEntity.position().x + (livingEntity.getRandom().nextDouble() - 0.5D) *
                 (double) livingEntity.getBbWidth(), livingEntity.position().y +
                 livingEntity.getRandom().nextDouble() * livingEntity.getBbHeight(),
@@ -131,7 +131,7 @@ public class ChampionEventsHandler {
   public void onLivingAttack(LivingAttackEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
-    if (livingEntity.level().isClientSide()) {
+    if (livingEntity.level.isClientSide()) {
       return;
     }
     ChampionCapability.getCapability(livingEntity).ifPresent(champion -> {
@@ -163,7 +163,7 @@ public class ChampionEventsHandler {
   public void onLivingHurt(LivingHurtEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
-    if (!livingEntity.level().isClientSide()) {
+    if (!livingEntity.level.isClientSide()) {
       float[] amounts = new float[]{evt.getAmount(), evt.getAmount()};
       ChampionCapability.getCapability(livingEntity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
@@ -178,7 +178,7 @@ public class ChampionEventsHandler {
   public void onLivingDamage(LivingDamageEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
-    if (!livingEntity.level().isClientSide()) {
+    if (!livingEntity.level.isClientSide()) {
       float[] amounts = new float[]{evt.getAmount(), evt.getAmount()};
       ChampionCapability.getCapability(livingEntity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
@@ -193,7 +193,7 @@ public class ChampionEventsHandler {
   public void onLivingDeath(LivingDeathEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
-    if (livingEntity.level().isClientSide()) {
+    if (livingEntity.level.isClientSide()) {
       return;
     }
     ChampionCapability.getCapability(livingEntity).ifPresent(champion -> {
@@ -253,7 +253,7 @@ public class ChampionEventsHandler {
   public void onLivingHeal(LivingHealEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
-    if (!livingEntity.level().isClientSide()) {
+    if (!livingEntity.level.isClientSide()) {
       float[] amounts = new float[]{evt.getAmount(), evt.getAmount()};
       ChampionCapability.getCapability(livingEntity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();

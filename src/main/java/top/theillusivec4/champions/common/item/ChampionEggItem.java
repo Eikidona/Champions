@@ -186,7 +186,7 @@ public class ChampionEggItem extends EggItem {
       Optional<EntityType<?>> entitytype = getType(itemstack);
       entitytype.ifPresent(type -> {
         Entity entity = type
-          .create((ServerLevel) world, itemstack.getTag(), null, blockpos1,
+          .create((ServerLevel) world, itemstack.getTag(), null, context.getPlayer(), blockpos1,
             MobSpawnType.SPAWN_EGG, true,
             !Objects.equals(blockpos, blockpos1) && direction == Direction.UP);
 
@@ -225,7 +225,7 @@ public class ChampionEggItem extends EggItem {
           Optional<EntityType<?>> entityType = getType(itemstack);
           return entityType.map(type -> {
             Entity entity = type
-              .create((ServerLevel) worldIn, itemstack.getTag(), null, blockpos,
+              .create((ServerLevel) worldIn, itemstack.getTag(), null, playerIn, blockpos,
                 MobSpawnType.SPAWN_EGG, false, false);
 
             if (entity instanceof LivingEntity) {

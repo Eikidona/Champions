@@ -5,7 +5,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
@@ -26,7 +25,7 @@ public class ShieldingAffix extends BasicAffix {
     RandomSource random = livingEntity.getRandom();
 
     if (shielding.mode) {
-      livingEntity.level().addParticle(ParticleTypes.ENTITY_EFFECT,
+      livingEntity.level.addParticle(ParticleTypes.ENTITY_EFFECT,
         livingEntity.position().x + (random.nextFloat() - 0.5D) * livingEntity.getBbWidth(),
         livingEntity.position().y + random.nextFloat() * livingEntity.getBbHeight(),
         livingEntity.position().z + (random.nextFloat() - 0.5D) * livingEntity.getBbWidth(),
@@ -63,7 +62,8 @@ public class ShieldingAffix extends BasicAffix {
 
   @Override
   public boolean onAttacked(IChampion champion, DamageSource source, float amount) {
-    if (source.is(DamageTypes.FELL_OUT_OF_WORLD)) {
+
+    if (source == DamageSource.OUT_OF_WORLD) {
       return true;
     }
     AffixData.BooleanData shielding =

@@ -63,7 +63,7 @@ public class InfestedAffix extends GoalAffix {
     if (source.getDirectEntity() instanceof LivingEntity) {
       target = (LivingEntity) source.getDirectEntity();
     }
-    Level world = champion.getLivingEntity().level();
+    Level world = champion.getLivingEntity().level;
 
     if (world instanceof ServerLevel) {
       spawnParasites(champion.getLivingEntity(), buffer.num, target, (ServerLevel) world);
@@ -94,13 +94,13 @@ public class InfestedAffix extends GoalAffix {
 
     for (int i = 0; i < amount; i++) {
       Entity entity = type
-          .create(world, null, null, livingEntity.blockPosition(), MobSpawnType.MOB_SUMMONED,
+          .create(world, null, null,null, livingEntity.blockPosition(), MobSpawnType.MOB_SUMMONED,
               false, false);
 
       if (entity instanceof LivingEntity) {
         ChampionCapability.getCapability(entity)
             .ifPresent(champion -> champion.getServer().setRank(RankManager.getLowestRank()));
-        livingEntity.level().addFreshEntity(entity);
+        livingEntity.level.addFreshEntity(entity);
 
         if (entity instanceof Mob) {
           ((Monster) entity).spawnAnim();
@@ -133,12 +133,12 @@ public class InfestedAffix extends GoalAffix {
           AffixData.IntegerData buffer = AffixData
               .getData(champion, InfestedAffix.this.getIdentifier(), AffixData.IntegerData.class);
 
-          if (buffer.num > 0 && this.mobEntity.level() instanceof ServerLevel) {
+          if (buffer.num > 0 && this.mobEntity.level instanceof ServerLevel) {
             this.attackTime =
                 ChampionsConfig.infestedInterval * 20 + this.mobEntity.getRandom().nextInt(5) * 10;
             int amount = ChampionsConfig.infestedAmount;
             spawnParasites(this.mobEntity, amount, this.mobEntity.getTarget(),
-                (ServerLevel) this.mobEntity.level());
+                (ServerLevel) this.mobEntity.level);
             buffer.num = Math.max(0, buffer.num - amount);
             buffer.saveData();
           }
