@@ -5,7 +5,7 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.network.FriendlyByteBuf;
 
-public class AffixArgumentInfo implements ArgumentTypeInfo<AffixArgument, AffixArgumentInfo.Template> {
+public class AffixArgumentInfo implements ArgumentTypeInfo<AffixArgumentType, AffixArgumentInfo.Template> {
 
     @Override
     public void serializeToNetwork(Template template, FriendlyByteBuf buffer) {
@@ -23,18 +23,18 @@ public class AffixArgumentInfo implements ArgumentTypeInfo<AffixArgument, AffixA
     }
 
     @Override
-    public Template unpack(AffixArgument argument) {
+    public Template unpack(AffixArgumentType argument) {
         return new Template();
     }
 
-    public class Template implements ArgumentTypeInfo.Template<AffixArgument> {
+    public class Template implements ArgumentTypeInfo.Template<AffixArgumentType> {
         @Override
-        public AffixArgument instantiate(CommandBuildContext context) {
-            return new AffixArgument();
+        public AffixArgumentType instantiate(CommandBuildContext context) {
+            return new AffixArgumentType();
         }
 
         @Override
-        public ArgumentTypeInfo<AffixArgument, ?> type() {
+        public ArgumentTypeInfo<AffixArgumentType, ?> type() {
             return AffixArgumentInfo.this;
         }
     }
