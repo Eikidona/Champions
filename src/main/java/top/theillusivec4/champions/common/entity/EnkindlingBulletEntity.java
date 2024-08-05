@@ -1,10 +1,12 @@
 package top.theillusivec4.champions.common.entity;
 
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.damagesource.EntityDamageSource;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -33,14 +35,17 @@ public class EnkindlingBulletEntity extends BaseBulletEntity {
   protected void bulletEffect(LivingEntity target) {
 
     if (this.getOwner() != null) {
-      target.hurt(
-        new IndirectEntityDamageSource("cinderBullet.indirect", this, this.getOwner()).setIsFire()
-          .setMagic(), 1);
+      DamageSource magic = this.damageSources().indirectMagic(this, this.getOwner());
+      DamageSource fire = this.damageSources().inFire();
+      target.hurt(magic, 1);
+      target.hurt(fire, 0);
     } else {
-      target.hurt(new EntityDamageSource("cinderBullet", this).setIsFire().setMagic(), 1);
+      DamageSource damageSource = new DamageSources(target.level.registryAccess()).inFire();
+      target.hurt(new DamageSource(new Holder.Direct<>(new DamageType("cinderBullet", 0.1f)), this), 1); //.setIsFire().setMagic()
     }
     target.setSecondsOnFire(8);
   }
+
 
   @Override
   protected ParticleOptions getParticle() {

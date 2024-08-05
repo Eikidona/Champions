@@ -29,7 +29,7 @@ public class ClientEventHandler {
 
   @SubscribeEvent
   public static void onRegisterParticleProviders(RegisterParticleProvidersEvent evt) {
-    evt.register(ChampionsRegistry.RANK_PARTICLE_TYPE.get(), RankParticle.RankFactory::new);
+    evt.registerSpriteSet(ChampionsRegistry.RANK_PARTICLE_TYPE.get(), RankParticle.RankFactory::new);
   }
 
 }

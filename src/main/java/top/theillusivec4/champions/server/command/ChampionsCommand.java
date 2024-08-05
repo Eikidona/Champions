@@ -121,7 +121,7 @@ public class ChampionsCommand {
       final Entity sourceEntity = source.getEntity();
 
       if (sourceEntity != null) {
-        Entity entity = entityType.create((ServerLevel) sourceEntity.getLevel(), null, null, null,
+        Entity entity = entityType.create((ServerLevel) sourceEntity.level, null, null,
           pos != null ? pos : new BlockPos(sourceEntity.blockPosition()), MobSpawnType.COMMAND,
           false, false);
 

@@ -94,7 +94,7 @@ public class InfestedAffix extends GoalAffix {
 
     for (int i = 0; i < amount; i++) {
       Entity entity = type
-          .create(world, null, null,null, livingEntity.blockPosition(), MobSpawnType.MOB_SUMMONED,
+          .create(world, null, null, livingEntity.blockPosition(), MobSpawnType.MOB_SUMMONED,
               false, false);
 
       if (entity instanceof LivingEntity) {

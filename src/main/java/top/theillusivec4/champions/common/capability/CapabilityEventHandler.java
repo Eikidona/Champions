@@ -6,7 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingConversionEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.PacketDistributor;
@@ -36,7 +36,7 @@ public class CapabilityEventHandler {
   }
 
   @SubscribeEvent
-  public void onSpecialSpawn(LivingSpawnEvent.SpecialSpawn evt) {
+  public void onSpecialSpawn(MobSpawnEvent.FinalizeSpawn evt) {
     LivingEntity entity = evt.getEntity();
 
     if (!entity.level.isClientSide()) {

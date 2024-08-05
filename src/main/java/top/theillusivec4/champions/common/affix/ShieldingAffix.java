@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
@@ -63,7 +64,7 @@ public class ShieldingAffix extends BasicAffix {
   @Override
   public boolean onAttacked(IChampion champion, DamageSource source, float amount) {
 
-    if (source == DamageSource.OUT_OF_WORLD) {
+    if (source.is(DamageTypes.OUT_OF_WORLD)) {
       return true;
     }
     AffixData.BooleanData shielding =
