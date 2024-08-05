@@ -38,7 +38,7 @@ import java.util.Collection;
 public class ChampionsCommand {
 
   public static final SuggestionProvider<CommandSourceStack> AFFIXES = SuggestionProviders
-    .register(new ResourceLocation(Champions.MODID, "affices"),
+    .register(new ResourceLocation(Champions.MODID, "affixes"),
       (context, builder) -> SharedSuggestionProvider.suggest(
         ChampionsApiImpl.getInstance().getAffixes().stream().map(IAffix::getIdentifier),
         builder));
@@ -57,7 +57,7 @@ public class ChampionsCommand {
     type -> Component.translatable("command.champions.egg.unknown_entity", type));
 
   public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-    final int opPermissionLevel = 2;
+    int opPermissionLevel = 2;
     LiteralArgumentBuilder<CommandSourceStack> championsCommand = Commands.literal("champions")
       .requires(player -> player.hasPermission(opPermissionLevel));
 
@@ -67,11 +67,11 @@ public class ChampionsCommand {
           context -> createEgg(context.getSource(),
             ResourceLocationArgument.getId(context, "entity"),
             IntegerArgumentType.getInteger(context, "tier"), new ArrayList<>())).then(
-          Commands.argument("affixes", AffixArgument.affix()).suggests(AFFIXES).executes(
+          Commands.argument("affixes", AffixArgumentType.affix()).suggests(AFFIXES).executes(
             context -> createEgg(context.getSource(),
               ResourceLocationArgument.getId(context, "entity"),
               IntegerArgumentType.getInteger(context, "tier"),
-              AffixArgument.getAffixes(context, "affixes")))))));
+              AffixArgumentType.getAffixes(context, "affixes")))))));
 
     championsCommand.then(Commands.literal("summon").then(
       Commands.argument("entity", ResourceLocationArgument.id()).suggests(MONSTER_ENTITIES)
@@ -79,11 +79,11 @@ public class ChampionsCommand {
           context -> summon(context.getSource(),
             ResourceLocationArgument.getId(context, "entity"),
             IntegerArgumentType.getInteger(context, "tier"), new ArrayList<>())).then(
-          Commands.argument("affixes", AffixArgument.affix()).suggests(AFFIXES).executes(
+          Commands.argument("affixes", AffixArgumentType.affix()).suggests(AFFIXES).executes(
             context -> summon(context.getSource(),
               ResourceLocationArgument.getId(context, "entity"),
               IntegerArgumentType.getInteger(context, "tier"),
-              AffixArgument.getAffixes(context, "affixes")))))));
+              AffixArgumentType.getAffixes(context, "affixes")))))));
 
     championsCommand.then(Commands.literal("summonpos").then(
       Commands.argument("pos", BlockPosArgument.blockPos()).then(
@@ -94,12 +94,12 @@ public class ChampionsCommand {
                 BlockPosArgument.getSpawnablePos(context, "pos"),
                 ResourceLocationArgument.getId(context, "entity"),
                 IntegerArgumentType.getInteger(context, "tier"), new ArrayList<>())).then(
-              Commands.argument("affixes", AffixArgument.affix()).suggests(AFFIXES).executes(
+              Commands.argument("affixes", AffixArgumentType.affix()).suggests(AFFIXES).executes(
                 context -> summon(context.getSource(),
                   BlockPosArgument.getSpawnablePos(context, "pos"),
                   ResourceLocationArgument.getId(context, "entity"),
                   IntegerArgumentType.getInteger(context, "tier"),
-                  AffixArgument.getAffixes(context, "affixes"))))))));
+                  AffixArgumentType.getAffixes(context, "affixes"))))))));
 
     dispatcher.register(championsCommand);
   }

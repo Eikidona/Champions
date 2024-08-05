@@ -19,6 +19,8 @@ import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
@@ -31,11 +33,10 @@ import top.theillusivec4.champions.common.util.ChampionHelper;
 import java.util.List;
 import java.util.Optional;
 
-@SuppressWarnings("unused")
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Champions.MODID)
 public class ChampionEventsHandler {
-
   @SubscribeEvent
-  public void onLivingXpDrop(LivingExperienceDropEvent evt) {
+  public static void onLivingXpDrop(LivingExperienceDropEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
     ChampionCapability.getCapability(livingEntity)
       .ifPresent(champion -> champion.getServer().getRank().ifPresent(rank -> {
@@ -50,7 +51,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public void onExplosion(ExplosionEvent.Start evt) {
+  public static void onExplosion(ExplosionEvent.Start evt) {
     Explosion explosion = evt.getExplosion();
     Entity entity = explosion.getExploder();
 
@@ -67,7 +68,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public void onLivingJoinWorld(EntityJoinLevelEvent evt) {
+  public static void onLivingJoinWorld(EntityJoinLevelEvent evt) {
     Entity entity = evt.getEntity();
 
     if (!entity.level().isClientSide()) {
@@ -89,7 +90,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public void onLivingUpdate(LivingEvent.LivingTickEvent evt) {
+  public static void onLivingUpdate(LivingEvent.LivingTickEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (livingEntity.level().isClientSide()) {
@@ -128,7 +129,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public void onLivingAttack(LivingAttackEvent evt) {
+  public static void onLivingAttack(LivingAttackEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (livingEntity.level().isClientSide()) {
@@ -160,7 +161,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public void onLivingHurt(LivingHurtEvent evt) {
+  public static void onLivingHurt(LivingHurtEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (!livingEntity.level().isClientSide()) {
@@ -175,7 +176,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public void onLivingDamage(LivingDamageEvent evt) {
+  public static void onLivingDamage(LivingDamageEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (!livingEntity.level().isClientSide()) {
@@ -190,7 +191,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public void onLivingDeath(LivingDeathEvent evt) {
+  public static void onLivingDeath(LivingDeathEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (livingEntity.level().isClientSide()) {
@@ -230,18 +231,18 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public void onServerStart(ServerAboutToStartEvent evt) {
+  public static void onServerStart(ServerAboutToStartEvent evt) {
     ChampionHelper.setServer(evt.getServer());
   }
 
   @SubscribeEvent
-  public void onServerClose(ServerStoppedEvent evt) {
+  public static void onServerClose(ServerStoppedEvent evt) {
     ChampionHelper.setServer(null);
     ChampionHelper.clearBeacons();
   }
 
   @SubscribeEvent
-  public void onBeaconStart(AttachCapabilitiesEvent<BlockEntity> evt) {
+  public static void onBeaconStart(AttachCapabilitiesEvent<BlockEntity> evt) {
     BlockEntity blockEntity = evt.getObject();
 
     if (blockEntity instanceof BeaconBlockEntity beaconBlockEntity) {
@@ -250,7 +251,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public void onLivingHeal(LivingHealEvent evt) {
+  public static void onLivingHeal(LivingHealEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (!livingEntity.level().isClientSide()) {

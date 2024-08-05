@@ -9,21 +9,21 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
-import top.theillusivec4.champions.server.command.AffixArgument.IAffixProvider;
+import top.theillusivec4.champions.server.command.AffixArgumentType.IAffixProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class AffixArgument implements ArgumentType<IAffixProvider> {
+public class AffixArgumentType implements ArgumentType<IAffixProvider> {
 
   private static final Collection<String> EXAMPLES = Arrays.asList("molten", "reflecting");
   private static final DynamicCommandExceptionType UNKNOWN_AFFIX = new DynamicCommandExceptionType(
     type -> Component.translatable("argument.champions.affix.unknown", type));
 
-  public static AffixArgument affix() {
-    return new AffixArgument();
+  public static AffixArgumentType affix() {
+    return new AffixArgumentType();
   }
 
   public static Collection<IAffix> getAffixes(CommandContext<CommandSourceStack> context,
@@ -39,16 +39,12 @@ public class AffixArgument implements ArgumentType<IAffixProvider> {
 
   @Override
   public IAffixProvider parse(StringReader reader) throws CommandSyntaxException {
-    String s = reader.getString().substring(reader.getCursor(), reader.getTotalLength());
-    String[] split = s.split(" ");
     List<IAffix> affixes = new ArrayList<>();
 
-    for (String id : split) {
-      affixes.add(Champions.API.getAffix(id).orElseThrow(() -> UNKNOWN_AFFIX.create(id)));
-    }
-
     while (reader.canRead()) {
-      reader.skip();
+      reader.skipWhitespace();  // 跳过空白字符
+      String id = reader.readString();  // 读取一个字符串
+      affixes.add(Champions.API.getAffix(id).orElseThrow(() -> UNKNOWN_AFFIX.create(id)));
     }
     return (source) -> affixes;
   }

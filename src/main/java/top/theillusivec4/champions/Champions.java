@@ -20,7 +20,6 @@
 package top.theillusivec4.champions;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
-import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
@@ -68,8 +67,6 @@ import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.registry.RegistryReference;
 import top.theillusivec4.champions.common.stat.ChampionsStats;
 import top.theillusivec4.champions.common.util.EntityManager;
-import top.theillusivec4.champions.server.command.AffixArgument;
-import top.theillusivec4.champions.server.command.AffixArgumentInfo;
 import top.theillusivec4.champions.server.command.ChampionSelectorOptions;
 import top.theillusivec4.champions.server.command.ChampionsCommand;
 
@@ -156,7 +153,6 @@ public class Champions {
         return stack;
       };
       DispenserBlock.registerBehavior(ChampionsRegistry.CHAMPION_EGG_ITEM.get(), dispenseBehavior);
-      ArgumentTypeInfos.registerByClass(AffixArgument.class, new AffixArgumentInfo());
     });
   }
 
