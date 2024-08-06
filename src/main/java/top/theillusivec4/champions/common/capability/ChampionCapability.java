@@ -14,6 +14,8 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.champions.Champions;
@@ -29,7 +31,7 @@ import java.util.*;
 
 public class ChampionCapability {
 
-  public static final Capability<IChampion> CHAMPION_CAP =
+  public static final EntityCapability<IChampion> CHAMPION_CAP =
     CapabilityManager.get(new CapabilityToken<>() {
     });
 
@@ -41,8 +43,8 @@ public class ChampionCapability {
   private static final String ID_TAG = "identifier";
 
   public static void register() {
-    MinecraftForge.EVENT_BUS.register(new CapabilityEventHandler());
-    MinecraftForge.EVENT_BUS.register(new ChampionEventsHandler());
+    NeoForge.EVENT_BUS.register(new CapabilityEventHandler());
+    NeoForge.EVENT_BUS.register(new ChampionEventsHandler());
   }
 
   public static Provider createProvider(final LivingEntity livingEntity) {

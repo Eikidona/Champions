@@ -8,6 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.common.NeoForge;
 import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
@@ -29,7 +30,7 @@ public abstract class BasicAffix implements IAffix {
     this.category = category;
 
     if (hasSubscriptions) {
-      MinecraftForge.EVENT_BUS.register(this);
+      NeoForge.EVENT_BUS.register(this);
     }
   }
 

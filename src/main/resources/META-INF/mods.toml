@@ -10,9 +10,7 @@ version="${version}"
 displayName="Champions"
 displayURL="https://github.com/TheIllusiveC4/Champions/"
 authors="C4, kumoe"
-description='''
-Creates elite mobs of different rarities, with enhanced stats and extra abilities.
-'''
+description=""
 [[dependencies.champions]]
   modId="forge"
   mandatory=true

@@ -11,14 +11,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.level.ExplosionEvent;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
-import net.minecraftforge.event.server.ServerStoppedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
@@ -33,7 +32,7 @@ import java.util.Optional;
 
 public class ChampionEventsHandler {
   @SubscribeEvent
-  public static void onLivingXpDrop(LivingExperienceDropEvent evt) {
+  public void onLivingXpDrop(LivingExperienceDropEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
     ChampionCapability.getCapability(livingEntity)
       .ifPresent(champion -> champion.getServer().getRank().ifPresent(rank -> {
@@ -48,7 +47,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onExplosion(ExplosionEvent.Start evt) {
+  public void onExplosion(ExplosionEvent.Start evt) {
     Explosion explosion = evt.getExplosion();
     Entity entity = explosion.getExploder();
 
@@ -65,7 +64,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingJoinWorld(EntityJoinLevelEvent evt) {
+  public void onLivingJoinWorld(EntityJoinLevelEvent evt) {
     Entity entity = evt.getEntity();
 
     if (!entity.level().isClientSide()) {
@@ -87,7 +86,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingUpdate(LivingEvent.LivingTickEvent evt) {
+  public void onLivingUpdate(LivingEvent.LivingTickEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (livingEntity.level().isClientSide()) {
@@ -126,7 +125,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingAttack(LivingAttackEvent evt) {
+  public void onLivingAttack(LivingAttackEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (livingEntity.level().isClientSide()) {
@@ -158,7 +157,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingHurt(LivingHurtEvent evt) {
+  public void onLivingHurt(LivingHurtEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (!livingEntity.level().isClientSide()) {
@@ -173,7 +172,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingDamage(LivingDamageEvent evt) {
+  public void onLivingDamage(LivingDamageEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (!livingEntity.level().isClientSide()) {
@@ -188,7 +187,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingDeath(LivingDeathEvent evt) {
+  public void onLivingDeath(LivingDeathEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (livingEntity.level().isClientSide()) {
@@ -206,7 +205,7 @@ public class ChampionEventsHandler {
         if (!evt.isCanceled()) {
           Entity source = evt.getSource().getEntity();
 
-          if (source instanceof ServerPlayer player && !(source instanceof FakePlayer)) {
+          if (source instanceof ServerPlayer player) {
             player.awardStat(ChampionsStats.CHAMPION_MOBS_KILLED);
             int messageTier = ChampionsConfig.deathMessageTier;
 
@@ -228,18 +227,18 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onServerStart(ServerAboutToStartEvent evt) {
+  public void onServerStart(ServerAboutToStartEvent evt) {
     ChampionHelper.setServer(evt.getServer());
   }
 
   @SubscribeEvent
-  public static void onServerClose(ServerStoppedEvent evt) {
+  public void onServerClose(ServerStoppedEvent evt) {
     ChampionHelper.setServer(null);
     ChampionHelper.clearBeacons();
   }
 
   @SubscribeEvent
-  public static void onBeaconStart(AttachCapabilitiesEvent<BlockEntity> evt) {
+  public void onBeaconStart(AttachCapabilitiesEvent<BlockEntity> evt) {
     BlockEntity blockEntity = evt.getObject();
 
     if (blockEntity instanceof BeaconBlockEntity beaconBlockEntity) {
@@ -248,7 +247,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingHeal(LivingHealEvent evt) {
+  public void onLivingHeal(LivingHealEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (!livingEntity.level().isClientSide()) {

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -93,7 +95,7 @@ public class AffixManager {
       if (mobList != null) {
 
         for (String s : mobList) {
-          EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(s));
+          EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(s));
 
           if (type != null) {
             this.mobList.add(type);

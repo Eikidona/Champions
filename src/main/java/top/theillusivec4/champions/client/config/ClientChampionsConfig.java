@@ -1,32 +1,41 @@
 package top.theillusivec4.champions.client.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.IntValue;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.champions.Champions;
 
 public class ClientChampionsConfig {
 
-  private static final String CONFIG_PREFIX = "gui." + Champions.MODID + ".config.";
-
-  public static final ForgeConfigSpec CLIENT_SPEC;
+  public static final ModConfigSpec CLIENT_SPEC;
   public static final Client CLIENT;
+  private static final String CONFIG_PREFIX = "gui." + Champions.MODID + ".config.";
+  public static int hudXOffset;
+  public static int hudYOffset;
+  public static int hudRange;
+  public static boolean enableWailaIntegration;
 
   static {
-    final Pair<Client, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
+    final Pair<Client, ModConfigSpec> specPair = new ModConfigSpec.Builder()
       .configure(Client::new);
     CLIENT_SPEC = specPair.getRight();
     CLIENT = specPair.getLeft();
   }
 
+  public static void bake() {
+    hudXOffset = CLIENT.hudXOffset.get();
+    hudYOffset = CLIENT.hudYOffset.get();
+    hudRange = CLIENT.hudRange.get();
+    enableWailaIntegration = CLIENT.enableWailaIntegration.get();
+  }
+
   public static class Client {
 
-    public final IntValue hudXOffset;
-    public final IntValue hudYOffset;
-    public final IntValue hudRange;
-    public final ForgeConfigSpec.BooleanValue enableWailaIntegration;
+    public final ModConfigSpec.IntValue hudXOffset;
+    public final ModConfigSpec.IntValue hudYOffset;
+    public final ModConfigSpec.IntValue hudRange;
+    public final ModConfigSpec.BooleanValue enableWailaIntegration;
 
-    public Client(ForgeConfigSpec.Builder builder) {
+    public Client(ModConfigSpec.Builder builder) {
       builder.push("hud");
 
       hudXOffset = builder.comment("The x-offset for the champion HUD")
@@ -45,17 +54,5 @@ public class ClientChampionsConfig {
 
       builder.pop();
     }
-  }
-
-  public static int hudXOffset;
-  public static int hudYOffset;
-  public static int hudRange;
-  public static boolean enableWailaIntegration;
-
-  public static void bake() {
-    hudXOffset = CLIENT.hudXOffset.get();
-    hudYOffset = CLIENT.hudYOffset.get();
-    hudRange = CLIENT.hudRange.get();
-    enableWailaIntegration = CLIENT.enableWailaIntegration.get();
   }
 }
