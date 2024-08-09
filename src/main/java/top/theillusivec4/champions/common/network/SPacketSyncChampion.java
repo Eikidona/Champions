@@ -3,53 +3,51 @@ package top.theillusivec4.champions.common.network;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 
-public class SPacketSyncChampion {
+public record SPacketSyncChampion(int entityId, int tier, int defaultColor, Set<String> affixes) implements CustomPacketPayload {
 
-  private final int entityId;
-  private final int tier;
-  private final int defaultColor;
-  private final Set<String> affixes;
-  private final int affixSize;
+  public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "sync_champion");
 
-  public SPacketSyncChampion(int entityId, int tier, int defaultColor, Set<String> affixes) {
-    this.entityId = entityId;
-    this.tier = tier;
-    this.affixSize = affixes.size();
-    this.affixes = affixes;
-    this.defaultColor = defaultColor;
+  public SPacketSyncChampion(final FriendlyByteBuf buffer) {
+    this(
+      buffer.readInt(),
+      buffer.readInt(),
+      buffer.readInt(),
+      IntStream.range(0, buffer.readInt())
+        .mapToObj(i -> buffer.readUtf())
+        .collect(Collectors.toSet())
+    );
   }
 
-  public static void encode(SPacketSyncChampion msg, FriendlyByteBuf buf) {
-    buf.writeInt(msg.entityId);
-    buf.writeInt(msg.tier);
-    buf.writeInt(msg.affixSize);
-    buf.writeInt(msg.defaultColor);
-    msg.affixes.forEach(buf::writeUtf);
+  @Override
+  public void write(final FriendlyByteBuf buffer) {
+    buffer.writeInt(entityId);
+    buffer.writeInt(tier);
+    buffer.writeInt(defaultColor);
+    buffer.writeInt(affixes.size());
+    affixes.forEach(buffer::writeUtf);
   }
 
-  public static SPacketSyncChampion decode(FriendlyByteBuf buf) {
-    int entityId = buf.readInt();
-    int tier = buf.readInt();
-    Set<String> affixes = new HashSet<>();
-    int affixSize = buf.readInt();
-    int defaultColor = buf.readInt();
-
-    for (int i = 0; i < affixSize; i++) {
-      affixes.add(buf.readUtf());
-    }
-    return new SPacketSyncChampion(entityId, tier, defaultColor, affixes);
+  @Override
+  public ResourceLocation id() {
+    return ID;
   }
-
-  public static void handle(SPacketSyncChampion msg, Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> {
+  public static void handle(SPacketSyncChampion msg, PlayPayloadContext ctx) {
+    ctx.workHandler().submitAsync(() -> {
       ClientLevel world = Minecraft.getInstance().level;
 
       if (world != null) {
@@ -61,6 +59,5 @@ public class SPacketSyncChampion {
         });
       }
     });
-    ctx.get().setPacketHandled(true);
   }
 }

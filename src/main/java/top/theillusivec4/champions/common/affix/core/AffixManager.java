@@ -1,37 +1,17 @@
 package top.theillusivec4.champions.common.affix.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import javax.annotation.Nullable;
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
-import top.theillusivec4.champions.common.affix.AdaptableAffix;
-import top.theillusivec4.champions.common.affix.ArcticAffix;
-import top.theillusivec4.champions.common.affix.DampeningAffix;
-import top.theillusivec4.champions.common.affix.DesecratingAffix;
-import top.theillusivec4.champions.common.affix.EnkindlingAffix;
-import top.theillusivec4.champions.common.affix.HastyAffix;
-import top.theillusivec4.champions.common.affix.InfestedAffix;
-import top.theillusivec4.champions.common.affix.KnockingAffix;
-import top.theillusivec4.champions.common.affix.LivelyAffix;
-import top.theillusivec4.champions.common.affix.MagneticAffix;
-import top.theillusivec4.champions.common.affix.MoltenAffix;
-import top.theillusivec4.champions.common.affix.ParalyzingAffix;
-import top.theillusivec4.champions.common.affix.PlaguedAffix;
-import top.theillusivec4.champions.common.affix.ReflectiveAffix;
-import top.theillusivec4.champions.common.affix.ShieldingAffix;
-import top.theillusivec4.champions.common.affix.WoundingAffix;
+import top.theillusivec4.champions.common.affix.*;
 import top.theillusivec4.champions.common.config.AffixesConfig.AffixConfig;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
+
+import javax.annotation.Nullable;
+import java.util.*;
 
 public class AffixManager {
 
@@ -39,10 +19,10 @@ public class AffixManager {
 
   public static void register() {
     Champions.API.registerAffixes(new MoltenAffix(), new HastyAffix(), new ReflectiveAffix(),
-        new LivelyAffix(), new MagneticAffix(), new DampeningAffix(), new AdaptableAffix(),
-        new KnockingAffix(), new DesecratingAffix(), new PlaguedAffix(), new InfestedAffix(),
-        new ParalyzingAffix(), new WoundingAffix(), new ShieldingAffix(), new ArcticAffix(),
-        new EnkindlingAffix());
+      new LivelyAffix(), new MagneticAffix(), new DampeningAffix(), new AdaptableAffix(),
+      new KnockingAffix(), new DesecratingAffix(), new PlaguedAffix(), new InfestedAffix(),
+      new ParalyzingAffix(), new WoundingAffix(), new ShieldingAffix(), new ArcticAffix(),
+      new EnkindlingAffix());
   }
 
   public static Optional<AffixSettings> getSettings(String identifier) {
@@ -69,7 +49,7 @@ public class AffixManager {
         return;
       }
       AffixSettings settings = new AffixSettings(affixConfig.identifier, affixConfig.enabled,
-          affixConfig.minTier, affixConfig.maxTier, affixConfig.mobList, affixConfig.mobPermission);
+        affixConfig.minTier, affixConfig.maxTier, affixConfig.mobList, affixConfig.mobPermission);
       SETTINGS.put(affixConfig.identifier, settings);
     });
   }
@@ -121,8 +101,8 @@ public class AffixManager {
         isValidEntity = mobList.contains(champion.getLivingEntity().getType());
       }
       return this.enabled && isValidEntity && champion.getServer().getRank().map(
-          rank -> rank.getTier() >= this.minTier && (this.maxTier == null
-              || rank.getTier() <= this.maxTier)).orElse(false);
+        rank -> rank.getTier() >= this.minTier && (this.maxTier == null
+          || rank.getTier() <= this.maxTier)).orElse(false);
     }
   }
 }

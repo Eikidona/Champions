@@ -22,7 +22,9 @@ public class ChampionHelper {
   private static final Set<BlockPos> BEACON_POS = new HashSet<>();
 
   private static MinecraftServer server = null;
-
+  /**
+   * check entity is LivingEntity & Enemy
+   */
   public static boolean isValidChampion(final Entity entity) {
     return entity instanceof LivingEntity && entity instanceof Enemy;
   }

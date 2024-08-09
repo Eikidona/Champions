@@ -6,6 +6,12 @@ import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.handlers.ClientPayloadHandler;
+import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import top.theillusivec4.champions.Champions;
 
 public class NetworkHandler {
@@ -31,5 +37,14 @@ public class NetworkHandler {
                                    Function<FriendlyByteBuf, M> decoder,
                                    BiConsumer<M, Supplier<NetworkEvent.Context>> messageConsumer) {
     INSTANCE.registerMessage(id++, messageType, encoder, decoder, messageConsumer);
+  }
+
+  @SubscribeEvent
+  public static void register(final RegisterPayloadHandlerEvent event) {
+    final IPayloadRegistrar registrar = event.registrar(Champions.MODID);
+    registrar.play(SPacketSyncChampion.ID,SPacketSyncChampion::new,handler->handler
+      .client(ClientPayloadHandler.getInstance()::handle)
+      .server(ServerPayloadHandler.getInstance()::handle)
+    );
   }
 }

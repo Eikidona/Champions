@@ -8,13 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.LazyOptional;
 import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,12 +26,9 @@ import java.util.*;
 
 public class ChampionCapability {
 
-  public static final EntityCapability<IChampion> CHAMPION_CAP =
-    CapabilityManager.get(new CapabilityToken<>() {
-    });
 
-  public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "champion");
-
+  public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "champion_cap");
+  public static final EntityCapability<IChampion, Void> CHAMPION_CAP = EntityCapability.createVoid(ID, IChampion.class);
   private static final String AFFIX_TAG = "affixes";
   private static final String TIER_TAG = "tier";
   private static final String DATA_TAG = "data";
@@ -52,16 +44,16 @@ public class ChampionCapability {
   }
 
   @Deprecated
-  public static LazyOptional<IChampion> getCapability(final LivingEntity entity) {
+  public static Optional<IChampion> getCapability(final LivingEntity entity) {
     return getCapability((Entity) entity);
   }
 
-  public static LazyOptional<IChampion> getCapability(final Entity entity) {
+  public static Optional<IChampion> getCapability(final Entity entity) {
 
     if (!ChampionHelper.isValidChampion(entity)) {
-      return LazyOptional.empty();
+      return Optional.empty();
     }
-    return entity.getCapability(CHAMPION_CAP);
+    return Optional.ofNullable(entity.getCapability(CHAMPION_CAP));
   }
 
   public static class Champion implements IChampion {
@@ -180,7 +172,7 @@ public class ChampionCapability {
     }
   }
 
-  public static class Provider implements ICapabilitySerializable<Tag> {
+  public static class Provider implements ICapabilityProvider<LivingEntity, Direction, IChampion> {
 
     final LazyOptional<IChampion> optional;
     final IChampion data;
@@ -190,12 +182,12 @@ public class ChampionCapability {
       this.optional = LazyOptional.of(() -> data);
     }
 
-    @NotNull
-    @Override
-    public <T> LazyOptional<T> getCapability(@NotNull final Capability<T> cap,
-                                             @Nullable final Direction side) {
-      return cap == CHAMPION_CAP ? optional.cast() : LazyOptional.empty();
-    }
+//    @NotNull
+//    @Override
+//    public <T> LazyOptional<T> getCapability(@NotNull final Capability<T> cap,
+//                                             @Nullable final Direction side) {
+//      return cap == CHAMPION_CAP ? optional.cast() : LazyOptional.empty();
+//    }
 
     @Override
     public Tag serializeNBT() {
@@ -242,6 +234,11 @@ public class ChampionCapability {
         }
         champion.setAffixes(affixes);
       }
+    }
+
+    @Override
+    public @Nullable IChampion getCapability(LivingEntity object, Direction context) {
+      return null;
     }
   }
 }

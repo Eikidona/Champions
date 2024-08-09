@@ -34,32 +34,30 @@ public class ChampionEventsHandler {
   @SubscribeEvent
   public void onLivingXpDrop(LivingExperienceDropEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
-    ChampionCapability.getCapability(livingEntity)
-      .ifPresent(champion -> champion.getServer().getRank().ifPresent(rank -> {
-        int growth = rank.getGrowthFactor();
+    ChampionCapability.getCapability(livingEntity).flatMap(champion -> champion.getServer().getRank()).ifPresent(rank -> {
+      int growth = rank.getGrowthFactor();
 
-        if (growth > 0) {
-          evt.setDroppedExperience(
-            (growth * ChampionsConfig.experienceGrowth * evt.getOriginalExperience() +
-              evt.getDroppedExperience()));
-        }
-      }));
+      if (growth > 0) {
+        evt.setDroppedExperience(
+          (growth * ChampionsConfig.experienceGrowth * evt.getOriginalExperience() +
+            evt.getDroppedExperience()));
+      }
+    });
   }
 
   @SubscribeEvent
   public void onExplosion(ExplosionEvent.Start evt) {
     Explosion explosion = evt.getExplosion();
-    Entity entity = explosion.getExploder();
+    Entity entity = explosion.getDirectSourceEntity();
 
     if (entity != null && !entity.level().isClientSide()) {
-      ChampionCapability.getCapability(entity)
-        .ifPresent(champion -> champion.getServer().getRank().ifPresent(rank -> {
-          int growth = rank.getGrowthFactor();
+      ChampionCapability.getCapability(entity).flatMap(champion -> champion.getServer().getRank()).ifPresent(rank -> {
+        int growth = rank.getGrowthFactor();
 
-          if (growth > 0) {
-            explosion.radius += ChampionsConfig.explosionGrowth * growth;
-          }
-        }));
+        if (growth > 0) {
+          explosion.radius += ChampionsConfig.explosionGrowth * growth;
+        }
+      });
     }
   }
 

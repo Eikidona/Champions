@@ -40,7 +40,6 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -66,6 +65,7 @@ import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.registry.RegistryReference;
 import top.theillusivec4.champions.common.stat.ChampionsStats;
+import top.theillusivec4.champions.common.util.ChampionHelper;
 import top.theillusivec4.champions.common.util.EntityManager;
 import top.theillusivec4.champions.server.command.ChampionSelectorOptions;
 import top.theillusivec4.champions.server.command.ChampionsCommand;
@@ -84,9 +84,11 @@ public class Champions {
 
   public static boolean scalingHealthLoaded = false;
   public static boolean gameStagesLoaded = false;
+  private final IEventBus modEventBus;
 
-  public Champions() {
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+  public Champions(IEventBus modEventBus) {
+    this.modEventBus = modEventBus;
+    this.modEventBus.addListener(this::enqueueIMC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
     createServerConfig(ChampionsConfig.RANKS_SPEC, "ranks");
@@ -98,12 +100,11 @@ public class Champions {
       ModLoadingContext.get()
         .registerConfig(ModConfig.Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
     }
-    IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-    eventBus.addListener(this::config);
-    eventBus.addListener(this::setup);
-    eventBus.addListener(this::registerCaps);
+    this.modEventBus.addListener(this::config);
+    this.modEventBus.addListener(this::setup);
+    this.modEventBus.addListener(this::registerCaps);
     NeoForge.EVENT_BUS.addListener(this::registerCommands);
-    ChampionsRegistry.register(eventBus);
+    ChampionsRegistry.register(this.modEventBus);
     scalingHealthLoaded = ModList.get().isLoaded("scalinghealth");
   }
 
@@ -157,7 +158,20 @@ public class Champions {
   }
 
   private void registerCaps(final RegisterCapabilitiesEvent evt) {
-    evt.registerEntity(IChampion.class);
+
+    for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
+      if (ChampionHelper.isValidChampion(entityType)) {
+        evt.registerEntity(
+          ChampionCapability.CHAMPION_CAP,
+          (EntityType<LivingEntity>) entityType,
+          (entity, ctx) -> ChampionCapability.getCapability(entity).get());
+      }
+    }
+
+    evt.registerEntity(ChampionCapability.CHAMPION_CAP,
+      BuiltInRegistries.ENTITY_TYPE.
+
+      );
   }
 
   private void registerCommands(final RegisterCommandsEvent evt) {
