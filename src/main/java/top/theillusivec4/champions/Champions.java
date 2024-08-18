@@ -88,6 +88,7 @@ public class Champions {
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
     ModLoadingContext.get().registerConfig(Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
     ModLoadingContext.get().registerConfig(Type.SERVER, ChampionsConfig.SERVER_SPEC);
+    ModLoadingContext.get().registerConfig(Type.COMMON, ChampionsConfig.COMMON_SPEC);
     createServerConfig(ChampionsConfig.RANKS_SPEC, "ranks");
     createServerConfig(ChampionsConfig.AFFIXES_SPEC, "affixes");
     createServerConfig(ChampionsConfig.ENTITIES_SPEC, "entities");
@@ -204,6 +205,8 @@ public class Champions {
       }
     } else if (evt.getConfig().getType() == Type.CLIENT) {
       ClientChampionsConfig.bake();
+    } else if (evt.getConfig().getType() == Type.COMMON) {
+      ChampionsConfig.bakeCommon();
     }
   }
 

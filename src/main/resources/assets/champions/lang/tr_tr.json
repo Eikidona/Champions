@@ -7,7 +7,9 @@
   "effect.champions.paralysis": "Felç",
   "effect.champions.wound": "Yaralanma",
   "death.attack.reflection": "%1$s kendi ilacının tadına baktı",
-  "rank.champions.title.0": "Genel",
+  "death.attack.cinderBullet": "%1$s yandı.",
+  "death.attack.cinderBullet.indirect": "%1$s ,  %2$s ile savaşırken yandı.",
+  "rank.champions.title.0": "Yaygın",
   "rank.champions.title.1": "Yetenekli",
   "rank.champions.title.2": "Elit",
   "rank.champions.title.3": "Efsanevi",
@@ -27,5 +29,9 @@
   "affix.champions.wounding": "Yaralayıcı",
   "affix.champions.shielding": "Korumalı",
   "affix.champions.arctic": "Buz-gibi",
-  "affix.champions.enkindling": "Alevlendirici"
+  "affix.champions.enkindling": "Tutuşturucu",
+  "advancements.champions.kill_a_champion.title": "Şampiyon Avcısı",
+  "advancements.champions.kill_a_champion.description": "Güçlü bir düşman öldür",
+  "stat.champions.champion_mobs_killed": "Öldürülen Şampiyon Sayısı",
+  "command.champions.egg.unknown_entity": "Bilinmeyen Yaratık"
 }
