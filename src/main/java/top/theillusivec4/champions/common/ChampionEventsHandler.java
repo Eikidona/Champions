@@ -33,7 +33,7 @@ import java.util.Optional;
 
 public class ChampionEventsHandler {
   @SubscribeEvent
-  public static void onLivingXpDrop(LivingExperienceDropEvent evt) {
+  public void onLivingXpDrop(LivingExperienceDropEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
     ChampionCapability.getCapability(livingEntity)
       .ifPresent(champion -> champion.getServer().getRank().ifPresent(rank -> {
@@ -48,7 +48,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onExplosion(ExplosionEvent.Start evt) {
+  public void onExplosion(ExplosionEvent.Start evt) {
     Explosion explosion = evt.getExplosion();
     Entity entity = explosion.getExploder();
 
@@ -65,7 +65,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingJoinWorld(EntityJoinLevelEvent evt) {
+  public void onLivingJoinWorld(EntityJoinLevelEvent evt) {
     Entity entity = evt.getEntity();
 
     if (!entity.level().isClientSide()) {
@@ -87,7 +87,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingUpdate(LivingEvent.LivingTickEvent evt) {
+  public void onLivingUpdate(LivingEvent.LivingTickEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (livingEntity.level().isClientSide()) {
@@ -126,7 +126,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingAttack(LivingAttackEvent evt) {
+  public void onLivingAttack(LivingAttackEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (livingEntity.level().isClientSide()) {
@@ -158,7 +158,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingHurt(LivingHurtEvent evt) {
+  public void onLivingHurt(LivingHurtEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (!livingEntity.level().isClientSide()) {
@@ -173,7 +173,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingDamage(LivingDamageEvent evt) {
+  public void onLivingDamage(LivingDamageEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (!livingEntity.level().isClientSide()) {
@@ -188,7 +188,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingDeath(LivingDeathEvent evt) {
+  public void onLivingDeath(LivingDeathEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (livingEntity.level().isClientSide()) {
@@ -228,18 +228,18 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onServerStart(ServerAboutToStartEvent evt) {
+  public void onServerStart(ServerAboutToStartEvent evt) {
     ChampionHelper.setServer(evt.getServer());
   }
 
   @SubscribeEvent
-  public static void onServerClose(ServerStoppedEvent evt) {
+  public void onServerClose(ServerStoppedEvent evt) {
     ChampionHelper.setServer(null);
     ChampionHelper.clearBeacons();
   }
 
   @SubscribeEvent
-  public static void onBeaconStart(AttachCapabilitiesEvent<BlockEntity> evt) {
+  public void onBeaconStart(AttachCapabilitiesEvent<BlockEntity> evt) {
     BlockEntity blockEntity = evt.getObject();
 
     if (blockEntity instanceof BeaconBlockEntity beaconBlockEntity) {
@@ -248,7 +248,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public static void onLivingHeal(LivingHealEvent evt) {
+  public void onLivingHeal(LivingHealEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (!livingEntity.level().isClientSide()) {

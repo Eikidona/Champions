@@ -27,6 +27,8 @@ public class ChampionsConfig {
 
   public static final ForgeConfigSpec SERVER_SPEC;
   public static final ServerConfig SERVER;
+  public static final ForgeConfigSpec COMMON_SPEC;
+  public static final CommonConfig COMMON;
   public static final ForgeConfigSpec STAGE_SPEC;
   public static final StageConfig STAGE;
   public static final ForgeConfigSpec RANKS_SPEC;
@@ -105,6 +107,12 @@ public class ChampionsConfig {
     STAGE_SPEC = specPair2.getRight();
     STAGE = specPair2.getLeft();
   }
+  static {
+    final Pair<CommonConfig, ForgeConfigSpec> specPair = new Builder()
+      .configure(CommonConfig::new);
+    COMMON_SPEC = specPair.getRight();
+    COMMON = specPair.getLeft();
+  }
 
   static {
     final Pair<Ranks, ForgeConfigSpec> specPair = new Builder()
@@ -141,18 +149,20 @@ public class ChampionsConfig {
     ENTITIES.entities = new ObjectConverter().toObject(configData, EntitiesConfig::new);
     entities = ENTITIES.entities.entities;
   }
-
+  public static void bakeCommon(){
+    beaconProtectionRange = COMMON.beaconProtectionRange.get();
+    championSpawners = COMMON.championSpawners.get();
+    deathMessageTier = COMMON.deathMessageTier.get();
+    dimensionList = COMMON.dimensionList.get();
+    dimensionPermission = COMMON.dimensionPermission.get();
+    entitiesList = COMMON.entitiesList.get();
+    entitiesPermission = COMMON.entitiesPermission.get();
+    showHud = COMMON.showHud.get();
+    showParticles = COMMON.showParticles.get();
+    enableTOPIntegration = COMMON.enableTOPIntegration.get();
+    bossBarBlackList = COMMON.bossBarBlackList.get();
+  }
   public static void bake() {
-    beaconProtectionRange = SERVER.beaconProtectionRange.get();
-    championSpawners = SERVER.championSpawners.get();
-    deathMessageTier = SERVER.deathMessageTier.get();
-    dimensionList = SERVER.dimensionList.get();
-    dimensionPermission = SERVER.dimensionPermission.get();
-    entitiesList = SERVER.entitiesList.get();
-    entitiesPermission = SERVER.entitiesPermission.get();
-    showHud = SERVER.showHud.get();
-    showParticles = SERVER.showParticles.get();
-    enableTOPIntegration = SERVER.enableTOPIntegration.get();
 
     fakeLoot = SERVER.fakeLoot.get();
     lootSource = SERVER.lootSource.get();
@@ -243,7 +253,6 @@ public class ChampionsConfig {
     reflectiveMinPercent = SERVER.reflectiveMinPercent.get();
 
     woundingChance = SERVER.woundingChance.get();
-    bossBarBlackList = SERVER.bossBarBlackList.get();
 
     if (Champions.scalingHealthLoaded) {
       scalingHealthSpawnModifiers = SERVER.scalingHealthSpawnModifiers.get();
@@ -284,8 +293,7 @@ public class ChampionsConfig {
     }
   }
 
-  public static class ServerConfig {
-
+  public static class CommonConfig {
     public final IntValue beaconProtectionRange;
     public final BooleanValue championSpawners;
     public final IntValue deathMessageTier;
@@ -296,6 +304,65 @@ public class ChampionsConfig {
     public final BooleanValue showHud;
     public final BooleanValue showParticles;
     public final BooleanValue enableTOPIntegration;
+    public final ConfigValue<List<? extends String>> bossBarBlackList;
+
+    public CommonConfig(Builder builder) {
+      builder.push("general");
+
+      beaconProtectionRange = builder
+        .comment("The range from an active beacon where no champions will spawn (0 to disable)")
+        .translation(CONFIG_PREFIX + "beaconProtectionRange")
+        .defineInRange("beaconProtectionRange", 64, 0, 1000);
+
+      championSpawners = builder.comment("Set to true to enable champions from mob spawners")
+        .translation(CONFIG_PREFIX + "championSpawners").define("championSpawners", false);
+
+      deathMessageTier = builder.comment(
+          "The minimum tier of champions that will have death messages sent out upon defeat (0 to disable)")
+        .translation(CONFIG_PREFIX + "deathMessageTier")
+        .defineInRange("deathMessageTier", 0, 0, Integer.MAX_VALUE);
+
+      dimensionList = builder
+        .comment("A list of dimension names that are blacklisted/whitelisted for champions")
+        .translation(CONFIG_PREFIX + "dimensionList")
+        .defineList("dimensionList", new ArrayList<>(), s -> s instanceof String);
+
+      dimensionPermission = builder
+        .comment("Set whether the dimension list is a blacklist or whitelist")
+        .translation(CONFIG_PREFIX + "dimensionPermission")
+        .defineEnum("dimensionPermission", Permission.BLACKLIST);
+
+      entitiesList = builder
+        .comment("A list of entities that are blacklisted/whitelisted for champions")
+        .translation(CONFIG_PREFIX + "entitiesList")
+        .defineListAllowEmpty(Lists.newArrayList("entitiesList"), ArrayList::new,
+          s -> s instanceof String);
+
+      entitiesPermission = builder
+        .comment("Set whether the entities list is a blacklist or whitelist")
+        .translation(CONFIG_PREFIX + "entitiesPermission")
+        .defineEnum("entitiesPermission", Permission.BLACKLIST);
+
+      showHud = builder.comment(
+          "Set to true to show HUD display for champions, including health, affixes, and tier")
+        .translation(CONFIG_PREFIX + "showHud").define("showHud", true);
+      bossBarBlackList = builder.comment(
+          "Set entity id (for example, ['minecraft:end_dragon', 'minecraft:creeper']) to hidden HUD display for champions, including health, affixes, and tier")
+        .translation(CONFIG_PREFIX + "bossBarBlackList").define("bossBarBlackList", List.of(), ChampionsConfig::validateEntityName);
+
+      showParticles = builder.comment(
+          "Set to true to have champions generate a colored particle effect indicating their rank")
+        .translation(CONFIG_PREFIX + "showParticles").define("showParticles", true);
+
+      enableTOPIntegration =
+        builder.comment("Set to true to show champion tier and affixes in The One Probe overlay")
+          .translation(CONFIG_PREFIX + "enableTOPIntegration").define("enableTOPIntegration", true);
+
+      builder.pop();
+    }
+  }
+
+  public static class ServerConfig {
 
     public final BooleanValue fakeLoot;
     public final EnumValue<LootSource> lootSource;
@@ -356,63 +423,11 @@ public class ChampionsConfig {
     public final BooleanValue reflectiveLethal;
 
     public final DoubleValue woundingChance;
-    public final ConfigValue<List<? extends String>> bossBarBlackList;
 
     public final ConfigValue<List<? extends String>> scalingHealthSpawnModifiers;
 
     public ServerConfig(Builder builder) {
-      builder.push("general");
 
-      beaconProtectionRange = builder
-        .comment("The range from an active beacon where no champions will spawn (0 to disable)")
-        .translation(CONFIG_PREFIX + "beaconProtectionRange")
-        .defineInRange("beaconProtectionRange", 64, 0, 1000);
-
-      championSpawners = builder.comment("Set to true to enable champions from mob spawners")
-        .translation(CONFIG_PREFIX + "championSpawners").define("championSpawners", false);
-
-      deathMessageTier = builder.comment(
-          "The minimum tier of champions that will have death messages sent out upon defeat (0 to disable)")
-        .translation(CONFIG_PREFIX + "deathMessageTier")
-        .defineInRange("deathMessageTier", 0, 0, Integer.MAX_VALUE);
-
-      dimensionList = builder
-        .comment("A list of dimension names that are blacklisted/whitelisted for champions")
-        .translation(CONFIG_PREFIX + "dimensionList")
-        .defineList("dimensionList", new ArrayList<>(), s -> s instanceof String);
-
-      dimensionPermission = builder
-        .comment("Set whether the dimension list is a blacklist or whitelist")
-        .translation(CONFIG_PREFIX + "dimensionPermission")
-        .defineEnum("dimensionPermission", Permission.BLACKLIST);
-
-      entitiesList = builder
-        .comment("A list of entities that are blacklisted/whitelisted for champions")
-        .translation(CONFIG_PREFIX + "entitiesList")
-        .defineListAllowEmpty(Lists.newArrayList("entitiesList"), ArrayList::new,
-          s -> s instanceof String);
-
-      entitiesPermission = builder
-        .comment("Set whether the entities list is a blacklist or whitelist")
-        .translation(CONFIG_PREFIX + "entitiesPermission")
-        .defineEnum("entitiesPermission", Permission.BLACKLIST);
-
-      showHud = builder.comment(
-          "Set to true to show HUD display for champions, including health, affixes, and tier")
-        .translation(CONFIG_PREFIX + "showHud").define("showHud", true);
-      bossBarBlackList = builder.comment(
-          "Set entity id (for example, ['minecraft:end_dragon', 'minecraft:creeper']) to hidden HUD display for champions, including health, affixes, and tier")
-        .translation(CONFIG_PREFIX + "bossBarBlackList").define("bossBarBlackList", List.of(), ChampionsConfig::validateEntityName);
-
-      showParticles = builder.comment(
-          "Set to true to have champions generate a colored particle effect indicating their rank")
-        .translation(CONFIG_PREFIX + "showParticles").define("showParticles", true);
-
-      enableTOPIntegration =
-        builder.comment("Set to true to show champion tier and affixes in The One Probe overlay")
-          .translation(CONFIG_PREFIX + "enableTOPIntegration").define("enableTOPIntegration", true);
-
-      builder.pop();
 
       builder.push("loot");
 
