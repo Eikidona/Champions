@@ -3,13 +3,14 @@ package top.theillusivec4.champions.common.config;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.conversion.ObjectConverter;
 import com.google.common.collect.Lists;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec.*;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.common.config.AffixesConfig.AffixConfig;
@@ -24,15 +25,17 @@ import java.util.List;
 
 public class ChampionsConfig {
 
-  public static final ModConfigSpec SERVER_SPEC;
+  public static final ForgeConfigSpec SERVER_SPEC;
   public static final ServerConfig SERVER;
-  public static final ModConfigSpec STAGE_SPEC;
+  public static final ForgeConfigSpec COMMON_SPEC;
+  public static final CommonConfig COMMON;
+  public static final ForgeConfigSpec STAGE_SPEC;
   public static final StageConfig STAGE;
-  public static final ModConfigSpec RANKS_SPEC;
+  public static final ForgeConfigSpec RANKS_SPEC;
   public static final Ranks RANKS;
-  public static final ModConfigSpec AFFIXES_SPEC;
+  public static final ForgeConfigSpec AFFIXES_SPEC;
   public static final Affixes AFFIXES;
-  public static final ModConfigSpec ENTITIES_SPEC;
+  public static final ForgeConfigSpec ENTITIES_SPEC;
   public static final Entities ENTITIES;
   private static final String CONFIG_PREFIX = "gui." + Champions.MODID + ".config.";
   public static List<RankConfig> ranks;
@@ -95,32 +98,38 @@ public class ChampionsConfig {
   public static List<? extends String> bossBarBlackList;
 
   static {
-    final Pair<ServerConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder()
+    final Pair<ServerConfig, ForgeConfigSpec> specPair = new Builder()
       .configure(ServerConfig::new);
     SERVER_SPEC = specPair.getRight();
     SERVER = specPair.getLeft();
-    final Pair<StageConfig, ModConfigSpec> specPair2 = new ModConfigSpec.Builder()
+    final Pair<StageConfig, ForgeConfigSpec> specPair2 = new Builder()
       .configure(StageConfig::new);
     STAGE_SPEC = specPair2.getRight();
     STAGE = specPair2.getLeft();
   }
+  static {
+    final Pair<CommonConfig, ForgeConfigSpec> specPair = new Builder()
+      .configure(CommonConfig::new);
+    COMMON_SPEC = specPair.getRight();
+    COMMON = specPair.getLeft();
+  }
 
   static {
-    final Pair<Ranks, ModConfigSpec> specPair = new ModConfigSpec.Builder()
+    final Pair<Ranks, ForgeConfigSpec> specPair = new Builder()
       .configure(Ranks::new);
     RANKS_SPEC = specPair.getRight();
     RANKS = specPair.getLeft();
   }
 
   static {
-    final Pair<Affixes, ModConfigSpec> specPair = new ModConfigSpec.Builder()
+    final Pair<Affixes, ForgeConfigSpec> specPair = new Builder()
       .configure(Affixes::new);
     AFFIXES_SPEC = specPair.getRight();
     AFFIXES = specPair.getLeft();
   }
 
   static {
-    final Pair<Entities, ModConfigSpec> specPair = new ModConfigSpec.Builder()
+    final Pair<Entities, ForgeConfigSpec> specPair = new Builder()
       .configure(Entities::new);
     ENTITIES_SPEC = specPair.getRight();
     ENTITIES = specPair.getLeft();
@@ -140,18 +149,20 @@ public class ChampionsConfig {
     ENTITIES.entities = new ObjectConverter().toObject(configData, EntitiesConfig::new);
     entities = ENTITIES.entities.entities;
   }
-
+  public static void bakeCommon(){
+    beaconProtectionRange = COMMON.beaconProtectionRange.get();
+    championSpawners = COMMON.championSpawners.get();
+    deathMessageTier = COMMON.deathMessageTier.get();
+    dimensionList = COMMON.dimensionList.get();
+    dimensionPermission = COMMON.dimensionPermission.get();
+    entitiesList = COMMON.entitiesList.get();
+    entitiesPermission = COMMON.entitiesPermission.get();
+    showHud = COMMON.showHud.get();
+    showParticles = COMMON.showParticles.get();
+    enableTOPIntegration = COMMON.enableTOPIntegration.get();
+    bossBarBlackList = COMMON.bossBarBlackList.get();
+  }
   public static void bake() {
-    beaconProtectionRange = SERVER.beaconProtectionRange.get();
-    championSpawners = SERVER.championSpawners.get();
-    deathMessageTier = SERVER.deathMessageTier.get();
-    dimensionList = SERVER.dimensionList.get();
-    dimensionPermission = SERVER.dimensionPermission.get();
-    entitiesList = SERVER.entitiesList.get();
-    entitiesPermission = SERVER.entitiesPermission.get();
-    showHud = SERVER.showHud.get();
-    showParticles = SERVER.showParticles.get();
-    enableTOPIntegration = SERVER.enableTOPIntegration.get();
 
     fakeLoot = SERVER.fakeLoot.get();
     lootSource = SERVER.lootSource.get();
@@ -189,12 +200,12 @@ public class ChampionsConfig {
     infestedPerHealth = SERVER.infestedPerHealth.get();
     infestedInterval = SERVER.infestedInterval.get();
 
-    EntityType<?> type = BuiltInRegistries.ENTITY_TYPE
-      .get(new ResourceLocation(SERVER.infestedParasite.get()));
+    EntityType<?> type = ForgeRegistries.ENTITY_TYPES
+      .getValue(new ResourceLocation(SERVER.infestedParasite.get()));
     infestedParasite = type != null ? type : EntityType.SILVERFISH;
 
-    type = BuiltInRegistries.ENTITY_TYPE
-      .get(new ResourceLocation(SERVER.infestedEnderParasite.get()));
+    type = ForgeRegistries.ENTITY_TYPES
+      .getValue(new ResourceLocation(SERVER.infestedEnderParasite.get()));
     infestedEnderParasite = type != null ? type : EntityType.ENDERMITE;
 
     paralyzingChance = SERVER.paralyzingChance.get();
@@ -217,7 +228,7 @@ public class ChampionsConfig {
       if (s.length < 1) {
         throw new IllegalArgumentException();
       }
-      MobEffect effect = BuiltInRegistries.MOB_EFFECT.get(new ResourceLocation(s[0]));
+      MobEffect effect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(s[0]));
 
       if (effect == null) {
         throw new IllegalArgumentException();
@@ -242,7 +253,6 @@ public class ChampionsConfig {
     reflectiveMinPercent = SERVER.reflectiveMinPercent.get();
 
     woundingChance = SERVER.woundingChance.get();
-    bossBarBlackList = SERVER.bossBarBlackList.get();
 
     if (Champions.scalingHealthLoaded) {
       scalingHealthSpawnModifiers = SERVER.scalingHealthSpawnModifiers.get();
@@ -255,7 +265,7 @@ public class ChampionsConfig {
     if (obj instanceof List<?> entityNameList) {
       for (var entityName : entityNameList) {
         ResourceLocation location = new ResourceLocation((String) entityName);
-        valid = BuiltInRegistries.ENTITY_TYPE.containsKey(location);
+        valid = ForgeRegistries.ENTITY_TYPES.containsKey(location);
       }
     }
     return valid;
@@ -263,10 +273,10 @@ public class ChampionsConfig {
 
   public static class StageConfig {
 
-    public final ModConfigSpec.ConfigValue<List<? extends String>> entityStages;
-    public final ModConfigSpec.ConfigValue<List<? extends String>> tierStages;
+    public final ConfigValue<List<? extends String>> entityStages;
+    public final ConfigValue<List<? extends String>> tierStages;
 
-    public StageConfig(ModConfigSpec.Builder builder) {
+    public StageConfig(Builder builder) {
       entityStages = builder
         .comment("""
           A list of entity stages in the format: "stage;modid:entity" or "stage;modid:entity;modid:dimension"
@@ -283,83 +293,20 @@ public class ChampionsConfig {
     }
   }
 
-  public static class ServerConfig {
+  public static class CommonConfig {
+    public final IntValue beaconProtectionRange;
+    public final BooleanValue championSpawners;
+    public final IntValue deathMessageTier;
+    public final ConfigValue<List<? extends String>> dimensionList;
+    public final EnumValue<Permission> dimensionPermission;
+    public final ConfigValue<List<? extends String>> entitiesList;
+    public final EnumValue<Permission> entitiesPermission;
+    public final BooleanValue showHud;
+    public final BooleanValue showParticles;
+    public final BooleanValue enableTOPIntegration;
+    public final ConfigValue<List<? extends String>> bossBarBlackList;
 
-    public final ModConfigSpec.IntValue beaconProtectionRange;
-    public final ModConfigSpec.BooleanValue championSpawners;
-    public final ModConfigSpec.IntValue deathMessageTier;
-    public final ModConfigSpec.ConfigValue<List<? extends String>> dimensionList;
-    public final ModConfigSpec.EnumValue<Permission> dimensionPermission;
-    public final ModConfigSpec.ConfigValue<List<? extends String>> entitiesList;
-    public final ModConfigSpec.EnumValue<Permission> entitiesPermission;
-    public final ModConfigSpec.BooleanValue showHud;
-    public final ModConfigSpec.BooleanValue showParticles;
-    public final ModConfigSpec.BooleanValue enableTOPIntegration;
-
-    public final ModConfigSpec.BooleanValue fakeLoot;
-    public final ModConfigSpec.EnumValue<LootSource> lootSource;
-    public final ModConfigSpec.ConfigValue<List<? extends String>> lootDrops;
-    public final ModConfigSpec.BooleanValue lootScaling;
-
-    public final ModConfigSpec.DoubleValue healthGrowth;
-    public final ModConfigSpec.DoubleValue attackGrowth;
-    public final ModConfigSpec.DoubleValue armorGrowth;
-    public final ModConfigSpec.DoubleValue toughnessGrowth;
-    public final ModConfigSpec.DoubleValue knockbackResistanceGrowth;
-    public final ModConfigSpec.IntValue experienceGrowth;
-    public final ModConfigSpec.IntValue explosionGrowth;
-
-    public final ModConfigSpec.DoubleValue affixTargetRange;
-
-    public final ModConfigSpec.DoubleValue adaptableDamageReductionIncrement;
-    public final ModConfigSpec.DoubleValue adaptableMaxDamageReduction;
-
-    public final ModConfigSpec.IntValue arcticAttackInterval;
-
-    public final ModConfigSpec.DoubleValue dampenedDamageReduction;
-
-    public final ModConfigSpec.IntValue desecratingCloudInterval;
-    public final ModConfigSpec.IntValue desecratingCloudActivationTime;
-    public final ModConfigSpec.DoubleValue desecratingCloudRadius;
-    public final ModConfigSpec.IntValue desecratingCloudDuration;
-
-    public final ModConfigSpec.IntValue enkindlingAttackInterval;
-
-    public final ModConfigSpec.DoubleValue hastyMovementBonus;
-
-    public final ModConfigSpec.ConfigValue<String> infestedParasite;
-    public final ModConfigSpec.ConfigValue<String> infestedEnderParasite;
-    public final ModConfigSpec.IntValue infestedAmount;
-    public final ModConfigSpec.IntValue infestedInterval;
-    public final ModConfigSpec.DoubleValue infestedPerHealth;
-    public final ModConfigSpec.IntValue infestedTotal;
-
-    public final ModConfigSpec.DoubleValue paralyzingChance;
-
-    public final ModConfigSpec.DoubleValue knockingMultiplier;
-
-    public final ModConfigSpec.DoubleValue livelyHealAmount;
-    public final ModConfigSpec.DoubleValue livelyPassiveMultiplier;
-    public final ModConfigSpec.IntValue livelyCooldown;
-
-    public final ModConfigSpec.DoubleValue magneticStrength;
-
-    public final ModConfigSpec.BooleanValue moltenWaterResistance;
-
-    public final ModConfigSpec.ConfigValue<String> plaguedEffect;
-    public final ModConfigSpec.IntValue plaguedRange;
-
-    public final ModConfigSpec.DoubleValue reflectiveMinPercent;
-    public final ModConfigSpec.DoubleValue reflectiveMaxPercent;
-    public final ModConfigSpec.IntValue reflectiveMax;
-    public final ModConfigSpec.BooleanValue reflectiveLethal;
-
-    public final ModConfigSpec.DoubleValue woundingChance;
-    public final ModConfigSpec.ConfigValue<List<? extends String>> bossBarBlackList;
-
-    public final ModConfigSpec.ConfigValue<List<? extends String>> scalingHealthSpawnModifiers;
-
-    public ServerConfig(ModConfigSpec.Builder builder) {
+    public CommonConfig(Builder builder) {
       builder.push("general");
 
       beaconProtectionRange = builder
@@ -412,6 +359,75 @@ public class ChampionsConfig {
           .translation(CONFIG_PREFIX + "enableTOPIntegration").define("enableTOPIntegration", true);
 
       builder.pop();
+    }
+  }
+
+  public static class ServerConfig {
+
+    public final BooleanValue fakeLoot;
+    public final EnumValue<LootSource> lootSource;
+    public final ConfigValue<List<? extends String>> lootDrops;
+    public final BooleanValue lootScaling;
+
+    public final DoubleValue healthGrowth;
+    public final DoubleValue attackGrowth;
+    public final DoubleValue armorGrowth;
+    public final DoubleValue toughnessGrowth;
+    public final DoubleValue knockbackResistanceGrowth;
+    public final IntValue experienceGrowth;
+    public final IntValue explosionGrowth;
+
+    public final DoubleValue affixTargetRange;
+
+    public final DoubleValue adaptableDamageReductionIncrement;
+    public final DoubleValue adaptableMaxDamageReduction;
+
+    public final IntValue arcticAttackInterval;
+
+    public final DoubleValue dampenedDamageReduction;
+
+    public final IntValue desecratingCloudInterval;
+    public final IntValue desecratingCloudActivationTime;
+    public final DoubleValue desecratingCloudRadius;
+    public final IntValue desecratingCloudDuration;
+
+    public final IntValue enkindlingAttackInterval;
+
+    public final DoubleValue hastyMovementBonus;
+
+    public final ConfigValue<String> infestedParasite;
+    public final ConfigValue<String> infestedEnderParasite;
+    public final IntValue infestedAmount;
+    public final IntValue infestedInterval;
+    public final DoubleValue infestedPerHealth;
+    public final IntValue infestedTotal;
+
+    public final DoubleValue paralyzingChance;
+
+    public final DoubleValue knockingMultiplier;
+
+    public final DoubleValue livelyHealAmount;
+    public final DoubleValue livelyPassiveMultiplier;
+    public final IntValue livelyCooldown;
+
+    public final DoubleValue magneticStrength;
+
+    public final BooleanValue moltenWaterResistance;
+
+    public final ConfigValue<String> plaguedEffect;
+    public final IntValue plaguedRange;
+
+    public final DoubleValue reflectiveMinPercent;
+    public final DoubleValue reflectiveMaxPercent;
+    public final IntValue reflectiveMax;
+    public final BooleanValue reflectiveLethal;
+
+    public final DoubleValue woundingChance;
+
+    public final ConfigValue<List<? extends String>> scalingHealthSpawnModifiers;
+
+    public ServerConfig(Builder builder) {
+
 
       builder.push("loot");
 
@@ -683,7 +699,7 @@ public class ChampionsConfig {
 
     public RanksConfig ranks;
 
-    public Ranks(ModConfigSpec.Builder builder) {
+    public Ranks(Builder builder) {
       builder.comment("List of ranks").define("ranks", new ArrayList<>());
       builder.build();
     }
@@ -693,7 +709,7 @@ public class ChampionsConfig {
 
     public AffixesConfig affixes;
 
-    public Affixes(ModConfigSpec.Builder builder) {
+    public Affixes(Builder builder) {
       builder.comment("List of affix configurations").define("affixes", new ArrayList<>());
       builder.build();
     }
@@ -703,7 +719,7 @@ public class ChampionsConfig {
 
     public EntitiesConfig entities;
 
-    public Entities(ModConfigSpec.Builder builder) {
+    public Entities(Builder builder) {
       builder.comment("List of entity configurations").define("entities", new ArrayList<>());
       builder.build();
     }

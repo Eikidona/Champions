@@ -20,7 +20,6 @@ public class ClientEventHandler {
   @SubscribeEvent
   public static void onRegisterColor(final RegisterColorHandlersEvent.Item event) {
     event.register(ChampionEggItem::getColor, ChampionsRegistry.CHAMPION_EGG_ITEM.get());
-
   }
 
   @SubscribeEvent
