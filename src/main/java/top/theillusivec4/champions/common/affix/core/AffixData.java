@@ -1,10 +1,11 @@
 package top.theillusivec4.champions.common.affix.core;
 
-import java.lang.reflect.InvocationTargetException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
+
+import java.lang.reflect.InvocationTargetException;
 
 public abstract class AffixData {
 

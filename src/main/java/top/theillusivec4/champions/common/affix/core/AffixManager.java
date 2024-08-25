@@ -1,8 +1,8 @@
 package top.theillusivec4.champions.common.affix.core;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.*;
@@ -19,10 +19,10 @@ public class AffixManager {
 
   public static void register() {
     Champions.API.registerAffixes(new MoltenAffix(), new HastyAffix(), new ReflectiveAffix(),
-      new LivelyAffix(), new MagneticAffix(), new DampeningAffix(), new AdaptableAffix(),
-      new KnockingAffix(), new DesecratingAffix(), new PlaguedAffix(), new InfestedAffix(),
-      new ParalyzingAffix(), new WoundingAffix(), new ShieldingAffix(), new ArcticAffix(),
-      new EnkindlingAffix());
+        new LivelyAffix(), new MagneticAffix(), new DampeningAffix(), new AdaptableAffix(),
+        new KnockingAffix(), new DesecratingAffix(), new PlaguedAffix(), new InfestedAffix(),
+        new ParalyzingAffix(), new WoundingAffix(), new ShieldingAffix(), new ArcticAffix(),
+        new EnkindlingAffix());
   }
 
   public static Optional<AffixSettings> getSettings(String identifier) {
@@ -49,7 +49,7 @@ public class AffixManager {
         return;
       }
       AffixSettings settings = new AffixSettings(affixConfig.identifier, affixConfig.enabled,
-        affixConfig.minTier, affixConfig.maxTier, affixConfig.mobList, affixConfig.mobPermission);
+          affixConfig.minTier, affixConfig.maxTier, affixConfig.mobList, affixConfig.mobPermission);
       SETTINGS.put(affixConfig.identifier, settings);
     });
   }
@@ -75,7 +75,7 @@ public class AffixManager {
       if (mobList != null) {
 
         for (String s : mobList) {
-          EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(s));
+          EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(s));
 
           if (type != null) {
             this.mobList.add(type);
@@ -101,8 +101,8 @@ public class AffixManager {
         isValidEntity = mobList.contains(champion.getLivingEntity().getType());
       }
       return this.enabled && isValidEntity && champion.getServer().getRank().map(
-        rank -> rank.getTier() >= this.minTier && (this.maxTier == null
-          || rank.getTier() <= this.maxTier)).orElse(false);
+          rank -> rank.getTier() >= this.minTier && (this.maxTier == null
+              || rank.getTier() <= this.maxTier)).orElse(false);
     }
   }
 }

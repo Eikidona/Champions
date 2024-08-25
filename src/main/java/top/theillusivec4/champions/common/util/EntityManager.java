@@ -1,22 +1,16 @@
 package top.theillusivec4.champions.common.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import javax.annotation.Nullable;
-
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
 import top.theillusivec4.champions.common.config.EntitiesConfig.EntityConfig;
+
+import javax.annotation.Nullable;
+import java.util.*;
 
 public class EntityManager {
 
@@ -40,8 +34,8 @@ public class EntityManager {
         Champions.LOGGER.error("Missing identifier while building entity settings, skipping...");
         return;
       }
-      EntityType<?> type = BuiltInRegistries.ENTITY_TYPE
-          .get(new ResourceLocation(entityConfig.entity));
+      EntityType<?> type = ForgeRegistries.ENTITY_TYPES
+          .getValue(new ResourceLocation(entityConfig.entity));
 
       if (type == null) {
         Champions.LOGGER.error("Invalid identifier while building entity settings, skipping...");

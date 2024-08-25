@@ -1,17 +1,7 @@
 package top.theillusivec4.champions.common.loot;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import com.google.gson.*;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
@@ -23,6 +13,12 @@ import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.rank.Rank;
+
+import javax.annotation.Nonnull;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public record LootItemChampionPropertyCondition(LootContext.EntityTarget target,
                                                 MinMaxBounds.Ints tier, AffixesPredicate affixes)

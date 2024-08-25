@@ -1,10 +1,11 @@
 package top.theillusivec4.champions.common.rank;
 
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.effect.MobEffect;
 import top.theillusivec4.champions.api.IAffix;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Rank {
 

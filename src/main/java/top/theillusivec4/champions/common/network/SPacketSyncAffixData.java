@@ -1,6 +1,5 @@
 package top.theillusivec4.champions.common.network;
 
-import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
@@ -9,6 +8,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.NetworkEvent;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
+
+import java.util.function.Supplier;
 
 public class SPacketSyncAffixData {
 

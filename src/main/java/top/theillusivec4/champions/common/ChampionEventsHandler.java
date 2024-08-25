@@ -11,14 +11,18 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.*;
-import net.neoforged.neoforge.event.level.ExplosionEvent;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.level.ExplosionEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import top.theillusivec4.champions.api.IChampion;
+import top.theillusivec4.champions.client.ChampionsOverlay;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.rank.Rank;
@@ -34,30 +38,32 @@ public class ChampionEventsHandler {
   @SubscribeEvent
   public void onLivingXpDrop(LivingExperienceDropEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
-    ChampionCapability.getCapability(livingEntity).flatMap(champion -> champion.getServer().getRank()).ifPresent(rank -> {
-      int growth = rank.getGrowthFactor();
+    ChampionCapability.getCapability(livingEntity)
+      .ifPresent(champion -> champion.getServer().getRank().ifPresent(rank -> {
+        int growth = rank.getGrowthFactor();
 
-      if (growth > 0) {
-        evt.setDroppedExperience(
-          (growth * ChampionsConfig.experienceGrowth * evt.getOriginalExperience() +
-            evt.getDroppedExperience()));
-      }
-    });
+        if (growth > 0) {
+          evt.setDroppedExperience(
+            (growth * ChampionsConfig.experienceGrowth * evt.getOriginalExperience() +
+              evt.getDroppedExperience()));
+        }
+      }));
   }
 
   @SubscribeEvent
   public void onExplosion(ExplosionEvent.Start evt) {
     Explosion explosion = evt.getExplosion();
-    Entity entity = explosion.getDirectSourceEntity();
+    Entity entity = explosion.getExploder();
 
     if (entity != null && !entity.level().isClientSide()) {
-      ChampionCapability.getCapability(entity).flatMap(champion -> champion.getServer().getRank()).ifPresent(rank -> {
-        int growth = rank.getGrowthFactor();
+      ChampionCapability.getCapability(entity)
+        .ifPresent(champion -> champion.getServer().getRank().ifPresent(rank -> {
+          int growth = rank.getGrowthFactor();
 
-        if (growth > 0) {
-          explosion.radius += ChampionsConfig.explosionGrowth * growth;
-        }
-      });
+          if (growth > 0) {
+            explosion.radius += ChampionsConfig.explosionGrowth * growth;
+          }
+        }));
     }
   }
 
@@ -203,7 +209,7 @@ public class ChampionEventsHandler {
         if (!evt.isCanceled()) {
           Entity source = evt.getSource().getEntity();
 
-          if (source instanceof ServerPlayer player) {
+          if (source instanceof ServerPlayer player && !(source instanceof FakePlayer)) {
             player.awardStat(ChampionsStats.CHAMPION_MOBS_KILLED);
             int messageTier = ChampionsConfig.deathMessageTier;
 
@@ -239,7 +245,7 @@ public class ChampionEventsHandler {
   public void onBeaconStart(AttachCapabilitiesEvent<BlockEntity> evt) {
     BlockEntity blockEntity = evt.getObject();
 
-    if (blockEntity instanceof BeaconBlockEntity beaconBlockEntity) {
+    if (blockEntity instanceof BeaconBlockEntity) {
       ChampionHelper.addBeacon(blockEntity.getBlockPos());
     }
   }
@@ -256,6 +262,13 @@ public class ChampionEventsHandler {
           .forEach(affix -> amounts[1] = affix.onHeal(champion, amounts[0], amounts[1]));
       });
       evt.setAmount(amounts[1]);
+    }
+  }
+
+  @SubscribeEvent(priority = EventPriority.LOWEST)
+  public void onBossBarEvent(final CustomizeGuiOverlayEvent.BossEventProgress evt) {
+    if (ChampionsOverlay.isRendering) {
+      evt.setCanceled(true);
     }
   }
 }

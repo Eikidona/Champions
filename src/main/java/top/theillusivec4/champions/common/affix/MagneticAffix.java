@@ -1,7 +1,5 @@
 package top.theillusivec4.champions.common.affix;
 
-import java.util.Collections;
-import java.util.List;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -13,6 +11,9 @@ import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.affix.core.GoalAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
+
+import java.util.Collections;
+import java.util.List;
 
 public class MagneticAffix extends GoalAffix {
 

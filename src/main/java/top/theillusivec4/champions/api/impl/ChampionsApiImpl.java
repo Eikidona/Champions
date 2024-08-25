@@ -1,17 +1,13 @@
 package top.theillusivec4.champions.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampionsApi;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ChampionsApiImpl implements IChampionsApi {
 
