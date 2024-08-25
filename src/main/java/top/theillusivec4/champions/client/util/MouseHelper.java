@@ -1,6 +1,5 @@
 package top.theillusivec4.champions.client.util;
 
-import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,6 +11,8 @@ import net.minecraft.world.phys.Vec3;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
+
+import java.util.Optional;
 
 public class MouseHelper {
 

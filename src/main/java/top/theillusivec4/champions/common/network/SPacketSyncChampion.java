@@ -1,8 +1,5 @@
 package top.theillusivec4.champions.common.network;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
@@ -11,6 +8,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.NetworkEvent;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Supplier;
 
 public class SPacketSyncChampion {
 

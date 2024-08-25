@@ -1,13 +1,14 @@
 package top.theillusivec4.champions.api;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import javax.annotation.Nonnull;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.LivingEntity;
 import top.theillusivec4.champions.common.rank.Rank;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public interface IChampion {
 

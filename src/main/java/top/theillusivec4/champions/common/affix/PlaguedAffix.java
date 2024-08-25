@@ -1,6 +1,5 @@
 package top.theillusivec4.champions.common.affix;
 
-import java.util.List;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
@@ -11,6 +10,8 @@ import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
+
+import java.util.List;
 
 public class PlaguedAffix extends BasicAffix {
   public PlaguedAffix() {

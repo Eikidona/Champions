@@ -1,10 +1,6 @@
 package top.theillusivec4.champions.common.rank;
 
 import com.google.common.collect.ImmutableSortedMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
-import javax.annotation.Nonnull;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.effect.MobEffect;
@@ -13,6 +9,11 @@ import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.RanksConfig.RankConfig;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
 
 public class RankManager {
 

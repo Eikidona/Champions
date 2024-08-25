@@ -1,35 +1,17 @@
 package top.theillusivec4.champions.common.affix.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
-import top.theillusivec4.champions.common.affix.AdaptableAffix;
-import top.theillusivec4.champions.common.affix.ArcticAffix;
-import top.theillusivec4.champions.common.affix.DampeningAffix;
-import top.theillusivec4.champions.common.affix.DesecratingAffix;
-import top.theillusivec4.champions.common.affix.EnkindlingAffix;
-import top.theillusivec4.champions.common.affix.HastyAffix;
-import top.theillusivec4.champions.common.affix.InfestedAffix;
-import top.theillusivec4.champions.common.affix.KnockingAffix;
-import top.theillusivec4.champions.common.affix.LivelyAffix;
-import top.theillusivec4.champions.common.affix.MagneticAffix;
-import top.theillusivec4.champions.common.affix.MoltenAffix;
-import top.theillusivec4.champions.common.affix.ParalyzingAffix;
-import top.theillusivec4.champions.common.affix.PlaguedAffix;
-import top.theillusivec4.champions.common.affix.ReflectiveAffix;
-import top.theillusivec4.champions.common.affix.ShieldingAffix;
-import top.theillusivec4.champions.common.affix.WoundingAffix;
+import top.theillusivec4.champions.common.affix.*;
 import top.theillusivec4.champions.common.config.AffixesConfig.AffixConfig;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
+
+import javax.annotation.Nullable;
+import java.util.*;
 
 public class AffixManager {
 

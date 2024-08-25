@@ -11,6 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -18,8 +19,10 @@ import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import top.theillusivec4.champions.api.IChampion;
+import top.theillusivec4.champions.client.ChampionsOverlay;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.rank.Rank;
@@ -242,7 +245,7 @@ public class ChampionEventsHandler {
   public void onBeaconStart(AttachCapabilitiesEvent<BlockEntity> evt) {
     BlockEntity blockEntity = evt.getObject();
 
-    if (blockEntity instanceof BeaconBlockEntity beaconBlockEntity) {
+    if (blockEntity instanceof BeaconBlockEntity) {
       ChampionHelper.addBeacon(blockEntity.getBlockPos());
     }
   }
@@ -259,6 +262,13 @@ public class ChampionEventsHandler {
           .forEach(affix -> amounts[1] = affix.onHeal(champion, amounts[0], amounts[1]));
       });
       evt.setAmount(amounts[1]);
+    }
+  }
+
+  @SubscribeEvent(priority = EventPriority.LOWEST)
+  public void onBossBarEvent(final CustomizeGuiOverlayEvent.BossEventProgress evt) {
+    if (ChampionsOverlay.isRendering) {
+      evt.setCanceled(true);
     }
   }
 }

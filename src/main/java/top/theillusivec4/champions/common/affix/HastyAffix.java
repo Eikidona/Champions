@@ -1,6 +1,5 @@
 package top.theillusivec4.champions.common.affix;
 
-import java.util.UUID;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -9,6 +8,8 @@ import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
+
+import java.util.UUID;
 
 public class HastyAffix extends BasicAffix {
 

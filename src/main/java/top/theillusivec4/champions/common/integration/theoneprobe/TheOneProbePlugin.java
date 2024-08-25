@@ -1,12 +1,6 @@
 package top.theillusivec4.champions.common.integration.theoneprobe;
 
-import java.util.function.Function;
-import mcjty.theoneprobe.api.Color;
-import mcjty.theoneprobe.api.IProbeHitEntityData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.IProbeInfoEntityProvider;
-import mcjty.theoneprobe.api.ITheOneProbe;
-import mcjty.theoneprobe.api.ProbeMode;
+import mcjty.theoneprobe.api.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.Entity;
@@ -17,6 +11,8 @@ import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
+
+import java.util.function.Function;
 
 public class TheOneProbePlugin implements IProbeInfoEntityProvider {
 

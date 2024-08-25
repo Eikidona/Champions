@@ -4,7 +4,6 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import top.theillusivec4.champions.common.registry.RegistryReference;
 
 public class ParalysisEffect extends MobEffect {
 

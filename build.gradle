@@ -83,8 +83,12 @@ dependencies {
   compileOnly fg.deobf("curse.maven:scalinghealth-248027:${cf_scalinghealth}")
   compileOnly fg.deobf("curse.maven:TOP-245211:${cf_theoneprobe}")
   compileOnly fg.deobf("curse.maven:jade-324717:${cf_jade}")
+  implementation fg.deobf("curse.maven:jade-324717:${cf_jade}")
   compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-${mc_version}:${gamestages_version}")
   compileOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-1.20.1:${bookshelf_version}")
+  implementation fg.deobf("curse.maven:curios-309927:5367944")
+  implementation fg.deobf("curse.maven:lionfish-api-1001614:5363774")
+  implementation fg.deobf("curse.maven:lendercataclysm-551586:5474791")
 //  implementation fg.deobf("curse.maven:xl-packets-391640:4426828")
 //  implementation fg.deobf("curse.maven:serverconfig-updater-365281:4612683")
 }

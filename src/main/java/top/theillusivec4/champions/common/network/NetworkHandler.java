@@ -1,14 +1,15 @@
 package top.theillusivec4.champions.common.network;
 
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import top.theillusivec4.champions.Champions;
+
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class NetworkHandler {
 
