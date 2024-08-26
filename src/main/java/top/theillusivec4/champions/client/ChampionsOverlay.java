@@ -2,10 +2,10 @@ package top.theillusivec4.champions.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
+import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import top.theillusivec4.champions.client.util.HUDHelper;
 import top.theillusivec4.champions.client.util.MouseHelper;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
@@ -20,11 +20,11 @@ public class ChampionsOverlay implements IGuiOverlay {
   public static int startY = 0;
 
   public static boolean isBlackListEntity(LivingEntity entity) {
-    return ChampionsConfig.bossBarBlackList.contains(Objects.requireNonNull(ForgeRegistries.ENTITY_TYPES.getKey(entity.getType())).toString());
+    return ChampionsConfig.bossBarBlackList.contains(Objects.requireNonNull(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType())).toString());
   }
 
   @Override
-  public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int width,
+  public void render(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int width,
                      int height) {
 
     if (ChampionsConfig.showHud) {

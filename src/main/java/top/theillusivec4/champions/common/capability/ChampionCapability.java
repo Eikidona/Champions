@@ -8,12 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.champions.Champions;
@@ -41,8 +36,8 @@ public class ChampionCapability {
   private static final String ID_TAG = "identifier";
 
   public static void register() {
-    MinecraftForge.EVENT_BUS.register(new CapabilityEventHandler());
-    MinecraftForge.EVENT_BUS.register(new ChampionEventsHandler());
+    NeoForge.EVENT_BUS.register(new CapabilityEventHandler());
+    NeoForge.EVENT_BUS.register(new ChampionEventsHandler());
   }
 
   public static Provider createProvider(final LivingEntity livingEntity) {

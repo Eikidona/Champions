@@ -15,14 +15,14 @@ import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.impl.ChampionsApiImpl;
@@ -46,7 +46,7 @@ public class ChampionsCommand {
   public static final SuggestionProvider<CommandSourceStack> MONSTER_ENTITIES = SuggestionProviders
     .register(new ResourceLocation(Champions.MODID, "monster_entities"),
       (context, builder) -> SharedSuggestionProvider.suggestResource(
-        ForgeRegistries.ENTITY_TYPES.getValues().stream()
+        BuiltInRegistries.ENTITY_TYPE.stream()
           .filter(type -> type.getCategory() == MobCategory.MONSTER),
         builder, EntityType::getKey,
         (type) -> Component.translatable(
@@ -112,7 +112,7 @@ public class ChampionsCommand {
   private static int summon(CommandSourceStack source, @Nullable BlockPos pos,
                             ResourceLocation resourceLocation, int tier, Collection<IAffix> affixes)
     throws CommandSyntaxException {
-    EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(resourceLocation);
+    EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(resourceLocation);
 
 
     if (entityType == null) {
@@ -142,7 +142,7 @@ public class ChampionsCommand {
   private static int createEgg(CommandSourceStack source, ResourceLocation resourceLocation,
                                int tier,
                                Collection<IAffix> affixes) throws CommandSyntaxException {
-    EntityType<?> entity = ForgeRegistries.ENTITY_TYPES.getValue(resourceLocation);
+    EntityType<?> entity = BuiltInRegistries.ENTITY_TYPE.get(resourceLocation);
 
     if (entity == null) {
       throw UNKNOWN_ENTITY.create(resourceLocation);
