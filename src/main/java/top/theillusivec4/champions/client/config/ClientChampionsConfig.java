@@ -6,26 +6,16 @@ import top.theillusivec4.champions.Champions;
 
 public class ClientChampionsConfig {
 
+  private static final String CONFIG_PREFIX = "gui." + Champions.MODID + ".config.";
+
   public static final ModConfigSpec CLIENT_SPEC;
   public static final Client CLIENT;
-  private static final String CONFIG_PREFIX = "gui." + Champions.MODID + ".config.";
-  public static int hudXOffset;
-  public static int hudYOffset;
-  public static int hudRange;
-  public static boolean enableWailaIntegration;
 
   static {
     final Pair<Client, ModConfigSpec> specPair = new ModConfigSpec.Builder()
       .configure(Client::new);
     CLIENT_SPEC = specPair.getRight();
     CLIENT = specPair.getLeft();
-  }
-
-  public static void bake() {
-    hudXOffset = CLIENT.hudXOffset.get();
-    hudYOffset = CLIENT.hudYOffset.get();
-    hudRange = CLIENT.hudRange.get();
-    enableWailaIntegration = CLIENT.enableWailaIntegration.get();
   }
 
   public static class Client {
@@ -54,5 +44,17 @@ public class ClientChampionsConfig {
 
       builder.pop();
     }
+  }
+
+  public static int hudXOffset;
+  public static int hudYOffset;
+  public static int hudRange;
+  public static boolean enableWailaIntegration;
+
+  public static void bake() {
+    hudXOffset = CLIENT.hudXOffset.get();
+    hudYOffset = CLIENT.hudYOffset.get();
+    hudRange = CLIENT.hudRange.get();
+    enableWailaIntegration = CLIENT.enableWailaIntegration.get();
   }
 }

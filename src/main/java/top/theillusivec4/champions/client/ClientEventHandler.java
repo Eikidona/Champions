@@ -1,6 +1,5 @@
 package top.theillusivec4.champions.client;
 
-
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -24,7 +23,7 @@ public class ClientEventHandler {
 
   @SubscribeEvent
   public static void registerGuiOverlayEvent(final RegisterGuiOverlaysEvent evt) {
-    evt.registerBelow(VanillaGuiOverlay.BOSS_EVENT_PROGRESS.id(), new ResourceLocation(Champions.MODID , "health_overlay"), new ChampionsOverlay());
+    evt.registerBelow(VanillaGuiOverlay.BOSS_EVENT_PROGRESS.id(), new ResourceLocation(Champions.MODID ,"health_overlay"), new ChampionsOverlay());
   }
 
   @SubscribeEvent

@@ -1,10 +1,10 @@
 package top.theillusivec4.champions.common.rank;
 
 import com.google.common.collect.ImmutableSortedMap;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
@@ -66,8 +66,8 @@ public class RankManager {
 
   private static Rank getRankFromConfig(RankConfig rank) throws IllegalArgumentException {
     if (rank.tier == null || rank.numAffixes == null || rank.chance == null
-        || rank.defaultColor == null || rank.growthFactor == null || rank.effects == null
-        || rank.presetAffixes == null) {
+      || rank.defaultColor == null || rank.growthFactor == null || rank.effects == null
+      || rank.presetAffixes == null) {
       throw new IllegalArgumentException("Missing rank attribute");
     }
     int tier;
@@ -104,7 +104,7 @@ public class RankManager {
 
     rank.effects.forEach(effect -> {
       String[] parsed = effect.split(";");
-      MobEffect found = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(parsed[0]));
+      MobEffect found = BuiltInRegistries.MOB_EFFECT.get(new ResourceLocation(parsed[0]));
 
       if (found != null) {
         int amplifier = 0;
@@ -114,7 +114,7 @@ public class RankManager {
             amplifier = Integer.parseInt(parsed[1]);
           } catch (NumberFormatException e) {
             Champions.LOGGER
-                .error("Found invalid amplifier value for effect, setting to default 1");
+              .error("Found invalid amplifier value for effect, setting to default 1");
           }
         }
         effects.add(new Tuple<>(found, amplifier));
@@ -123,8 +123,8 @@ public class RankManager {
 
     List<IAffix> presetAffixes = new ArrayList<>();
     rank.presetAffixes
-        .forEach(affix -> Champions.API.getAffix(affix).ifPresent(presetAffixes::add));
+      .forEach(affix -> Champions.API.getAffix(affix).ifPresent(presetAffixes::add));
     return new Rank(tier, numAffixes, growthFactor, (float) chance, defaultColor, effects,
-        presetAffixes);
+      presetAffixes);
   }
 }

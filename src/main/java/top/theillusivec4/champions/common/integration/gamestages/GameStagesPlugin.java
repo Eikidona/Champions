@@ -1,10 +1,10 @@
 package top.theillusivec4.champions.common.integration.gamestages;
 
 import net.darkhax.gamestages.GameStageHelper;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 
@@ -101,7 +101,7 @@ public class GameStagesPlugin {
   }
 
   public static boolean hasEntityStage(LivingEntity living) {
-    final ResourceLocation rl = ForgeRegistries.ENTITY_TYPES.getKey(living.getType());
+    final ResourceLocation rl = BuiltInRegistries.ENTITY_TYPE.getKey(living.getType());
 
     if (rl != null) {
       final String id = rl.toString();

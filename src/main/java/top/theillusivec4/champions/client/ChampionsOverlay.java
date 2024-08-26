@@ -10,7 +10,6 @@ import top.theillusivec4.champions.client.util.HUDHelper;
 import top.theillusivec4.champions.client.util.MouseHelper;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -25,7 +24,6 @@ public class ChampionsOverlay implements IGuiOverlay {
   }
 
   @Override
-  @ParametersAreNonnullByDefault
   public void render(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int width,
                      int height) {
 
