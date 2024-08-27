@@ -5,6 +5,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 public class CapabilityEventHandler {
 
   @SubscribeEvent
-  public void attachCapabilities(final AttachCapabilitiesEvent<Entity> evt) {
+  public void attachCapabilities(final RegisterCapabilitiesEvent <Entity> evt) {
     Entity entity = evt.getObject();
 
     if (ChampionHelper.isValidChampion(entity)) {

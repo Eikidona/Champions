@@ -1,5 +1,6 @@
 package top.theillusivec4.champions.common.capability;
 
+import cpw.mods.util.Lazy;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -8,6 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,9 +27,10 @@ import java.util.*;
 
 public class ChampionCapability {
 
-  public static final Capability<IChampion> CHAMPION_CAP =
-    CapabilityManager.get(new CapabilityToken<>() {
-    });
+  public static final EntityCapability<IChampion, Void> CHAMPION_CAP = EntityCapability.createVoid(
+    new ResourceLocation("mymod", "champion_capability"),
+    IChampion.class
+  );
 
   public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "champion");
 
@@ -44,17 +48,11 @@ public class ChampionCapability {
     return new Provider(livingEntity);
   }
 
-  @Deprecated
-  public static LazyOptional<IChampion> getCapability(final LivingEntity entity) {
-    return getCapability((Entity) entity);
-  }
-
-  public static LazyOptional<IChampion> getCapability(final Entity entity) {
-
+  public static IChampion getCapability(final Entity entity) {
     if (!ChampionHelper.isValidChampion(entity)) {
-      return LazyOptional.empty();
+      return null;
     }
-    return entity.getCapability(CHAMPION_CAP);
+    return entity.getCapability(CHAMPION_CAP,null);
   }
 
   public static class Champion implements IChampion {
@@ -173,24 +171,27 @@ public class ChampionCapability {
     }
   }
 
-  public static class Provider implements ICapabilitySerializable<Tag> {
+  public static class Provider implements ICapabilityProvider<Entity, Void, IChampion> {
 
-    final LazyOptional<IChampion> optional;
-    final IChampion data;
+    private final IChampion data;
 
     Provider(final LivingEntity livingEntity) {
       this.data = new Champion(livingEntity);
-      this.optional = LazyOptional.of(() -> data);
     }
 
     @NotNull
-    @Override
-    public <T> LazyOptional<T> getCapability(@NotNull final Capability<T> cap,
-                                             @Nullable final Direction side) {
-      return cap == CHAMPION_CAP ? optional.cast() : LazyOptional.empty();
+    public <T> T getCapability(@NotNull final EntityCapability<T, ?> cap, @Nullable final Direction side) {
+      if (ChampionCapability.CHAMPION_CAP.equals(cap)) {
+        return (T) data;
+      }
+      return null;
     }
 
     @Override
+    public @Nullable IChampion getCapability(Entity entity, Void context) {
+      return entity.getCapability(CHAMPION_CAP,null);
+    }
+
     public Tag serializeNBT() {
       CompoundTag compoundNBT = new CompoundTag();
       IChampion.Server champion = data.getServer();
@@ -208,8 +209,11 @@ public class ChampionCapability {
       return compoundNBT;
     }
 
-    @Override
     public void deserializeNBT(final Tag nbt) {
+      if (!(nbt instanceof CompoundTag)) {
+        return;
+      }
+
       CompoundTag compoundNBT = (CompoundTag) nbt;
       IChampion.Server champion = data.getServer();
 
@@ -228,7 +232,7 @@ public class ChampionCapability {
           Champions.API.getAffix(id).ifPresent(affix -> {
             affixes.add(affix);
 
-            if (tag.hasUUID(DATA_TAG)) {
+            if (tag.contains(DATA_TAG)) {
               champion.setData(id, tag.getCompound(DATA_TAG));
             }
           });

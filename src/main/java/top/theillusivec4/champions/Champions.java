@@ -86,7 +86,7 @@ public class Champions {
   public static boolean gameStagesLoaded = false;
 
   public Champions() {
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+    NeoForge.EVENT_BUS.addListener(this::enqueueIMC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
@@ -99,7 +99,7 @@ public class Champions {
       ModLoadingContext.get()
         .registerConfig(ModConfig.Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
     }
-    IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    IEventBus eventBus = NeoForge.EVENT_BUS;
     eventBus.addListener(this::config);
     eventBus.addListener(this::setup);
     eventBus.addListener(this::registerCaps);
