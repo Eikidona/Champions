@@ -20,13 +20,14 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import net.neoforged.neoforge.common.util.FakePlayer;
+import org.jetbrains.annotations.NotNull;
+import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums;
 import top.theillusivec4.champions.common.config.ConfigLoot;
 import top.theillusivec4.champions.common.rank.Rank;
-import top.theillusivec4.champions.common.registry.RegistryReference;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -70,7 +71,7 @@ public class ChampionLootModifier extends LootModifier {
 
         if (ChampionsConfig.lootSource != ConfigEnums.LootSource.CONFIG) {
           LootTable lootTable = serverWorld.getServer().getLootData()
-            .getLootTable(new ResourceLocation(RegistryReference.CHAMPION_LOOT));
+            .getLootTable(new ResourceLocation(Champions.MODID, "champion_loot"));
           LootParams.Builder lootParamsBuilder = new LootParams.Builder(serverWorld)
             .withParameter(LootContextParams.THIS_ENTITY, entity)
             .withParameter(LootContextParams.ORIGIN, entity.position())
@@ -110,6 +111,7 @@ public class ChampionLootModifier extends LootModifier {
   }
 
   @Override
+  @NotNull
   public Codec<? extends IGlobalLootModifier> codec() {
     return CODEC;
   }

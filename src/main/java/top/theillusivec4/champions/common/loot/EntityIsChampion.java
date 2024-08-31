@@ -1,10 +1,8 @@
 package top.theillusivec4.champions.common.loot;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import net.minecraft.util.GsonHelper;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
@@ -13,39 +11,29 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.rank.Rank;
+import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Set;
 
-@Deprecated
-public class EntityIsChampion implements LootItemCondition {
+public record EntityIsChampion(Integer minTier, Integer maxTier,
+                               LootContext.EntityTarget target) implements LootItemCondition {
 
-  public static LootItemConditionType type =
-    new LootItemConditionType(new EntityIsChampion.Serializer());
-
-  @Nullable
-  private final Integer minTier;
-  @Nullable
-  private final Integer maxTier;
-  private final LootContext.EntityTarget target;
-
-  private EntityIsChampion(@Nullable Integer minTier, @Nullable Integer maxTier,
-                           LootContext.EntityTarget targetIn) {
-    this.minTier = minTier;
-    this.maxTier = maxTier;
-    this.target = targetIn;
-  }
+  public static final Codec<EntityIsChampion> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    Codec.INT.fieldOf("minTier").forGetter(EntityIsChampion::minTier),
+    Codec.INT.fieldOf("maxTier").forGetter(EntityIsChampion::maxTier),
+    LootContext.EntityTarget.CODEC.fieldOf("target").forGetter(EntityIsChampion::target)
+  ).apply(instance, EntityIsChampion::new));
 
   @NotNull
   @Override
   public Set<LootContextParam<?>> getReferencedContextParams() {
-    return ImmutableSet.of(this.target.getParam());
+    return ImmutableSet.of(target.getParam());
   }
 
   @Override
   public boolean test(LootContext context) {
-    Entity entity = context.getParamOrNull(this.target.getParam());
+    Entity entity = context.getParamOrNull(target.getParam());
 
     if (entity == null) {
       return false;
@@ -62,10 +50,10 @@ public class EntityIsChampion implements LootItemCondition {
   @Nonnull
   @Override
   public LootItemConditionType getType() {
-    return type;
+    return ChampionsRegistry.ENTITY_IS_CHAMPION.get();
   }
 
-  public static class Serializer
+  /*public static class Serializer
     implements net.minecraft.world.level.storage.loot.Serializer<EntityIsChampion> {
 
     @Override
@@ -87,5 +75,5 @@ public class EntityIsChampion implements LootItemCondition {
       return new EntityIsChampion(minTier, maxTier,
         GsonHelper.getAsObject(json, "entity", context, LootContext.EntityTarget.class));
     }
-  }
+  }*/
 }

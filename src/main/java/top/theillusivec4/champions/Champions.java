@@ -21,10 +21,7 @@ package top.theillusivec4.champions;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,8 +40,6 @@ import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,13 +52,9 @@ import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.integration.gamestages.GameStagesPlugin;
 import top.theillusivec4.champions.common.integration.theoneprobe.TheOneProbePlugin;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
-import top.theillusivec4.champions.common.loot.EntityIsChampion;
-import top.theillusivec4.champions.common.loot.LootItemChampionPropertyCondition;
-import top.theillusivec4.champions.common.network.SPacketSyncAffixData;
-import top.theillusivec4.champions.common.network.SPacketSyncChampion;
+import top.theillusivec4.champions.common.network.NetworkHandler;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
-import top.theillusivec4.champions.common.registry.RegistryReference;
 import top.theillusivec4.champions.common.stat.ChampionsStats;
 import top.theillusivec4.champions.common.util.EntityManager;
 import top.theillusivec4.champions.server.command.ChampionSelectorOptions;
@@ -85,9 +76,7 @@ public class Champions {
   public static boolean gameStagesLoaded = false;
 
   public Champions(IEventBus eventBus) {
-
     eventBus.addListener(this::enqueueIMC);
-    eventBus.addListener(this::registerNetowrk);
     ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
@@ -125,15 +114,11 @@ public class Champions {
 
   private void setup(final FMLCommonSetupEvent evt) {
     ChampionAttachment.register();
+    NetworkHandler.register();
     AffixManager.register();
     evt.enqueueWork(() -> {
       ChampionsStats.setup();
       ChampionSelectorOptions.setup();
-      Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE,
-        new ResourceLocation(RegistryReference.IS_CHAMPION), EntityIsChampion.type);
-      Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE,
-        new ResourceLocation(RegistryReference.CHAMPION_PROPERTIES),
-        LootItemChampionPropertyCondition.INSTANCE);
       DispenseItemBehavior dispenseBehavior = (source, stack) -> {
         Direction direction = source.state().getValue(DispenserBlock.FACING);
         Optional<EntityType<?>> entityType = ChampionEggItem.getType(stack);
@@ -210,13 +195,5 @@ public class Champions {
       InterModComms.sendTo(MODID, "theoneprobe", "getTheOneProbe",
         TheOneProbePlugin.GetTheOneProbe::new);
     }
-  }
-
-  private void registerNetowrk(final RegisterPayloadHandlerEvent event) {
-    final IPayloadRegistrar registrar = event.registrar("champions");
-    registrar.play(SPacketSyncAffixData.ID, SPacketSyncAffixData::new, handler -> handler
-      .server(SPacketSyncAffixData.AffixDataHandler.getInstance()::handle));
-    registrar.play(SPacketSyncChampion.ID, SPacketSyncChampion::new, handler -> handler
-      .server(SPacketSyncChampion.ChampionHandler.getInstance()::handle));
   }
 }
