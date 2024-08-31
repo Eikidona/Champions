@@ -26,7 +26,7 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.impl.ChampionsApiImpl;
-import top.theillusivec4.champions.common.capability.ChampionCapability;
+import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
@@ -126,7 +126,7 @@ public class ChampionsCommand {
           false, false);
 
         if (entity instanceof LivingEntity) {
-          ChampionCapability.getCapability(entity).ifPresent(
+          ChampionAttachment.getAttachment(entity).ifPresent(
             champion -> ChampionBuilder.spawnPreset(champion, tier, new ArrayList<>(affixes)));
           source.getLevel().addFreshEntity(entity);
           source.sendSuccess(() -> Component.translatable("commands.champions.summon.success",

@@ -32,7 +32,7 @@ import net.minecraft.world.phys.HitResult;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
-import top.theillusivec4.champions.common.capability.ChampionCapability;
+import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
 
 import javax.annotation.Nonnull;
@@ -189,9 +189,9 @@ public class ChampionEggItem extends EggItem {
             MobSpawnType.SPAWN_EGG, true,
             !Objects.equals(blockpos, blockpos1) && direction == Direction.UP);
 
-        if (entity instanceof LivingEntity) {
-          ChampionCapability.getCapability(entity)
-            .ifPresent(champion -> read(champion, itemstack));
+        if (entity instanceof LivingEntity livingEntity) {
+          IChampion champion = ChampionAttachment.getAttachment(livingEntity);
+          read(champion, itemstack);
           world.addFreshEntity(entity);
           itemstack.shrink(1);
         }
@@ -228,8 +228,8 @@ public class ChampionEggItem extends EggItem {
                 MobSpawnType.SPAWN_EGG, false, false);
 
             if (entity instanceof LivingEntity) {
-              ChampionCapability.getCapability(entity)
-                .ifPresent(champion -> read(champion, itemstack));
+              IChampion champion = ChampionAttachment.getAttachment(entity);
+              read(champion, itemstack);
               worldIn.addFreshEntity(entity);
 
               if (!playerIn.getAbilities().invulnerable) {

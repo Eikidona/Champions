@@ -8,14 +8,17 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import top.theillusivec4.champions.Champions;
+import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.entity.ArcticBulletEntity;
 import top.theillusivec4.champions.common.entity.EnkindlingBulletEntity;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
@@ -25,7 +28,6 @@ import top.theillusivec4.champions.common.potion.WoundEffect;
 import top.theillusivec4.champions.server.command.AffixArgumentInfo;
 import top.theillusivec4.champions.server.command.AffixArgumentType;
 
-import java.util.function.Supplier;
 
 public class ChampionsRegistry {
 
@@ -38,14 +40,16 @@ public class ChampionsRegistry {
   private static final DeferredRegister<MobEffect> MOB_EFFECT = DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, Champions.MODID);
   private static final DeferredRegister<EntityType<?>> ENTITY_TYPE = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Champions.MODID);
   private static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPES = DeferredRegister.create(BuiltInRegistries.COMMAND_ARGUMENT_TYPE, Champions.MODID);
+  private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Champions.MODID);
+  public static final DeferredHolder<AttachmentType<?>, AttachmentType<ChampionAttachment.Provider>> CHAMPION_ATTACHMENT = ATTACHMENTS.register("champion_attachment", () -> AttachmentType.serializable(entity -> ChampionAttachment.createProvider((LivingEntity) entity)).build());
   public static DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<ChampionLootModifier>> CHAMPION_LOOT;
   public static DeferredHolder<EntityType<?>, EntityType<EnkindlingBulletEntity>> ENKINDLING_BULLET;
   public static DeferredHolder<EntityType<?>, EntityType<ArcticBulletEntity>> ARCTIC_BULLET;
   public static DeferredHolder<Item, ChampionEggItem> CHAMPION_EGG_ITEM;
-  public static DeferredHolder<ParticleType<?>,SimpleParticleType> RANK_PARTICLE_TYPE;
+  public static DeferredHolder<ParticleType<?>, SimpleParticleType> RANK_PARTICLE_TYPE;
   public static DeferredHolder<MobEffect, ParalysisEffect> PARALYSIS_EFFECT_TYPE;
   public static DeferredHolder<MobEffect, WoundEffect> WOUND_EFFECT_TYPE;
-  public static DeferredHolder<ArgumentTypeInfo<?,?>, AffixArgumentInfo> AFFIX_ARGUMENT_TYPE;
+  public static DeferredHolder<ArgumentTypeInfo<?, ?>, AffixArgumentInfo> AFFIX_ARGUMENT_TYPE;
 
   public static void registerItems(IEventBus bus) {
     CHAMPION_EGG_ITEM = EGG.register("champion_egg", ChampionEggItem::new);
