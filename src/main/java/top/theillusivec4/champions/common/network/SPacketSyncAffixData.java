@@ -7,7 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.NetworkEvent;
 import top.theillusivec4.champions.api.IChampion;
-import top.theillusivec4.champions.common.capability.ChampionAttachment;
+import top.theillusivec4.champions.common.capability.ChampionCapability;
 
 import java.util.function.Supplier;
 
@@ -39,7 +39,7 @@ public class SPacketSyncAffixData {
 
       if (world != null) {
         Entity entity = world.getEntity(msg.entityId);
-        ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
+        ChampionCapability.getCapability(entity).ifPresent(champion -> {
           IChampion.Client clientChampion = champion.getClient();
           clientChampion.getAffix(msg.id)
               .ifPresent(affix -> affix.readSyncTag(champion, msg.data));

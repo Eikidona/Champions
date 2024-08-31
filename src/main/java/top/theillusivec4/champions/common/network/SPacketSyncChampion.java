@@ -5,8 +5,9 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.network.NetworkEvent;
 import top.theillusivec4.champions.api.IChampion;
-import top.theillusivec4.champions.common.capability.ChampionAttachment;
+import top.theillusivec4.champions.common.capability.ChampionCapability;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -55,7 +56,7 @@ public class SPacketSyncChampion {
 
       if (world != null) {
         Entity entity = world.getEntity(msg.entityId);
-        ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
+        ChampionCapability.getCapability(entity).ifPresent(champion -> {
           IChampion.Client clientChampion = champion.getClient();
           clientChampion.setRank(new Tuple<>(msg.tier, msg.defaultColor));
           clientChampion.setAffixes(msg.affixes);

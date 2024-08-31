@@ -1,11 +1,11 @@
 package top.theillusivec4.champions.common.config;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.Champions;
 
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public class ConfigLoot {
           continue;
         }
 
-        Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(parsed[1]));
+        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(parsed[1]));
 
         if (item == null) {
           Champions.LOGGER.error("Item not found! {}", parsed[1]);

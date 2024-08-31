@@ -1,8 +1,8 @@
 package top.theillusivec4.champions.common.util;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
@@ -34,15 +34,15 @@ public class EntityManager {
         Champions.LOGGER.error("Missing identifier while building entity settings, skipping...");
         return;
       }
-      EntityType<?> type = BuiltInRegistries.ENTITY_TYPE
-        .get(new ResourceLocation(entityConfig.entity));
+      EntityType<?> type = ForgeRegistries.ENTITY_TYPES
+          .getValue(new ResourceLocation(entityConfig.entity));
 
       if (type == null) {
         Champions.LOGGER.error("Invalid identifier while building entity settings, skipping...");
         return;
       }
       EntitySettings settings = new EntitySettings(type, entityConfig.minTier, entityConfig.maxTier,
-        entityConfig.presetAffixes, entityConfig.affixList, entityConfig.affixPermission);
+          entityConfig.presetAffixes, entityConfig.affixList, entityConfig.affixPermission);
       SETTINGS.put(type, settings);
     });
   }

@@ -10,7 +10,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
-import top.theillusivec4.champions.common.capability.ChampionAttachment;
+import top.theillusivec4.champions.common.capability.ChampionCapability;
 
 import java.util.Optional;
 
@@ -37,7 +37,7 @@ public class MouseHelper {
 
         if (entityraytraceresult != null) {
           Entity entity1 = entityraytraceresult.getEntity();
-          return ChampionAttachment.getAttachment(entity1).map(IChampion::getLivingEntity);
+          return ChampionCapability.getCapability(entity1).map(IChampion::getLivingEntity);
         }
         mc.getProfiler().pop();
       }

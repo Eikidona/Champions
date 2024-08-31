@@ -3,7 +3,6 @@ package top.theillusivec4.champions.common.item;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -29,10 +28,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.common.ForgeSpawnEggItem;
+import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
-import top.theillusivec4.champions.common.capability.ChampionAttachment;
+import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
 
 import javax.annotation.Nonnull;
@@ -53,7 +54,7 @@ public class ChampionEggItem extends EggItem {
 
   public static int getColor(ItemStack stack, int tintIndex) {
     SpawnEggItem eggItem =
-      SpawnEggItem.byId(getType(stack).orElse(EntityType.ZOMBIE));
+      ForgeSpawnEggItem.fromEntityType(getType(stack).orElse(EntityType.ZOMBIE));
     return eggItem != null ? eggItem.getColor(tintIndex) : 0;
   }
 
@@ -66,7 +67,7 @@ public class ChampionEggItem extends EggItem {
         String id = entityTag.getString(ID_TAG);
 
         if (!id.isEmpty()) {
-          EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(id));
+          EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(id));
 
           if (type != null) {
             return Optional.of(type);
@@ -189,9 +190,9 @@ public class ChampionEggItem extends EggItem {
             MobSpawnType.SPAWN_EGG, true,
             !Objects.equals(blockpos, blockpos1) && direction == Direction.UP);
 
-        if (entity instanceof LivingEntity livingEntity) {
-          IChampion champion = ChampionAttachment.getAttachment(livingEntity);
-          read(champion, itemstack);
+        if (entity instanceof LivingEntity) {
+          ChampionCapability.getCapability(entity)
+            .ifPresent(champion -> read(champion, itemstack));
           world.addFreshEntity(entity);
           itemstack.shrink(1);
         }
@@ -228,8 +229,8 @@ public class ChampionEggItem extends EggItem {
                 MobSpawnType.SPAWN_EGG, false, false);
 
             if (entity instanceof LivingEntity) {
-              IChampion champion = ChampionAttachment.getAttachment(entity);
-              read(champion, itemstack);
+              ChampionCapability.getCapability(entity)
+                .ifPresent(champion -> read(champion, itemstack));
               worldIn.addFreshEntity(entity);
 
               if (!playerIn.getAbilities().invulnerable) {
