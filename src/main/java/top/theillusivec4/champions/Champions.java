@@ -40,21 +40,17 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.api.IChampionsApi;
 import top.theillusivec4.champions.api.impl.ChampionsApiImpl;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.affix.core.AffixManager;
-import top.theillusivec4.champions.common.capability.ChampionCapability;
+import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.integration.gamestages.GameStagesPlugin;
 import top.theillusivec4.champions.common.integration.theoneprobe.TheOneProbePlugin;
@@ -85,8 +81,8 @@ public class Champions {
   public static boolean scalingHealthLoaded = false;
   public static boolean gameStagesLoaded = false;
 
-  public Champions() {
-    NeoForge.EVENT_BUS.addListener(this::enqueueIMC);
+  public Champions(IEventBus eventBus) {
+    eventBus.addListener(this::enqueueIMC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
@@ -99,11 +95,9 @@ public class Champions {
       ModLoadingContext.get()
         .registerConfig(ModConfig.Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
     }
-    IEventBus eventBus = NeoForge.EVENT_BUS;
     eventBus.addListener(this::config);
     eventBus.addListener(this::setup);
-    eventBus.addListener(this::registerCaps);
-    NeoForge.EVENT_BUS.addListener(this::registerCommands);
+    eventBus.addListener(this::registerCommands);
     ChampionsRegistry.register(eventBus);
     scalingHealthLoaded = ModList.get().isLoaded("scalinghealth");
   }
@@ -125,7 +119,7 @@ public class Champions {
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
-    ChampionCapability.register();
+    ChampionAttachment.register();
     NetworkHandler.register();
     AffixManager.register();
     evt.enqueueWork(() -> {
@@ -145,9 +139,9 @@ public class Champions {
             direction != Direction.UP);
 
           if (entity instanceof LivingEntity) {
-            ChampionCapability.getCapability(entity)
+            ChampionAttachment.getAttachment(entity)
               .ifPresent(champion -> ChampionEggItem.read(champion, stack));
-            source.getLevel().addFreshEntity(entity);
+            source.level().addFreshEntity(entity);
             stack.shrink(1);
           }
         });
@@ -155,10 +149,6 @@ public class Champions {
       };
       DispenserBlock.registerBehavior(ChampionsRegistry.CHAMPION_EGG_ITEM.get(), dispenseBehavior);
     });
-  }
-
-  private void registerCaps(final RegisterCapabilitiesEvent evt) {
-    evt.registerEntity(IChampion.class);
   }
 
   private void registerCommands(final RegisterCommandsEvent evt) {
@@ -204,7 +194,7 @@ public class Champions {
       }
     } else if (evt.getConfig().getType() == ModConfig.Type.CLIENT) {
       ClientChampionsConfig.bake();
-    }else if (evt.getConfig().getType() == ModConfig.Type.COMMON){
+    } else if (evt.getConfig().getType() == ModConfig.Type.COMMON) {
       ChampionsConfig.bakeCommon();
     }
   }

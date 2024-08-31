@@ -21,7 +21,7 @@ import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import top.theillusivec4.champions.api.IChampion;
-import top.theillusivec4.champions.common.capability.ChampionCapability;
+import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums;
 import top.theillusivec4.champions.common.config.ConfigLoot;
@@ -64,7 +64,7 @@ public class ChampionLootModifier extends LootModifier {
         return generatedLoot;
       }
 
-      ChampionCapability.getCapability(entity).ifPresent(champion -> {
+      ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
         ServerLevel serverWorld = (ServerLevel) entity.level();
 

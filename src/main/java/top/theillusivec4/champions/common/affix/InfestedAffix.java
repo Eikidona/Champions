@@ -16,7 +16,7 @@ import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.AffixData;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.affix.core.GoalAffix;
-import top.theillusivec4.champions.common.capability.ChampionCapability;
+import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.rank.RankManager;
 
@@ -95,7 +95,7 @@ public class InfestedAffix extends GoalAffix {
               false, false);
 
       if (entity instanceof LivingEntity) {
-        ChampionCapability.getCapability(entity)
+        ChampionAttachment.getAttachment(entity)
             .ifPresent(champion -> champion.getServer().setRank(RankManager.getLowestRank()));
         livingEntity.level().addFreshEntity(entity);
 
@@ -126,7 +126,7 @@ public class InfestedAffix extends GoalAffix {
       this.attackTime--;
 
       if (this.attackTime <= 0) {
-        ChampionCapability.getCapability(this.mobEntity).ifPresent(champion -> {
+        ChampionAttachment.getAttachment(this.mobEntity).ifPresent(champion -> {
           AffixData.IntegerData buffer = AffixData
               .getData(champion, InfestedAffix.this.getIdentifier(), AffixData.IntegerData.class);
 
