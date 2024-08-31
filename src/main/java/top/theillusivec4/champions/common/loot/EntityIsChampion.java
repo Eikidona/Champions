@@ -11,7 +11,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import org.jetbrains.annotations.NotNull;
-import top.theillusivec4.champions.common.capability.ChampionCapability;
+import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.rank.Rank;
 
 import javax.annotation.Nonnull;
@@ -50,7 +50,7 @@ public class EntityIsChampion implements LootItemCondition {
     if (entity == null) {
       return false;
     } else {
-      return ChampionCapability.getCapability(entity).map(champion -> {
+      return ChampionAttachment.getAttachment(entity).map(champion -> {
         int tier = champion.getServer().getRank().map(Rank::getTier).orElse(0);
         boolean aboveMin = minTier == null ? tier >= 1 : tier >= minTier;
         boolean belowMax = maxTier == null || tier <= maxTier;
