@@ -5,7 +5,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -18,29 +17,28 @@ import top.theillusivec4.champions.common.network.SPacketSyncChampion;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
-import top.theillusivec4.champions.common.util.ChampionHelper;
 
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class CapabilityEventHandler {
 
-  @SubscribeEvent
-  public void attachCapabilities(final RegisterCapabilitiesEvent <Entity> evt) {
+  /*@SubscribeEvent
+  public void attachCapabilities(final RegisterCapabilitiesEvent evt) {
     Entity entity = evt.getObject();
 
     if (ChampionHelper.isValidChampion(entity)) {
       evt.addCapability(ChampionCapability.ID,
         ChampionCapability.createProvider((LivingEntity) entity));
     }
-  }
+  }*/
 
   @SubscribeEvent
   public void onSpecialSpawn(MobSpawnEvent.FinalizeSpawn evt) {
     LivingEntity entity = evt.getEntity();
 
     if (!entity.level().isClientSide()) {
-      ChampionCapability.getCapability(entity).ifPresent(champion -> {
+      ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
 
         if (serverChampion.getRank().isEmpty()) {
@@ -60,10 +58,9 @@ public class CapabilityEventHandler {
     LivingEntity entity = evt.getEntity();
 
     if (!entity.level().isClientSide()) {
-      entity.reviveCaps();
       LivingEntity outcome = evt.getOutcome();
-      ChampionCapability.getCapability(entity).ifPresent(
-        oldChampion -> ChampionCapability.getCapability(outcome)
+      ChampionAttachment.getAttachment(entity).ifPresent(
+        oldChampion -> ChampionAttachment.getAttachment(outcome)
           .ifPresent(newChampion -> {
             ChampionBuilder.copy(oldChampion, newChampion);
             IChampion.Server serverChampion = newChampion.getServer();
@@ -75,7 +72,6 @@ public class CapabilityEventHandler {
                   serverChampion.getAffixes().stream().map(IAffix::getIdentifier)
                     .collect(Collectors.toSet())));
           }));
-      entity.invalidateCaps();
     }
   }
 
@@ -85,7 +81,7 @@ public class CapabilityEventHandler {
     Player playerEntity = evt.getEntity();
 
     if (playerEntity instanceof ServerPlayer) {
-      ChampionCapability.getCapability(entity).ifPresent(champion -> {
+      ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
         NetworkHandler.INSTANCE
           .send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) playerEntity),

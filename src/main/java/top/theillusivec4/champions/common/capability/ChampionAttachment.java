@@ -1,36 +1,26 @@
 package top.theillusivec4.champions.common.capability;
 
-import cpw.mods.util.Lazy;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.capabilities.EntityCapability;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.NeoForge;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.ChampionEventsHandler;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.rank.RankManager;
+import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.util.ChampionHelper;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class ChampionCapability {
-
-  public static final EntityCapability<IChampion, Void> CHAMPION_CAP = EntityCapability.createVoid(
-    new ResourceLocation("mymod", "champion_capability"),
-    IChampion.class
-  );
+public class ChampionAttachment {
 
   public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "champion");
 
@@ -48,11 +38,11 @@ public class ChampionCapability {
     return new Provider(livingEntity);
   }
 
-  public static IChampion getCapability(final Entity entity) {
+  public static Optional<IChampion> getAttachment(final Entity entity) {
     if (!ChampionHelper.isValidChampion(entity)) {
-      return null;
+      return Optional.empty();
     }
-    return entity.getCapability(CHAMPION_CAP,null);
+    return Optional.ofNullable(entity.getData(ChampionsRegistry.CHAMPION_ATTACHMENT).champion);
   }
 
   public static class Champion implements IChampion {
@@ -171,30 +161,18 @@ public class ChampionCapability {
     }
   }
 
-  public static class Provider implements ICapabilityProvider<Entity, Void, IChampion> {
+  public static class Provider implements INBTSerializable<CompoundTag> {
 
-    private final IChampion data;
+    private final IChampion champion;
 
     Provider(final LivingEntity livingEntity) {
-      this.data = new Champion(livingEntity);
-    }
-
-    @NotNull
-    public <T> T getCapability(@NotNull final EntityCapability<T, ?> cap, @Nullable final Direction side) {
-      if (ChampionCapability.CHAMPION_CAP.equals(cap)) {
-        return (T) data;
-      }
-      return null;
+      this.champion = new Champion(livingEntity);
     }
 
     @Override
-    public @Nullable IChampion getCapability(Entity entity, Void context) {
-      return entity.getCapability(CHAMPION_CAP,null);
-    }
-
-    public Tag serializeNBT() {
+    public CompoundTag serializeNBT() {
       CompoundTag compoundNBT = new CompoundTag();
-      IChampion.Server champion = data.getServer();
+      IChampion.Server champion = this.champion.getServer();
       champion.getRank().ifPresent(rank -> compoundNBT.putInt(TIER_TAG, rank.getTier()));
       List<IAffix> affixes = champion.getAffixes();
       ListTag list = new ListTag();
@@ -209,21 +187,17 @@ public class ChampionCapability {
       return compoundNBT;
     }
 
-    public void deserializeNBT(final Tag nbt) {
-      if (!(nbt instanceof CompoundTag)) {
-        return;
-      }
+    @Override
+    public void deserializeNBT(CompoundTag nbt) {
+      IChampion.Server champion = this.champion.getServer();
 
-      CompoundTag compoundNBT = (CompoundTag) nbt;
-      IChampion.Server champion = data.getServer();
-
-      if (compoundNBT.contains(TIER_TAG)) {
-        int tier = compoundNBT.getInt(TIER_TAG);
+      if (nbt.contains(TIER_TAG)) {
+        int tier = nbt.getInt(TIER_TAG);
         champion.setRank(RankManager.getRank(tier));
       }
 
-      if (compoundNBT.contains(AFFIX_TAG)) {
-        ListTag list = compoundNBT.getList(AFFIX_TAG, CompoundTag.TAG_COMPOUND);
+      if (nbt.contains(AFFIX_TAG)) {
+        ListTag list = nbt.getList(AFFIX_TAG, CompoundTag.TAG_COMPOUND);
         List<IAffix> affixes = new ArrayList<>();
 
         for (int i = 0; i < list.size(); i++) {
