@@ -1,13 +1,12 @@
 package top.theillusivec4.champions.client;
 
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
 import top.theillusivec4.champions.common.particle.RankParticle;
@@ -23,7 +22,7 @@ public class ClientEventHandler {
 
   @SubscribeEvent
   public static void registerGuiOverlayEvent(final RegisterGuiOverlaysEvent evt) {
-    evt.registerBelow(VanillaGuiOverlay.BOSS_EVENT_PROGRESS.id(), new ResourceLocation(Champions.MODID ,"health_overlay"), new ChampionsOverlay());
+    evt.registerBelow(VanillaGuiOverlay.BOSS_EVENT_PROGRESS.id(), Champions.MODID + "_health_overlay", new ChampionsOverlay());
   }
 
   @SubscribeEvent

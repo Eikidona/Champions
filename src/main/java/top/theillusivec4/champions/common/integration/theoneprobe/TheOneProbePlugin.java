@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
-import top.theillusivec4.champions.common.capability.ChampionAttachment;
+import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 
 import java.util.function.Function;
@@ -27,7 +27,7 @@ public class TheOneProbePlugin implements IProbeInfoEntityProvider {
                                  IProbeHitEntityData probeHitEntityData) {
 
     if (ChampionsConfig.enableTOPIntegration) {
-      ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
+      ChampionCapability.getCapability(entity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
         serverChampion.getRank().ifPresent(rank -> {
           if (rank.getTier() == 0) {

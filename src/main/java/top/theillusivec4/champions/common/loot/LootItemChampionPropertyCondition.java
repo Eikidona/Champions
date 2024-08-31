@@ -2,18 +2,17 @@ package top.theillusivec4.champions.common.loot;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.*;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
-import top.theillusivec4.champions.common.capability.ChampionAttachment;
+import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.rank.Rank;
 
 import javax.annotation.Nonnull;
@@ -38,7 +37,7 @@ public record LootItemChampionPropertyCondition(LootContext.EntityTarget target,
   @Override
   public boolean test(LootContext context) {
     Entity entity = context.getParamOrNull(this.target.getParam());
-    return ChampionAttachment.getAttachment(entity).map(champion -> {
+    return ChampionCapability.getCapability(entity).map(champion -> {
       IChampion.Server server = champion.getServer();
       int tier = server.getRank().map(Rank::getTier).orElse(0);
 
@@ -103,7 +102,7 @@ public record LootItemChampionPropertyCondition(LootContext.EntityTarget target,
       }
     }
 
-    private static AffixesPredicate fromJson(JsonElement json) throws CommandSyntaxException {
+    private static AffixesPredicate fromJson(JsonElement json) {
 
       if (json != null && !json.isJsonNull()) {
 
@@ -135,12 +134,12 @@ public record LootItemChampionPropertyCondition(LootContext.EntityTarget target,
           MinMaxBounds.Ints matches = MinMaxBounds.Ints.atLeast(1);
 
           if (jsonObject.has("matches")) {
-            matches = MinMaxBounds.Ints.fromReader(new StringReader(jsonObject.get("matches").getAsString()));
+            matches = MinMaxBounds.Ints.fromJson(jsonObject.get("matches"));
           }
           MinMaxBounds.Ints count = MinMaxBounds.Ints.ANY;
 
           if (jsonObject.has("count")) {
-            count = MinMaxBounds.Ints.fromReader(new StringReader(jsonObject.get("count").getAsString()));
+            count = MinMaxBounds.Ints.fromJson(jsonObject.get("count"));
           }
           return new AffixesPredicate(affixes, matches, count);
         }
@@ -158,8 +157,8 @@ public record LootItemChampionPropertyCondition(LootContext.EntityTarget target,
         for (String value : this.values) {
           jsonArray.add(value);
         }
-        Integer min = this.count.min().orElse(null);
-        Integer max = this.count.max().orElse(null);
+        Integer min = this.count.getMin();
+        Integer max = this.count.getMax();
 
         if (min != null && min == 1 && max == null) {
           return jsonArray;

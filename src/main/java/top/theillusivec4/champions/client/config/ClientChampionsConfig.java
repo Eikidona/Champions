@@ -1,6 +1,7 @@
 package top.theillusivec4.champions.client.config;
 
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.champions.Champions;
 
@@ -8,11 +9,11 @@ public class ClientChampionsConfig {
 
   private static final String CONFIG_PREFIX = "gui." + Champions.MODID + ".config.";
 
-  public static final ModConfigSpec CLIENT_SPEC;
+  public static final ForgeConfigSpec CLIENT_SPEC;
   public static final Client CLIENT;
 
   static {
-    final Pair<Client, ModConfigSpec> specPair = new ModConfigSpec.Builder()
+    final Pair<Client, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
       .configure(Client::new);
     CLIENT_SPEC = specPair.getRight();
     CLIENT = specPair.getLeft();
@@ -20,12 +21,12 @@ public class ClientChampionsConfig {
 
   public static class Client {
 
-    public final ModConfigSpec.IntValue hudXOffset;
-    public final ModConfigSpec.IntValue hudYOffset;
-    public final ModConfigSpec.IntValue hudRange;
-    public final ModConfigSpec.BooleanValue enableWailaIntegration;
+    public final IntValue hudXOffset;
+    public final IntValue hudYOffset;
+    public final IntValue hudRange;
+    public final ForgeConfigSpec.BooleanValue enableWailaIntegration;
 
-    public Client(ModConfigSpec.Builder builder) {
+    public Client(ForgeConfigSpec.Builder builder) {
       builder.push("hud");
 
       hudXOffset = builder.comment("The x-offset for the champion HUD")

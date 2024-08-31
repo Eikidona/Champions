@@ -1,8 +1,8 @@
 package top.theillusivec4.champions.common.affix.core;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.*;
@@ -75,7 +75,7 @@ public class AffixManager {
       if (mobList != null) {
 
         for (String s : mobList) {
-          EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(s));
+          EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(s));
 
           if (type != null) {
             this.mobList.add(type);

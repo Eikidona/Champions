@@ -30,27 +30,31 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.InterModComms;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.IConfigSpec;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
-import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.IConfigSpec;
+import net.minecraftforge.fml.config.ModConfig.Type;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.api.IChampionsApi;
 import top.theillusivec4.champions.api.impl.ChampionsApiImpl;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.affix.core.AffixManager;
-import top.theillusivec4.champions.common.capability.ChampionAttachment;
+import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.integration.gamestages.GameStagesPlugin;
 import top.theillusivec4.champions.common.integration.theoneprobe.TheOneProbePlugin;
@@ -81,11 +85,11 @@ public class Champions {
   public static boolean scalingHealthLoaded = false;
   public static boolean gameStagesLoaded = false;
 
-  public Champions(IEventBus eventBus) {
-    eventBus.addListener(this::enqueueIMC);
-    ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
-    ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
-    ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
+  public Champions() {
+    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+    ModLoadingContext.get().registerConfig(Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
+    ModLoadingContext.get().registerConfig(Type.SERVER, ChampionsConfig.SERVER_SPEC);
+    ModLoadingContext.get().registerConfig(Type.COMMON, ChampionsConfig.COMMON_SPEC);
     createServerConfig(ChampionsConfig.RANKS_SPEC, "ranks");
     createServerConfig(ChampionsConfig.AFFIXES_SPEC, "affixes");
     createServerConfig(ChampionsConfig.ENTITIES_SPEC, "entities");
@@ -93,18 +97,20 @@ public class Champions {
 
     if (gameStagesLoaded) {
       ModLoadingContext.get()
-        .registerConfig(ModConfig.Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
+        .registerConfig(Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
     }
+    IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::config);
     eventBus.addListener(this::setup);
-    eventBus.addListener(this::registerCommands);
+    eventBus.addListener(this::registerCaps);
+    MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
     ChampionsRegistry.register(eventBus);
     scalingHealthLoaded = ModList.get().isLoaded("scalinghealth");
   }
 
-  private static void createServerConfig(ModConfigSpec spec, String suffix) {
+  private static void createServerConfig(ForgeConfigSpec spec, String suffix) {
     String fileName = "champions-" + suffix + ".toml";
-    ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, spec, fileName);
+    ModLoadingContext.get().registerConfig(Type.SERVER, spec, fileName);
     File defaults = FMLPaths.GAMEDIR.get().resolve("/defaultconfigs/" + fileName).toFile();
 
     if (!defaults.exists()) {
@@ -119,7 +125,7 @@ public class Champions {
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
-    ChampionAttachment.register();
+    ChampionCapability.register();
     NetworkHandler.register();
     AffixManager.register();
     evt.enqueueWork(() -> {
@@ -131,17 +137,17 @@ public class Champions {
         new ResourceLocation(RegistryReference.CHAMPION_PROPERTIES),
         LootItemChampionPropertyCondition.INSTANCE);
       DispenseItemBehavior dispenseBehavior = (source, stack) -> {
-        Direction direction = source.state().getValue(DispenserBlock.FACING);
+        Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
         Optional<EntityType<?>> entityType = ChampionEggItem.getType(stack);
         entityType.ifPresent(type -> {
-          Entity entity = type.create(source.level(), stack.getTag(), null,
-            source.pos().relative(direction), MobSpawnType.DISPENSER, true,
+          Entity entity = type.create(source.getLevel(), stack.getTag(), null,
+            source.getPos().relative(direction), MobSpawnType.DISPENSER, true,
             direction != Direction.UP);
 
           if (entity instanceof LivingEntity) {
-            ChampionAttachment.getAttachment(entity)
+            ChampionCapability.getCapability(entity)
               .ifPresent(champion -> ChampionEggItem.read(champion, stack));
-            source.level().addFreshEntity(entity);
+            source.getLevel().addFreshEntity(entity);
             stack.shrink(1);
           }
         });
@@ -149,6 +155,10 @@ public class Champions {
       };
       DispenserBlock.registerBehavior(ChampionsRegistry.CHAMPION_EGG_ITEM.get(), dispenseBehavior);
     });
+  }
+
+  private void registerCaps(final RegisterCapabilitiesEvent evt) {
+    evt.register(IChampion.class);
   }
 
   private void registerCommands(final RegisterCommandsEvent evt) {
@@ -161,7 +171,7 @@ public class Champions {
       return;
     }
 
-    if (evt.getConfig().getType() == ModConfig.Type.SERVER) {
+    if (evt.getConfig().getType() == Type.SERVER) {
       synchronized (this) {
 
         IConfigSpec<?> spec = evt.getConfig().getSpec();
@@ -192,9 +202,9 @@ public class Champions {
 
         }
       }
-    } else if (evt.getConfig().getType() == ModConfig.Type.CLIENT) {
+    } else if (evt.getConfig().getType() == Type.CLIENT) {
       ClientChampionsConfig.bake();
-    } else if (evt.getConfig().getType() == ModConfig.Type.COMMON) {
+    }else if (evt.getConfig().getType() == Type.COMMON){
       ChampionsConfig.bakeCommon();
     }
   }
