@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
-import top.theillusivec4.champions.common.capability.ChampionCapability;
+import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.rank.Rank;
 
 import java.util.HashSet;
@@ -96,7 +96,7 @@ public class ChampionSelectorOptions {
 
   private static boolean matches(Entity entity, Set<String> affixes, MinMaxBounds.Ints tier,
                                  MinMaxBounds.Ints count, MinMaxBounds.Ints matches) {
-    return ChampionCapability.getCapability(entity).map(champion -> {
+    return ChampionAttachment.getAttachment(entity).map(champion -> {
       IChampion.Server server = champion.getServer();
       int championTier = server.getRank().map(Rank::getTier).orElse(0);
 

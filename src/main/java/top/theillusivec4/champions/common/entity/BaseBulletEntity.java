@@ -25,6 +25,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.event.EventHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -245,7 +246,7 @@ public abstract class BaseBulletEntity extends Projectile {
       HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
 
       if (hitresult.getType() != HitResult.Type.MISS &&
-        !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
+        !EventHooks.onProjectileImpact(this, hitresult)) {
         this.onHit(hitresult);
       }
     }
