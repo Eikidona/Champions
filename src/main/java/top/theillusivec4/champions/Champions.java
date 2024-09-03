@@ -43,6 +43,8 @@ import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,7 +59,8 @@ import top.theillusivec4.champions.common.integration.theoneprobe.TheOneProbePlu
 import top.theillusivec4.champions.common.item.ChampionEggItem;
 import top.theillusivec4.champions.common.loot.EntityIsChampion;
 import top.theillusivec4.champions.common.loot.LootItemChampionPropertyCondition;
-import top.theillusivec4.champions.common.network.NetworkHandler;
+import top.theillusivec4.champions.common.network.SPacketSyncAffixData;
+import top.theillusivec4.champions.common.network.SPacketSyncChampion;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.registry.RegistryReference;
@@ -82,7 +85,9 @@ public class Champions {
   public static boolean gameStagesLoaded = false;
 
   public Champions(IEventBus eventBus) {
+
     eventBus.addListener(this::enqueueIMC);
+    eventBus.addListener(this::registerNetowrk);
     ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
@@ -120,7 +125,6 @@ public class Champions {
 
   private void setup(final FMLCommonSetupEvent evt) {
     ChampionAttachment.register();
-    NetworkHandler.register();
     AffixManager.register();
     evt.enqueueWork(() -> {
       ChampionsStats.setup();
@@ -206,5 +210,13 @@ public class Champions {
       InterModComms.sendTo(MODID, "theoneprobe", "getTheOneProbe",
         TheOneProbePlugin.GetTheOneProbe::new);
     }
+  }
+
+  private void registerNetowrk(final RegisterPayloadHandlerEvent event) {
+    final IPayloadRegistrar registrar = event.registrar("champions");
+    registrar.play(SPacketSyncAffixData.ID, SPacketSyncAffixData::new, handler -> handler
+      .server(SPacketSyncAffixData.AffixDataHandler.getInstance()::handle));
+    registrar.play(SPacketSyncChampion.ID, SPacketSyncChampion::new, handler -> handler
+      .server(SPacketSyncChampion.ChampionHandler.getInstance()::handle));
   }
 }

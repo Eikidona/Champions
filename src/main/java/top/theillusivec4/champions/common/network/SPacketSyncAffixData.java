@@ -4,49 +4,58 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 
 import java.util.function.Supplier;
 
-public class SPacketSyncAffixData {
+public record SPacketSyncAffixData(int entityId, String affixId, CompoundTag data) implements CustomPacketPayload {
 
-  private final int entityId;
-  private final String id;
-  private final CompoundTag data;
+  public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "main");
 
-  public SPacketSyncAffixData(int entityId, String id, CompoundTag data) {
-    this.entityId = entityId;
-    this.data = data;
-    this.id = id;
+  public SPacketSyncAffixData(final FriendlyByteBuf buffer) {
+    this(buffer.readInt(), buffer.readUtf(), buffer.readNbt());
   }
 
-  public static void encode(SPacketSyncAffixData msg, FriendlyByteBuf buf) {
-    buf.writeInt(msg.entityId);
-    buf.writeUtf(msg.id);
-    buf.writeNbt(msg.data);
+  @Override
+  public void write(FriendlyByteBuf buffer) {
+    buffer.writeInt(this.entityId);
+    buffer.writeUtf(this.affixId);
+    buffer.writeNbt(this.data);
   }
 
-  public static SPacketSyncAffixData decode(FriendlyByteBuf buf) {
-    return new SPacketSyncAffixData(buf.readInt(), buf.readUtf(), buf.readNbt());
+  @Override
+  public ResourceLocation id() {
+    return ID;
   }
 
-  public static void handle(SPacketSyncAffixData msg, Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> {
-      ClientLevel world = Minecraft.getInstance().level;
+  public static class AffixDataHandler {
 
-      if (world != null) {
-        Entity entity = world.getEntity(msg.entityId);
-        ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
-          IChampion.Client clientChampion = champion.getClient();
-          clientChampion.getAffix(msg.id)
-              .ifPresent(affix -> affix.readSyncTag(champion, msg.data));
-        });
-      }
-    });
-    ctx.get().setPacketHandled(true);
+    private static final AffixDataHandler INSTANCE = new AffixDataHandler();
+
+    public static AffixDataHandler getInstance() {
+      return INSTANCE;
+    }
+
+    public void handle(final SPacketSyncAffixData data, final PlayPayloadContext cxt) {
+      cxt.workHandler().submitAsync(() -> {
+        ClientLevel world = Minecraft.getInstance().level;
+
+        if (world != null) {
+          Entity entity = world.getEntity(data.entityId);
+          ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
+            IChampion.Client clientChampion = champion.getClient();
+            clientChampion.getAffix(data.affixId)
+              .ifPresent(affix -> affix.readSyncTag(champion, data.data));
+          });
+        }
+      });
+    }
   }
 }
 
