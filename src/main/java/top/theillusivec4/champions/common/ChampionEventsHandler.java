@@ -9,8 +9,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.block.entity.BeaconBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
@@ -239,14 +237,14 @@ public class ChampionEventsHandler {
     ChampionHelper.clearBeacons();
   }
 
-  @SubscribeEvent
+  /*@SubscribeEvent
   public void onBeaconStart(AttachCapabilitiesEvent<BlockEntity> evt) {
     BlockEntity blockEntity = evt.getObject();
 
     if (blockEntity instanceof BeaconBlockEntity) {
       ChampionHelper.addBeacon(blockEntity.getBlockPos());
     }
-  }
+  }*/
 
   @SubscribeEvent
   public void onLivingHeal(LivingHealEvent evt) {
