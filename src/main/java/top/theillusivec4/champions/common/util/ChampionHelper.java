@@ -9,10 +9,8 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
-import top.theillusivec4.champions.common.integration.gamestages.GameStagesPlugin;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,11 +27,10 @@ public class ChampionHelper {
     return entity instanceof LivingEntity && entity instanceof Enemy;
   }
 
-  public static boolean checkPotential(final LivingEntity livingEntity) {
-    return isValidEntity(livingEntity) &&
-      isValidDimension(livingEntity.level().dimension().location()) &&
-      !nearActiveBeacon(livingEntity)&&
-      (!Champions.gameStagesLoaded || GameStagesPlugin.hasEntityStage(livingEntity));
+  public static boolean isPotential(final LivingEntity livingEntity) {
+    return !isValidEntity(livingEntity) ||
+      !isValidDimension(livingEntity.level().dimension().location()) ||
+      nearActiveBeacon(livingEntity);
   }
 
   public static void addBeacon(BlockPos pos) {

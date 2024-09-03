@@ -40,6 +40,8 @@ import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,10 +51,10 @@ import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.affix.core.AffixManager;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
-import top.theillusivec4.champions.common.integration.gamestages.GameStagesPlugin;
 import top.theillusivec4.champions.common.integration.theoneprobe.TheOneProbePlugin;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
-import top.theillusivec4.champions.common.network.NetworkHandler;
+import top.theillusivec4.champions.common.network.SPacketSyncAffixData;
+import top.theillusivec4.champions.common.network.SPacketSyncChampion;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.stat.ChampionsStats;
@@ -76,14 +78,15 @@ public class Champions {
   public static boolean gameStagesLoaded = false;
 
   public Champions(IEventBus eventBus) {
+
     eventBus.addListener(this::enqueueIMC);
+    eventBus.addListener(this::registerNetwork);
     ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
     ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
     createServerConfig(ChampionsConfig.RANKS_SPEC, "ranks");
     createServerConfig(ChampionsConfig.AFFIXES_SPEC, "affixes");
     createServerConfig(ChampionsConfig.ENTITIES_SPEC, "entities");
-    gameStagesLoaded = ModList.get().isLoaded("gamestages");
 
     if (gameStagesLoaded) {
       ModLoadingContext.get()
@@ -114,7 +117,6 @@ public class Champions {
 
   private void setup(final FMLCommonSetupEvent evt) {
     ChampionAttachment.register();
-    NetworkHandler.register();
     AffixManager.register();
     evt.enqueueWork(() -> {
       ChampionsStats.setup();
@@ -175,7 +177,6 @@ public class Champions {
           } else if (spec == ChampionsConfig.STAGE_SPEC && Champions.gameStagesLoaded) {
             ChampionsConfig.entityStages = ChampionsConfig.STAGE.entityStages.get();
             ChampionsConfig.tierStages = ChampionsConfig.STAGE.tierStages.get();
-            GameStagesPlugin.buildStages();
           }
           ChampionsConfig.bake();
 
@@ -195,5 +196,13 @@ public class Champions {
       InterModComms.sendTo(MODID, "theoneprobe", "getTheOneProbe",
         TheOneProbePlugin.GetTheOneProbe::new);
     }
+  }
+
+  private void registerNetwork(final RegisterPayloadHandlerEvent event) {
+    final IPayloadRegistrar registrar = event.registrar("champions");
+    registrar.play(SPacketSyncAffixData.ID, SPacketSyncAffixData::new, handler -> handler
+      .server(SPacketSyncAffixData.AffixDataHandler.getInstance()::handle));
+    registrar.play(SPacketSyncChampion.ID, SPacketSyncChampion::new, handler -> handler
+      .server(SPacketSyncChampion.ChampionHandler.getInstance()::handle));
   }
 }

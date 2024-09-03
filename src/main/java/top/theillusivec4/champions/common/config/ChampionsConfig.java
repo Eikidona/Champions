@@ -17,7 +17,6 @@ import top.theillusivec4.champions.common.config.ConfigEnums.LootSource;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
 import top.theillusivec4.champions.common.config.EntitiesConfig.EntityConfig;
 import top.theillusivec4.champions.common.config.RanksConfig.RankConfig;
-import top.theillusivec4.champions.common.integration.scalinghealth.ScalingHealthPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +90,7 @@ public class ChampionsConfig {
   public static int reflectiveMax;
   public static boolean reflectiveLethal;
   public static double woundingChance;
-  public static List<? extends String> scalingHealthSpawnModifiers;
+//  public static List<? extends String> scalingHealthSpawnModifiers;
   public static List<? extends String> entityStages;
   public static List<? extends String> tierStages;
   public static List<? extends String> bossBarBlackList;
@@ -253,10 +252,6 @@ public class ChampionsConfig {
 
     woundingChance = SERVER.woundingChance.get();
 
-    if (Champions.scalingHealthLoaded) {
-      scalingHealthSpawnModifiers = SERVER.scalingHealthSpawnModifiers.get();
-      ScalingHealthPlugin.buildModifiers();
-    }
   }
 
   private static boolean validateEntityName(final Object obj) {

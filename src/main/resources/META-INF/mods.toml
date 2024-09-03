@@ -1,29 +1,37 @@
 modLoader="javafml"
-loaderVersion="${loader_version}"
+loaderVersion="${neo_version}"
 license="LGPL-3.0-or-later"
 issueTrackerURL="https://github.com/TheIllusiveC4/Champions/issues"
 logoFile="champions_icon.png"
 logoBlur=false
 [[mods]]
-modId="champions"
-version="${version}"
-displayName="Champions"
-displayURL="https://github.com/TheIllusiveC4/Champions/"
-authors="C4, kumoe"
-description=""
-[[dependencies.champions]]
-  modId="forge"
-  mandatory=true
-  versionRange="${forge_version_range}"
+  modId="${mod_id}"
+  version="${mod_version}"
+  displayName="${mod_name}"
+  displayURL="https://github.com/TheIllusiveC4/Champions/"
+  authors="C4, kumoe"
+  description='''${mod_description}'''
+[[dependencies.${mod_id}]] #optional
+  # the modid of the dependency
+  modId="neoforge" #mandatory
+  # The type of the dependency. Can be one of "required", "optional", "incompatible" or "discouraged" (case insensitive).
+  # 'required' requires the mod to exist, 'optional' does not
+  # 'incompatible' will prevent the game from loading when the mod exists, and 'discouraged' will show a warning
+  type="required" #mandatory
+  # Optional field describing why the dependency is required or why it is incompatible
+  # reason="..."
+  # The version range of the dependency
+  versionRange="${neo_version_range}" #mandatory
+  # An ordering relationship for the dependency.
+  # BEFORE - This mod is loaded BEFORE the dependency
+  # AFTER - This mod is loaded AFTER the dependency
   ordering="NONE"
+  # Side this dependency is applied on - BOTH, CLIENT, or SERVER
   side="BOTH"
-[[dependencies.champions]]
+[[dependencies.${mod_id}]]
   modId="minecraft"
-  mandatory=true
-  versionRange="${mc_version_range}"
+  type="required"
+  # This version range declares a minimum of the current minecraft version up to but not including the next major version
+  versionRange="${minecraft_version_range}"
   ordering="NONE"
   side="BOTH"
-[[dependencies.champions]]
-  modId="scalinghealth"
-  mandatory=false
-  versionRange="[6.3.0,)"
