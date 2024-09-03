@@ -22,7 +22,7 @@ public interface IChampion {
 
     List<IAffix> getAffixes();
 
-    void setAffixes(List<String> affixIds);
+    void setAffixes(Set<String> affixIds);
 
     CompoundTag getData(String identifier);
 
