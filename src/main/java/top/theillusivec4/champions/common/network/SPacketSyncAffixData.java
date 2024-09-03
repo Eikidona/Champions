@@ -12,8 +12,6 @@ import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 
-import java.util.function.Supplier;
-
 public record SPacketSyncAffixData(int entityId, String affixId, CompoundTag data) implements CustomPacketPayload {
 
   public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "main");

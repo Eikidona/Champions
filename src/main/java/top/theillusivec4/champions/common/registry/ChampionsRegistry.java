@@ -6,6 +6,9 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.stats.StatType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -44,8 +47,10 @@ public class ChampionsRegistry {
   private static final DeferredRegister<EntityType<?>> ENTITY_TYPE = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Champions.MODID);
   private static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPES = DeferredRegister.create(BuiltInRegistries.COMMAND_ARGUMENT_TYPE, Champions.MODID);
   private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Champions.MODID);
-  public static final DeferredHolder<AttachmentType<?>, AttachmentType<ChampionAttachment.Provider>> CHAMPION_ATTACHMENT = ATTACHMENTS.register("champion_attachment", () -> AttachmentType.serializable(entity -> ChampionAttachment.createProvider((LivingEntity) entity)).build());
   private static final DeferredRegister<LootItemConditionType> LOOT_ITEM_CONDITION_TYPE = DeferredRegister.create(BuiltInRegistries.LOOT_CONDITION_TYPE, Champions.MODID);
+  private static final DeferredRegister<StatType<?>> CHAMPIONS_STATS = DeferredRegister.create(BuiltInRegistries.STAT_TYPE, Champions.MODID);
+  public static DeferredHolder<AttachmentType<?>, AttachmentType<ChampionAttachment.Provider>> CHAMPION_ATTACHMENT;
+  public static DeferredHolder<StatType<?>, StatType<ResourceLocation>> CHAMPION_MOBS_KILLED;
   public static DeferredHolder<LootItemConditionType, LootItemConditionType> ENTITY_IS_CHAMPION;
   public static DeferredHolder<LootItemConditionType, LootItemConditionType> CHAMPION_PROPERTIES;
   public static DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<ChampionLootModifier>> CHAMPION_LOOT;
@@ -96,6 +101,16 @@ public class ChampionsRegistry {
     LOOT_ITEM_CONDITION_TYPE.register(bus);
   }
 
+  public static void registerCustomStats(IEventBus bus) {
+    CHAMPION_MOBS_KILLED = CHAMPIONS_STATS.register("champion_mobs_killed", () -> new StatType<>(BuiltInRegistries.CUSTOM_STAT, Component.translatable("stat.champions.champion_mobs_killed")));
+    CHAMPIONS_STATS.register(bus);
+  }
+
+  public static void registerAttachment(IEventBus bus) {
+    CHAMPION_ATTACHMENT = ATTACHMENTS.register("champion_attachment", () -> AttachmentType.serializable(entity -> ChampionAttachment.createProvider((LivingEntity) entity)).build());
+    ATTACHMENTS.register(bus);
+  }
+
   public static void register(IEventBus bus) {
     registerItems(bus);
     registerParticles(bus);
@@ -104,6 +119,8 @@ public class ChampionsRegistry {
     registerLootModifiers(bus);
     registerLootItemConditions(bus);
     registerArgumentType(bus);
+    registerCustomStats(bus);
+    registerAttachment(bus);
   }
 
 }
