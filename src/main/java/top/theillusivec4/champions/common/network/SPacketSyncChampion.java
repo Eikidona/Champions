@@ -3,65 +3,60 @@ package top.theillusivec4.champions.common.network;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
-
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.function.Supplier;
 
-public class SPacketSyncChampion {
+public record SPacketSyncChampion(int entityId, int tier, int defaultColor, List<String> affixes) implements CustomPacketPayload {
 
-  private final int entityId;
-  private final int tier;
-  private final int defaultColor;
-  private final Set<String> affixes;
-  private final int affixSize;
+  public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "main");
 
-  public SPacketSyncChampion(int entityId, int tier, int defaultColor, Set<String> affixes) {
-    this.entityId = entityId;
-    this.tier = tier;
-    this.affixSize = affixes.size();
-    this.affixes = affixes;
-    this.defaultColor = defaultColor;
+  public SPacketSyncChampion(final FriendlyByteBuf buffer) {
+    this(buffer.readInt(), buffer.readInt(), buffer.readInt(),  buffer.readList(FriendlyByteBuf::readUtf));
   }
 
-  public static void encode(SPacketSyncChampion msg, FriendlyByteBuf buf) {
-    buf.writeInt(msg.entityId);
-    buf.writeInt(msg.tier);
-    buf.writeInt(msg.affixSize);
-    buf.writeInt(msg.defaultColor);
-    msg.affixes.forEach(buf::writeUtf);
+  @Override
+  public void write(FriendlyByteBuf buffer) {
+    buffer.writeInt(this.entityId);
+    buffer.writeInt(this.tier);
+    buffer.writeInt(this.affixes.size());
+    buffer.writeInt(this.defaultColor);
+    this.affixes.forEach(buffer::writeUtf);
   }
 
-  public static SPacketSyncChampion decode(FriendlyByteBuf buf) {
-    int entityId = buf.readInt();
-    int tier = buf.readInt();
-    Set<String> affixes = new HashSet<>();
-    int affixSize = buf.readInt();
-    int defaultColor = buf.readInt();
+  @Override
+  public ResourceLocation id() {
+    return ID;
+  }
 
-    for (int i = 0; i < affixSize; i++) {
-      affixes.add(buf.readUtf());
+  public static class ChampionHandler {
+
+    private static final ChampionHandler INSTANCE = new ChampionHandler();
+
+    public static ChampionHandler getInstance() {
+      return INSTANCE;
     }
-    return new SPacketSyncChampion(entityId, tier, defaultColor, affixes);
-  }
 
-  public static void handle(SPacketSyncChampion msg, Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> {
-      ClientLevel world = Minecraft.getInstance().level;
+    public void handle(final SPacketSyncChampion data, final PlayPayloadContext cxt) {
+      cxt.workHandler().submitAsync(() -> {
+          ClientLevel world = Minecraft.getInstance().level;
 
-      if (world != null) {
-        Entity entity = world.getEntity(msg.entityId);
-        ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
-          IChampion.Client clientChampion = champion.getClient();
-          clientChampion.setRank(new Tuple<>(msg.tier, msg.defaultColor));
-          clientChampion.setAffixes(msg.affixes);
+          if (world != null) {
+            Entity entity = world.getEntity(data.entityId);
+            ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
+              IChampion.Client clientChampion = champion.getClient();
+              clientChampion.setRank(new Tuple<>(data.tier, data.defaultColor));
+              clientChampion.setAffixes(data.affixes);
+            });
+          }
         });
-      }
-    });
-    ctx.get().setPacketHandled(true);
+    }
   }
 }

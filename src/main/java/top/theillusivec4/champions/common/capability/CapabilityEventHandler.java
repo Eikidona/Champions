@@ -12,7 +12,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
-import top.theillusivec4.champions.common.network.NetworkHandler;
 import top.theillusivec4.champions.common.network.SPacketSyncChampion;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.rank.RankManager;
@@ -64,13 +63,12 @@ public class CapabilityEventHandler {
           .ifPresent(newChampion -> {
             ChampionBuilder.copy(oldChampion, newChampion);
             IChampion.Server serverChampion = newChampion.getServer();
-            NetworkHandler.INSTANCE
-              .send(PacketDistributor.TRACKING_ENTITY.with(() -> outcome),
+            LivingEntity packetEntity = null;
+            PacketDistributor.TRACKING_ENTITY.with(packetEntity).send(
                 new SPacketSyncChampion(outcome.getId(),
                   serverChampion.getRank().map(Rank::getTier).orElse(0),
                   serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
-                  serverChampion.getAffixes().stream().map(IAffix::getIdentifier)
-                    .collect(Collectors.toSet())));
+                  serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toList())));
           }));
     }
   }
@@ -83,13 +81,12 @@ public class CapabilityEventHandler {
     if (playerEntity instanceof ServerPlayer) {
       ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
-        NetworkHandler.INSTANCE
-          .send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) playerEntity),
+        ServerPlayer packetPlayer = null;
+        PacketDistributor.PLAYER.with(packetPlayer).send(
             new SPacketSyncChampion(entity.getId(),
               serverChampion.getRank().map(Rank::getTier).orElse(0),
               serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
-              serverChampion.getAffixes().stream().map(IAffix::getIdentifier)
-                .collect(Collectors.toSet())));
+              serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toList())));
       });
     }
   }
