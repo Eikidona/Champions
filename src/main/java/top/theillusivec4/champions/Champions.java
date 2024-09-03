@@ -200,8 +200,8 @@ public class Champions {
   private void registerNetwork(final RegisterPayloadHandlerEvent event) {
     final IPayloadRegistrar registrar = event.registrar("champions");
     registrar.play(SPacketSyncAffixData.ID, SPacketSyncAffixData::new, handler -> handler
-      .server(SPacketSyncAffixData.AffixDataHandler.getInstance()::handle));
+      .client(SPacketSyncAffixData.AffixDataHandler.getInstance()::handle));
     registrar.play(SPacketSyncChampion.ID, SPacketSyncChampion::new, handler -> handler
-      .server(SPacketSyncChampion.ChampionHandler.getInstance()::handle));
+      .client(SPacketSyncChampion.ChampionHandler.getInstance()::handle));
   }
 }

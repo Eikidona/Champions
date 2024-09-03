@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class HUDHelper {
 
-  private static final ResourceLocation GUI_BAR_TEXTURES = new ResourceLocation(
+  private static final ResourceLocation GUI_BAR_TEXTURES = new ResourceLocation(Champions.MODID,
     "textures/gui/bars.png");
   private static final ResourceLocation GUI_STAR = new ResourceLocation(Champions.MODID,
     "textures/gui/staricon.png");
@@ -32,7 +32,7 @@ public class HUDHelper {
         Set<String> affixSet = clientChampion.getAffixes().stream().map(IAffix::getIdentifier)
           .collect(Collectors.toSet());
 
-        if (num > 0 || affixSet.size() > 0) {
+        if (num > 0 || !affixSet.isEmpty()) {
           Minecraft client = Minecraft.getInstance();
           int i = client.getWindow().getGuiScaledWidth();
           int k = i / 2 - 91;
