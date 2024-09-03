@@ -190,10 +190,11 @@ public class ChampionEggItem extends EggItem {
             !Objects.equals(blockpos, blockpos1) && direction == Direction.UP);
 
         if (entity instanceof LivingEntity livingEntity) {
-          IChampion champion = ChampionAttachment.getAttachment(livingEntity);
-          read(champion, itemstack);
-          world.addFreshEntity(entity);
-          itemstack.shrink(1);
+            ChampionAttachment.getAttachment(livingEntity).ifPresent(iChampion -> {
+              read(iChampion, itemstack);
+              world.addFreshEntity(entity);
+              itemstack.shrink(1);
+            });
         }
       });
     }
@@ -228,8 +229,7 @@ public class ChampionEggItem extends EggItem {
                 MobSpawnType.SPAWN_EGG, false, false);
 
             if (entity instanceof LivingEntity) {
-              IChampion champion = ChampionAttachment.getAttachment(entity);
-              read(champion, itemstack);
+              ChampionAttachment.getAttachment(entity).ifPresent(iChampion -> read(iChampion, itemstack));
               worldIn.addFreshEntity(entity);
 
               if (!playerIn.getAbilities().invulnerable) {

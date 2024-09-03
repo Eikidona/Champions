@@ -14,15 +14,16 @@ import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 import java.util.Set;
 
-public record EntityIsChampion(Integer minTier, Integer maxTier,
+public record EntityIsChampion(Optional<Integer> minTier, Optional<Integer> maxTier,
                                LootContext.EntityTarget target) implements LootItemCondition {
 
   public static final Codec<EntityIsChampion> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-    Codec.INT.fieldOf("minTier").forGetter(EntityIsChampion::minTier),
-    Codec.INT.fieldOf("maxTier").forGetter(EntityIsChampion::maxTier),
-    LootContext.EntityTarget.CODEC.fieldOf("target").forGetter(EntityIsChampion::target)
+    Codec.INT.optionalFieldOf("minTier").forGetter(EntityIsChampion::minTier),
+    Codec.INT.optionalFieldOf("maxTier").forGetter(EntityIsChampion::maxTier),
+    LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(EntityIsChampion::target)
   ).apply(instance, EntityIsChampion::new));
 
   @NotNull
@@ -40,8 +41,8 @@ public record EntityIsChampion(Integer minTier, Integer maxTier,
     } else {
       return ChampionAttachment.getAttachment(entity).map(champion -> {
         int tier = champion.getServer().getRank().map(Rank::getTier).orElse(0);
-        boolean aboveMin = minTier == null ? tier >= 1 : tier >= minTier;
-        boolean belowMax = maxTier == null || tier <= maxTier;
+        boolean aboveMin = minTier.map(integer -> tier >= integer).orElseGet(() -> tier >= 1);
+        boolean belowMax = maxTier.isEmpty() || tier <= maxTier.get();
         return aboveMin && belowMax;
       }).orElse(false);
     }
@@ -52,28 +53,4 @@ public record EntityIsChampion(Integer minTier, Integer maxTier,
   public LootItemConditionType getType() {
     return ChampionsRegistry.ENTITY_IS_CHAMPION.get();
   }
-
-  /*public static class Serializer
-    implements net.minecraft.world.level.storage.loot.Serializer<EntityIsChampion> {
-
-    @Override
-    public void serialize(final JsonObject json, final EntityIsChampion value,
-                          final JsonSerializationContext context) {
-      json.addProperty("maxTier", value.maxTier);
-      json.addProperty("minTier", value.minTier);
-      json.add("entity", context.serialize(value.target));
-    }
-
-    @Nonnull
-    @Override
-    public EntityIsChampion deserialize(
-      JsonObject json,
-      @Nonnull JsonDeserializationContext context) {
-      Integer minTier = json.has("minTier") ? GsonHelper.getAsInt(json, "minTier") : null;
-      Integer maxTier = json.has("maxTier") ? GsonHelper.getAsInt(json, "maxTier") : null;
-
-      return new EntityIsChampion(minTier, maxTier,
-        GsonHelper.getAsObject(json, "entity", context, LootContext.EntityTarget.class));
-    }
-  }*/
 }

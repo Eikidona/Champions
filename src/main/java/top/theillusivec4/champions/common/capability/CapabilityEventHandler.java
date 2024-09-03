@@ -63,8 +63,7 @@ public class CapabilityEventHandler {
           .ifPresent(newChampion -> {
             ChampionBuilder.copy(oldChampion, newChampion);
             IChampion.Server serverChampion = newChampion.getServer();
-            LivingEntity packetEntity = null;
-            PacketDistributor.TRACKING_ENTITY.with(packetEntity).send(
+            PacketDistributor.TRACKING_ENTITY.with(entity).send(
                 new SPacketSyncChampion(outcome.getId(),
                   serverChampion.getRank().map(Rank::getTier).orElse(0),
                   serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
@@ -78,11 +77,10 @@ public class CapabilityEventHandler {
     Entity entity = evt.getTarget();
     Player playerEntity = evt.getEntity();
 
-    if (playerEntity instanceof ServerPlayer) {
+    if (playerEntity instanceof ServerPlayer serverPlayer) {
       ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
-        ServerPlayer packetPlayer = null;
-        PacketDistributor.PLAYER.with(packetPlayer).send(
+        PacketDistributor.PLAYER.with(serverPlayer).send(
             new SPacketSyncChampion(entity.getId(),
               serverChampion.getRank().map(Rank::getTier).orElse(0),
               serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),

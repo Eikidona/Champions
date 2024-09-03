@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 
 public record SPacketSyncChampion(int entityId, int tier, int defaultColor, List<String> affixes) implements CustomPacketPayload {
 
-  public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "main");
+  public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "sync_champion");
 
   public SPacketSyncChampion(final FriendlyByteBuf buffer) {
     this(buffer.readInt(), buffer.readInt(), buffer.readInt(),  buffer.readList(FriendlyByteBuf::readUtf));

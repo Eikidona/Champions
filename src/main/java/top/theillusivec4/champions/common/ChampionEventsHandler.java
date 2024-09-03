@@ -9,8 +9,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.block.entity.BeaconBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
@@ -26,7 +24,6 @@ import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
-import top.theillusivec4.champions.common.stat.ChampionsStats;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
 import top.theillusivec4.champions.common.util.ChampionHelper;
 
@@ -208,7 +205,7 @@ public class ChampionEventsHandler {
           Entity source = evt.getSource().getEntity();
 
           if (source instanceof ServerPlayer player && !(source instanceof FakePlayer)) {
-            player.awardStat(ChampionsStats.CHAMPION_MOBS_KILLED);
+            player.awardStat(ChampionsRegistry.CHAMPION_MOBS_KILLED.getKey().registry());
             int messageTier = ChampionsConfig.deathMessageTier;
 
             if (messageTier > 0 && rank.getTier() >= messageTier) {
@@ -239,14 +236,14 @@ public class ChampionEventsHandler {
     ChampionHelper.clearBeacons();
   }
 
-  @SubscribeEvent
+  /*@SubscribeEvent
   public void onBeaconStart(AttachCapabilitiesEvent<BlockEntity> evt) {
     BlockEntity blockEntity = evt.getObject();
 
     if (blockEntity instanceof BeaconBlockEntity) {
       ChampionHelper.addBeacon(blockEntity.getBlockPos());
     }
-  }
+  }*/
 
   @SubscribeEvent
   public void onLivingHeal(LivingHealEvent evt) {
