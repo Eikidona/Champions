@@ -21,10 +21,7 @@ package top.theillusivec4.champions;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -57,13 +54,8 @@ import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.integration.gamestages.GameStagesPlugin;
 import top.theillusivec4.champions.common.integration.theoneprobe.TheOneProbePlugin;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
-import top.theillusivec4.champions.common.loot.EntityIsChampion;
-import top.theillusivec4.champions.common.loot.LootItemChampionPropertyCondition;
-import top.theillusivec4.champions.common.network.SPacketSyncAffixData;
-import top.theillusivec4.champions.common.network.SPacketSyncChampion;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
-import top.theillusivec4.champions.common.registry.RegistryReference;
 import top.theillusivec4.champions.common.stat.ChampionsStats;
 import top.theillusivec4.champions.common.util.EntityManager;
 import top.theillusivec4.champions.server.command.ChampionSelectorOptions;
@@ -129,11 +121,6 @@ public class Champions {
     evt.enqueueWork(() -> {
       ChampionsStats.setup();
       ChampionSelectorOptions.setup();
-      Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE,
-        new ResourceLocation(RegistryReference.IS_CHAMPION), EntityIsChampion.type);
-      Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE,
-        new ResourceLocation(RegistryReference.CHAMPION_PROPERTIES),
-        LootItemChampionPropertyCondition.INSTANCE);
       DispenseItemBehavior dispenseBehavior = (source, stack) -> {
         Direction direction = source.state().getValue(DispenserBlock.FACING);
         Optional<EntityType<?>> entityType = ChampionEggItem.getType(stack);

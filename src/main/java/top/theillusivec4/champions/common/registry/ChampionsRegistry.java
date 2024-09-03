@@ -11,6 +11,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
@@ -23,6 +24,8 @@ import top.theillusivec4.champions.common.entity.ArcticBulletEntity;
 import top.theillusivec4.champions.common.entity.EnkindlingBulletEntity;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
 import top.theillusivec4.champions.common.loot.ChampionLootModifier;
+import top.theillusivec4.champions.common.loot.ChampionPropertyCondition;
+import top.theillusivec4.champions.common.loot.EntityIsChampion;
 import top.theillusivec4.champions.common.potion.ParalysisEffect;
 import top.theillusivec4.champions.common.potion.WoundEffect;
 import top.theillusivec4.champions.server.command.AffixArgumentInfo;
@@ -42,6 +45,9 @@ public class ChampionsRegistry {
   private static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPES = DeferredRegister.create(BuiltInRegistries.COMMAND_ARGUMENT_TYPE, Champions.MODID);
   private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Champions.MODID);
   public static final DeferredHolder<AttachmentType<?>, AttachmentType<ChampionAttachment.Provider>> CHAMPION_ATTACHMENT = ATTACHMENTS.register("champion_attachment", () -> AttachmentType.serializable(entity -> ChampionAttachment.createProvider((LivingEntity) entity)).build());
+  private static final DeferredRegister<LootItemConditionType> LOOT_ITEM_CONDITION_TYPE = DeferredRegister.create(BuiltInRegistries.LOOT_CONDITION_TYPE, Champions.MODID);
+  public static DeferredHolder<LootItemConditionType, LootItemConditionType> ENTITY_IS_CHAMPION;
+  public static DeferredHolder<LootItemConditionType, LootItemConditionType> CHAMPION_PROPERTIES;
   public static DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<ChampionLootModifier>> CHAMPION_LOOT;
   public static DeferredHolder<EntityType<?>, EntityType<EnkindlingBulletEntity>> ENKINDLING_BULLET;
   public static DeferredHolder<EntityType<?>, EntityType<ArcticBulletEntity>> ARCTIC_BULLET;
@@ -84,12 +90,19 @@ public class ChampionsRegistry {
     ENTITY_TYPE.register(bus);
   }
 
+  public static void registerLootItemConditions(IEventBus bus) {
+    ENTITY_IS_CHAMPION = LOOT_ITEM_CONDITION_TYPE.register("entity_champion", () -> new LootItemConditionType(EntityIsChampion.CODEC));
+    CHAMPION_PROPERTIES = LOOT_ITEM_CONDITION_TYPE.register("champion_properties", () -> new LootItemConditionType(ChampionPropertyCondition.CODEC));
+    LOOT_ITEM_CONDITION_TYPE.register(bus);
+  }
+
   public static void register(IEventBus bus) {
     registerItems(bus);
     registerParticles(bus);
     registerMobEffects(bus);
     registerEntityTypes(bus);
     registerLootModifiers(bus);
+    registerLootItemConditions(bus);
     registerArgumentType(bus);
   }
 
