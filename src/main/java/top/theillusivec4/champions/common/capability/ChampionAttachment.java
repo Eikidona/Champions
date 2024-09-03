@@ -133,7 +133,7 @@ public class ChampionAttachment {
       }
 
       @Override
-      public void setAffixes(List<String> affixes) {
+      public void setAffixes(Set<String> affixes) {
         this.affixes.clear();
 
         for (String affix : affixes) {
