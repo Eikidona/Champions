@@ -24,7 +24,6 @@ import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
-import top.theillusivec4.champions.common.stat.ChampionsStats;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
 import top.theillusivec4.champions.common.util.ChampionHelper;
 
@@ -206,7 +205,7 @@ public class ChampionEventsHandler {
           Entity source = evt.getSource().getEntity();
 
           if (source instanceof ServerPlayer player && !(source instanceof FakePlayer)) {
-            player.awardStat(ChampionsStats.CHAMPION_MOBS_KILLED);
+            player.awardStat(ChampionsRegistry.CHAMPION_MOBS_KILLED.getKey().registry());
             int messageTier = ChampionsConfig.deathMessageTier;
 
             if (messageTier > 0 && rank.getTier() >= messageTier) {

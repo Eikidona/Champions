@@ -39,6 +39,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
@@ -57,7 +58,6 @@ import top.theillusivec4.champions.common.network.SPacketSyncAffixData;
 import top.theillusivec4.champions.common.network.SPacketSyncChampion;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
-import top.theillusivec4.champions.common.stat.ChampionsStats;
 import top.theillusivec4.champions.common.util.EntityManager;
 import top.theillusivec4.champions.server.command.ChampionSelectorOptions;
 import top.theillusivec4.champions.server.command.ChampionsCommand;
@@ -94,7 +94,7 @@ public class Champions {
     }
     eventBus.addListener(this::config);
     eventBus.addListener(this::setup);
-    eventBus.addListener(this::registerCommands);
+    NeoForge.EVENT_BUS.addListener(this::registerCommands);
     ChampionsRegistry.register(eventBus);
     scalingHealthLoaded = ModList.get().isLoaded("scalinghealth");
   }
@@ -119,7 +119,6 @@ public class Champions {
     ChampionAttachment.register();
     AffixManager.register();
     evt.enqueueWork(() -> {
-      ChampionsStats.setup();
       ChampionSelectorOptions.setup();
       DispenseItemBehavior dispenseBehavior = (source, stack) -> {
         Direction direction = source.state().getValue(DispenserBlock.FACING);
