@@ -157,7 +157,7 @@ public class Champions {
         IConfigSpec<?> spec = evt.getConfig().getSpec();
         CommentedConfig commentedConfig = evt.getConfig().getConfigData();
 
-        if (evt instanceof ModConfigEvent.Reloading) {
+        if (evt instanceof ModConfigEvent.Loading) {
           ChampionsConfig.bake();
           // 重建管理器
           if (spec == ChampionsConfig.RANKS_SPEC) {
