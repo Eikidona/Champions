@@ -18,6 +18,7 @@ import top.theillusivec4.champions.common.config.ConfigEnums.LootSource;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
 import top.theillusivec4.champions.common.config.EntitiesConfig.EntityConfig;
 import top.theillusivec4.champions.common.config.RanksConfig.RankConfig;
+import top.theillusivec4.champions.common.integration.gamestages.GameStagesPlugin;
 import top.theillusivec4.champions.common.integration.scalinghealth.ScalingHealthPlugin;
 
 import java.util.ArrayList;
@@ -257,6 +258,11 @@ public class ChampionsConfig {
     if (Champions.scalingHealthLoaded) {
       scalingHealthSpawnModifiers = SERVER.scalingHealthSpawnModifiers.get();
       ScalingHealthPlugin.buildModifiers();
+    }
+    if (Champions.gameStagesLoaded) {
+      entityStages = STAGE.entityStages.get();
+      tierStages = STAGE.tierStages.get();
+      GameStagesPlugin.buildStages();
     }
   }
 
