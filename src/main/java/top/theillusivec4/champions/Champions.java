@@ -119,6 +119,7 @@ public class Champions {
     ChampionAttachment.register();
     AffixManager.register();
     evt.enqueueWork(() -> {
+      ChampionsRegistry.registerFormatter();
       ChampionSelectorOptions.setup();
       DispenseItemBehavior dispenseBehavior = (source, stack) -> {
         Direction direction = source.state().getValue(DispenserBlock.FACING);

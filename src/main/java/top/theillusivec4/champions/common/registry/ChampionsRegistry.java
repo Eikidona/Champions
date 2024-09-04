@@ -6,9 +6,9 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.stats.StatType;
+import net.minecraft.stats.StatFormatter;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,12 +34,16 @@ import top.theillusivec4.champions.common.potion.WoundEffect;
 import top.theillusivec4.champions.server.command.AffixArgumentInfo;
 import top.theillusivec4.champions.server.command.AffixArgumentType;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class ChampionsRegistry {
 
   public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIER_SERIALIZERS =
     DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, Champions.MODID);
   private static final DeferredRegister<Item> EGG = DeferredRegister.create(BuiltInRegistries.ITEM, Champions.MODID);
+
   // RANK
   private static final DeferredRegister<ParticleType<?>> PARTICLE_TYPE = DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, Champions.MODID);
   // PARALYSIS
@@ -48,9 +52,10 @@ public class ChampionsRegistry {
   private static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPES = DeferredRegister.create(BuiltInRegistries.COMMAND_ARGUMENT_TYPE, Champions.MODID);
   private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Champions.MODID);
   private static final DeferredRegister<LootItemConditionType> LOOT_ITEM_CONDITION_TYPE = DeferredRegister.create(BuiltInRegistries.LOOT_CONDITION_TYPE, Champions.MODID);
-  private static final DeferredRegister<StatType<?>> CHAMPIONS_STATS = DeferredRegister.create(BuiltInRegistries.STAT_TYPE, Champions.MODID);
+  private static final DeferredRegister<ResourceLocation> CHAMPIONS_STATS = DeferredRegister.create(BuiltInRegistries.CUSTOM_STAT, Champions.MODID);
+  private static final Map<ResourceLocation, StatFormatter> CUSTOM_STAT_FORMATTERS = new HashMap<>();
   public static DeferredHolder<AttachmentType<?>, AttachmentType<ChampionAttachment.Provider>> CHAMPION_ATTACHMENT;
-  public static DeferredHolder<StatType<?>, StatType<ResourceLocation>> CHAMPION_MOBS_KILLED;
+  public static DeferredHolder<ResourceLocation, ResourceLocation> CHAMPION_MOBS_KILLED;
   public static DeferredHolder<LootItemConditionType, LootItemConditionType> ENTITY_IS_CHAMPION;
   public static DeferredHolder<LootItemConditionType, LootItemConditionType> CHAMPION_PROPERTIES;
   public static DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<ChampionLootModifier>> CHAMPION_LOOT;
@@ -102,13 +107,20 @@ public class ChampionsRegistry {
   }
 
   public static void registerCustomStats(IEventBus bus) {
-    CHAMPION_MOBS_KILLED = CHAMPIONS_STATS.register("champion_mobs_killed", () -> new StatType<>(BuiltInRegistries.CUSTOM_STAT, Component.translatable("stat.champions.champion_mobs_killed")));
+    CHAMPION_MOBS_KILLED = makeCustomStat("champion_mobs_killed", StatFormatter.DEFAULT);
     CHAMPIONS_STATS.register(bus);
   }
 
   public static void registerAttachment(IEventBus bus) {
     CHAMPION_ATTACHMENT = ATTACHMENTS.register("champion_attachment", () -> AttachmentType.serializable(entity -> ChampionAttachment.createProvider((LivingEntity) entity)).build());
     ATTACHMENTS.register(bus);
+  }
+
+  private static DeferredHolder<ResourceLocation, ResourceLocation> makeCustomStat(String key, StatFormatter formatter) {
+    ResourceLocation resourceLocation = new ResourceLocation(CHAMPIONS_STATS.getNamespace(), key);
+    var holder = CHAMPIONS_STATS.register(key, () -> resourceLocation);
+    CUSTOM_STAT_FORMATTERS.put(resourceLocation, formatter);
+    return holder;
   }
 
   public static void register(IEventBus bus) {
@@ -122,5 +134,7 @@ public class ChampionsRegistry {
     registerCustomStats(bus);
     registerAttachment(bus);
   }
-
+  public static void registerFormatter() {
+    CUSTOM_STAT_FORMATTERS.forEach(Stats.CUSTOM::get);
+  }
 }

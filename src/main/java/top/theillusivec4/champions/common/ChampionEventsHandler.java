@@ -205,7 +205,7 @@ public class ChampionEventsHandler {
           Entity source = evt.getSource().getEntity();
 
           if (source instanceof ServerPlayer player && !(source instanceof FakePlayer)) {
-            player.awardStat(ChampionsRegistry.CHAMPION_MOBS_KILLED.getKey().registry());
+            player.awardStat(ChampionsRegistry.CHAMPION_MOBS_KILLED.get());
             int messageTier = ChampionsConfig.deathMessageTier;
 
             if (messageTier > 0 && rank.getTier() >= messageTier) {
