@@ -67,7 +67,7 @@ public class CapabilityEventHandler {
                 new SPacketSyncChampion(outcome.getId(),
                   serverChampion.getRank().map(Rank::getTier).orElse(0),
                   serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
-                  serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toList())));
+                  serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toSet())));
           }));
     }
   }
@@ -84,7 +84,7 @@ public class CapabilityEventHandler {
             new SPacketSyncChampion(entity.getId(),
               serverChampion.getRank().map(Rank::getTier).orElse(0),
               serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
-              serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toList())));
+              serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toSet())));
       });
     }
   }
