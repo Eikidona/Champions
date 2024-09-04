@@ -110,7 +110,7 @@ public class Champions {
   private static void createServerConfig(ForgeConfigSpec spec, String suffix) {
     String fileName = "champions-" + suffix + ".toml";
     ModLoadingContext.get().registerConfig(Type.SERVER, spec, fileName);
-    File defaults = FMLPaths.GAMEDIR.get().resolve("/defaultconfigs/" + fileName).toFile();
+    File defaults = FMLPaths.GAMEDIR.get().resolve("defaultconfigs").resolve(fileName).toFile();
 
     if (!defaults.exists()) {
       try {
@@ -176,30 +176,24 @@ public class Champions {
         IConfigSpec<?> spec = evt.getConfig().getSpec();
         CommentedConfig commentedConfig = evt.getConfig().getConfigData();
 
-        if (spec == ChampionsConfig.RANKS_SPEC) {
-          ChampionsConfig.transformRanks(commentedConfig);
-        } else if (spec == ChampionsConfig.AFFIXES_SPEC) {
-          ChampionsConfig.transformAffixes(commentedConfig);
-        } else if (spec == ChampionsConfig.ENTITIES_SPEC) {
-          ChampionsConfig.transformEntities(commentedConfig);
-        }
-
         if (evt instanceof ModConfigEvent.Loading) {
 
-
+          ChampionsConfig.bake();
           // 重建管理器
           if (spec == ChampionsConfig.RANKS_SPEC) {
+            ChampionsConfig.transformRanks(commentedConfig);
             RankManager.buildRanks();
           } else if (spec == ChampionsConfig.AFFIXES_SPEC) {
+            ChampionsConfig.transformAffixes(commentedConfig);
             AffixManager.buildAffixSettings();
           } else if (spec == ChampionsConfig.ENTITIES_SPEC) {
+            ChampionsConfig.transformEntities(commentedConfig);
             EntityManager.buildEntitySettings();
           } else if (spec == ChampionsConfig.STAGE_SPEC && Champions.gameStagesLoaded) {
             ChampionsConfig.entityStages = ChampionsConfig.STAGE.entityStages.get();
             ChampionsConfig.tierStages = ChampionsConfig.STAGE.tierStages.get();
             GameStagesPlugin.buildStages();
           }
-          ChampionsConfig.bake();
 
         }
       }
