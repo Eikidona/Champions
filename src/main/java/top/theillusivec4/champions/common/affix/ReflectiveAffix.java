@@ -1,5 +1,6 @@
 package top.theillusivec4.champions.common.affix;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
@@ -16,7 +17,7 @@ import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 
 public class ReflectiveAffix extends BasicAffix {
-  private static final ResourceKey<DamageType> REFLECTION_DAMAGE = ResourceKey.create(ResourceKey.createRegistryKey(new ResourceLocation(Champions.MODID, "reflection")), new ResourceLocation(Champions.MODID, "reflection"));
+  private static final ResourceKey<DamageType> REFLECTION_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Champions.MODID, "reflection"));
 
   public ReflectiveAffix() {
     super("reflective", AffixCategory.OFFENSE, true);
@@ -25,6 +26,7 @@ public class ReflectiveAffix extends BasicAffix {
   @SubscribeEvent
   public void onDamageEvent(LivingDamageEvent evt) {
     if (!ChampionsConfig.reflectiveLethal && evt.getSource().is(REFLECTION_DAMAGE)) {
+      Champions.LOGGER.debug(REFLECTION_DAMAGE.toString());
       LivingEntity living = evt.getEntity();
       float currentDamage = evt.getAmount();
 
