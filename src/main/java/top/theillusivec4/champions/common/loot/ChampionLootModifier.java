@@ -1,8 +1,10 @@
 package top.theillusivec4.champions.common.loot;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -33,7 +35,8 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public class ChampionLootModifier extends LootModifier {
-  public static final Codec<ChampionLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, ChampionLootModifier::new));
+  public static final MapCodec<ChampionLootModifier> CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, ChampionLootModifier::new));
+  private static final ResourceKey<LootTable> ChampionLoot = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(Champions.MODID, "champion_loot"));
   private static final ThreadLocal<Boolean> IS_PROCESSING = ThreadLocal.withInitial(() -> false);
 
   public ChampionLootModifier(LootItemCondition[] conditions) {
@@ -70,14 +73,14 @@ public class ChampionLootModifier extends LootModifier {
         ServerLevel serverWorld = (ServerLevel) entity.level();
 
         if (ChampionsConfig.lootSource != ConfigEnums.LootSource.CONFIG) {
-          LootTable lootTable = serverWorld.getServer().getLootData()
-            .getLootTable(new ResourceLocation(Champions.MODID, "champion_loot"));
+          LootTable lootTable = serverWorld.getServer().reloadableRegistries()
+            .getLootTable(ChampionLoot);
           LootParams.Builder lootParamsBuilder = new LootParams.Builder(serverWorld)
             .withParameter(LootContextParams.THIS_ENTITY, entity)
             .withParameter(LootContextParams.ORIGIN, entity.position())
             .withParameter(LootContextParams.DAMAGE_SOURCE, damageSource)
-            .withOptionalParameter(LootContextParams.KILLER_ENTITY, damageSource.getEntity())
-            .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, damageSource.getDirectEntity())
+            .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, damageSource.getEntity())
+            .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, damageSource.getDirectEntity())
             .withLuck(context.getLuck());
 
           if (entity instanceof LivingEntity livingEntity) {
@@ -112,7 +115,7 @@ public class ChampionLootModifier extends LootModifier {
 
   @Override
   @NotNull
-  public Codec<? extends IGlobalLootModifier> codec() {
+  public MapCodec<? extends IGlobalLootModifier> codec() {
     return CODEC;
   }
 

@@ -1,6 +1,7 @@
 package top.theillusivec4.champions.common.rank;
 
 import com.google.common.collect.ImmutableSortedMap;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
@@ -13,6 +14,7 @@ import top.theillusivec4.champions.common.config.RanksConfig.RankConfig;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.TreeMap;
 
 public class RankManager {
@@ -100,13 +102,13 @@ public class RankManager {
     } else {
       growthFactor = rank.growthFactor;
     }
-    List<Tuple<MobEffect, Integer>> effects = new ArrayList<>();
+    List<Tuple<Holder<MobEffect>, Integer>> effects = new ArrayList<>();
 
     rank.effects.forEach(effect -> {
       String[] parsed = effect.split(";");
-      MobEffect found = BuiltInRegistries.MOB_EFFECT.get(new ResourceLocation(parsed[0]));
+      Optional<Holder.Reference<MobEffect>> found = BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.parse(parsed[0]));
 
-      if (found != null) {
+      if (found.isPresent()) {
         int amplifier = 0;
 
         if (parsed.length > 1) {
@@ -117,7 +119,7 @@ public class RankManager {
               .error("Found invalid amplifier value for effect, setting to default 1");
           }
         }
-        effects.add(new Tuple<>(found, amplifier));
+        effects.add(new Tuple<>(found.get(), amplifier));
       }
     });
 

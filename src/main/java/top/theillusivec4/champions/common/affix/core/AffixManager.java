@@ -75,7 +75,7 @@ public class AffixManager {
       if (mobList != null) {
 
         for (String s : mobList) {
-          EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(s));
+          EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(s));
 
           if (type != null) {
             this.mobList.add(type);

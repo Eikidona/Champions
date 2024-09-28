@@ -26,7 +26,7 @@ public class ShieldingAffix extends BasicAffix {
     RandomSource random = livingEntity.getRandom();
 
     if (shielding.mode) {
-      livingEntity.level().addParticle(ParticleTypes.ENTITY_EFFECT,
+      livingEntity.level().addParticle(() -> ParticleTypes.ENTITY_EFFECT,
         livingEntity.position().x + (random.nextFloat() - 0.5D) * livingEntity.getBbWidth(),
         livingEntity.position().y + random.nextFloat() * livingEntity.getBbHeight(),
         livingEntity.position().z + (random.nextFloat() - 0.5D) * livingEntity.getBbWidth(),

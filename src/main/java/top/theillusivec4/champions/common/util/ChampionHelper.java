@@ -41,7 +41,7 @@ public class ChampionHelper {
   }
 
   private static boolean isValidEntity(final LivingEntity livingEntity) {
-    ResourceLocation rl = livingEntity.getType().getDefaultLootTable();
+    ResourceLocation rl = livingEntity.getType().getDefaultLootTable().location();
 
     if (rl == null) {
       return false;

@@ -20,8 +20,8 @@ public class ParalyzingAffix extends BasicAffix {
       float amount) {
 
     if (target.getRandom().nextFloat() < ChampionsConfig.paralyzingChance && !target.hasEffect(
-        ChampionsRegistry.PARALYSIS_EFFECT_TYPE.get())) {
-      target.addEffect(new MobEffectInstance(ChampionsRegistry.PARALYSIS_EFFECT_TYPE.get(), 60, 0));
+        ChampionsRegistry.PARALYSIS_EFFECT_TYPE )) {
+      target.addEffect(new MobEffectInstance(ChampionsRegistry.PARALYSIS_EFFECT_TYPE, 60, 0));
     }
     return true;
   }

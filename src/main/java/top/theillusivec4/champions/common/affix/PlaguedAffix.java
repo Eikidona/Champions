@@ -29,14 +29,14 @@ public class PlaguedAffix extends BasicAffix {
       float randomRadiusSection = Mth.sqrt(livingEntity.getRandom().nextFloat()) * radius;
       float f8 = Mth.cos(f6) * randomRadiusSection;
       float f9 = Mth.sin(f6) * randomRadiusSection;
-      int l1 = ChampionsConfig.plaguedEffect.getEffect().getColor();
+      int l1 = ChampionsConfig.plaguedEffect.getEffect().value().getColor();
       int i2 = l1 >> 16 & 255;
       int j2 = l1 >> 8 & 255;
       int j1 = l1 & 255;
       livingEntity.level()
-          .addParticle(ParticleTypes.ENTITY_EFFECT, livingEntity.position().x + (double) f8,
-              livingEntity.position().y, livingEntity.position().z + (double) f9,
-              ((float) i2 / 255.0F), ((float) j2 / 255.0F), ((float) j1 / 255.0F));
+        .addParticle(() -> ParticleTypes.ENTITY_EFFECT, livingEntity.position().x + (double) f8,
+          livingEntity.position().y, livingEntity.position().z + (double) f9,
+          ((float) i2 / 255.0F), ((float) j2 / 255.0F), ((float) j1 / 255.0F));
     }
   }
 
@@ -46,16 +46,16 @@ public class PlaguedAffix extends BasicAffix {
 
     if (livingEntity.tickCount % 10 == 0) {
       List<Entity> list = livingEntity.level().getEntities(livingEntity,
-          livingEntity.getBoundingBox().inflate(ChampionsConfig.plaguedRange),
-          entity -> entity instanceof LivingEntity && BasicAffix
-              .canTarget(livingEntity, (LivingEntity) entity, true));
+        livingEntity.getBoundingBox().inflate(ChampionsConfig.plaguedRange),
+        entity -> entity instanceof LivingEntity && BasicAffix
+          .canTarget(livingEntity, (LivingEntity) entity, true));
       list.forEach(entity -> {
 
         if (entity instanceof LivingEntity) {
           ((LivingEntity) entity).addEffect(
-              new MobEffectInstance(ChampionsConfig.plaguedEffect.getEffect(),
-                  ChampionsConfig.plaguedEffect.getDuration(),
-                  ChampionsConfig.plaguedEffect.getAmplifier()));
+            new MobEffectInstance(ChampionsConfig.plaguedEffect.getEffect(),
+              ChampionsConfig.plaguedEffect.getDuration(),
+              ChampionsConfig.plaguedEffect.getAmplifier()));
         }
       });
       livingEntity.removeEffect(ChampionsConfig.plaguedEffect.getEffect());
@@ -66,7 +66,7 @@ public class PlaguedAffix extends BasicAffix {
   public boolean onAttack(IChampion champion, LivingEntity target, DamageSource source,
                           float amount) {
     target.addEffect(new MobEffectInstance(ChampionsConfig.plaguedEffect.getEffect(),
-        ChampionsConfig.plaguedEffect.getDuration(), ChampionsConfig.plaguedEffect.getAmplifier()));
+      ChampionsConfig.plaguedEffect.getDuration(), ChampionsConfig.plaguedEffect.getAmplifier()));
     return true;
   }
 }

@@ -3,21 +3,23 @@ package top.theillusivec4.champions.common;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Tuple;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityAttachment;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
+import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.client.ChampionsOverlay;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
@@ -27,7 +29,6 @@ import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
 import top.theillusivec4.champions.common.util.ChampionHelper;
 
-import java.util.List;
 import java.util.Optional;
 
 public class ChampionEventsHandler {
@@ -76,7 +77,7 @@ public class ChampionEventsHandler {
         }
         serverChampion.getAffixes().forEach(affix -> affix.onSpawn(champion));
         serverChampion.getRank().ifPresent(rank -> {
-          List<Tuple<MobEffect, Integer>> effects = rank.getEffects();
+          var effects = rank.getEffects();
           effects.forEach(effectPair -> champion.getLivingEntity()
             .addEffect(new MobEffectInstance(effectPair.getA(), 200, effectPair.getB())));
         });
@@ -85,46 +86,46 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public void onLivingUpdate(LivingEvent.LivingTickEvent evt) {
-    LivingEntity livingEntity = evt.getEntity();
+  public void onLivingUpdate(EntityTickEvent.Pre evt) {
+    if (evt.getEntity() instanceof LivingEntity livingEntity) {
+      if (livingEntity.level().isClientSide()) {
+        ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
+          IChampion.Client clientChampion = champion.getClient();
+          clientChampion.getAffixes().forEach(affix -> affix.onClientUpdate(champion));
+          clientChampion.getRank().ifPresent(rank -> {
+            if (ChampionsConfig.showParticles && rank.getA() > 0) {
+              int color = rank.getB();
+              float r = (float) ((color >> 16) & 0xFF) / 255f;
+              float g = (float) ((color >> 8) & 0xFF) / 255f;
+              float b = (float) ((color) & 0xFF) / 255f;
 
-    if (livingEntity.level().isClientSide()) {
-      ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
-        IChampion.Client clientChampion = champion.getClient();
-        clientChampion.getAffixes().forEach(affix -> affix.onClientUpdate(champion));
-        clientChampion.getRank().ifPresent(rank -> {
-          if (ChampionsConfig.showParticles && rank.getA() > 0) {
-            int color = rank.getB();
-            float r = (float) ((color >> 16) & 0xFF) / 255f;
-            float g = (float) ((color >> 8) & 0xFF) / 255f;
-            float b = (float) ((color) & 0xFF) / 255f;
-
-            livingEntity.level().addParticle(ChampionsRegistry.RANK_PARTICLE_TYPE.get(),
-              livingEntity.position().x + (livingEntity.getRandom().nextDouble() - 0.5D) *
-                (double) livingEntity.getBbWidth(), livingEntity.position().y +
-                livingEntity.getRandom().nextDouble() * livingEntity.getBbHeight(),
-              livingEntity.position().z + (livingEntity.getRandom().nextDouble() - 0.5D) *
-                (double) livingEntity.getBbWidth(), r, g, b);
-          }
+              livingEntity.level().addParticle(ChampionsRegistry.RANK_PARTICLE_TYPE.get(),
+                livingEntity.position().x + (livingEntity.getRandom().nextDouble() - 0.5D) *
+                  (double) livingEntity.getBbWidth(), livingEntity.position().y +
+                  livingEntity.getRandom().nextDouble() * livingEntity.getBbHeight(),
+                livingEntity.position().z + (livingEntity.getRandom().nextDouble() - 0.5D) *
+                  (double) livingEntity.getBbWidth(), r, g, b);
+            }
+          });
         });
-      });
-    } else if (livingEntity.tickCount % 10 == 0) {
-      ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
-        IChampion.Server serverChampion = champion.getServer();
-        serverChampion.getAffixes().forEach(affix -> affix.onServerUpdate(champion));
-        serverChampion.getRank().ifPresent(rank -> {
-          if (livingEntity.tickCount % 4 == 0) {
-            List<Tuple<MobEffect, Integer>> effects = rank.getEffects();
-            effects.forEach(effectPair -> livingEntity.addEffect(
-              new MobEffectInstance(effectPair.getA(), 100, effectPair.getB())));
-          }
+      } else if (livingEntity.tickCount % 10 == 0) {
+        ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
+          IChampion.Server serverChampion = champion.getServer();
+          serverChampion.getAffixes().forEach(affix -> affix.onServerUpdate(champion));
+          serverChampion.getRank().ifPresent(rank -> {
+            if (livingEntity.tickCount % 4 == 0) {
+              var effects = rank.getEffects();
+              effects.forEach(effectPair -> livingEntity.addEffect(
+                new MobEffectInstance(effectPair.getA(), 100, effectPair.getB())));
+            }
+          });
         });
-      });
+      }
     }
   }
 
   @SubscribeEvent
-  public void onLivingAttack(LivingAttackEvent evt) {
+  public void onLivingAttack(LivingIncomingDamageEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (livingEntity.level().isClientSide()) {
@@ -156,7 +157,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public void onLivingHurt(LivingHurtEvent evt) {
+  public void onLivingHurt(LivingIncomingDamageEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (!livingEntity.level().isClientSide()) {
@@ -171,17 +172,17 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent
-  public void onLivingDamage(LivingDamageEvent evt) {
+  public void onLivingDamage(LivingDamageEvent.Pre evt) {
     LivingEntity livingEntity = evt.getEntity();
 
     if (!livingEntity.level().isClientSide()) {
-      float[] amounts = new float[]{evt.getAmount(), evt.getAmount()};
+      float[] amounts = new float[]{evt.getOriginalDamage(), evt.getOriginalDamage()};
       ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
         serverChampion.getAffixes().forEach(affix -> amounts[1] = affix
           .onDamage(champion, evt.getSource(), amounts[0], amounts[1]));
       });
-      evt.setAmount(amounts[1]);
+      evt.setNewDamage(amounts[1]);
     }
   }
 

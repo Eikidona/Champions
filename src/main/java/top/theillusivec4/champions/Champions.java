@@ -41,8 +41,8 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -81,15 +81,15 @@ public class Champions {
 
     eventBus.addListener(this::enqueueIMC);
     eventBus.addListener(this::registerNetwork);
-    ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
-    ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
-    ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
+    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
+    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
+    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
     createServerConfig(ChampionsConfig.RANKS_SPEC, "ranks");
     createServerConfig(ChampionsConfig.AFFIXES_SPEC, "affixes");
     createServerConfig(ChampionsConfig.ENTITIES_SPEC, "entities");
 
     if (gameStagesLoaded) {
-      ModLoadingContext.get()
+      ModLoadingContext.get().getActiveContainer()
         .registerConfig(ModConfig.Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
     }
     eventBus.addListener(this::config);
@@ -101,7 +101,7 @@ public class Champions {
 
   private static void createServerConfig(ModConfigSpec spec, String suffix) {
     String fileName = "champions-" + suffix + ".toml";
-    ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, spec, fileName);
+    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.SERVER, spec, fileName);
     File defaults = FMLPaths.GAMEDIR.get().resolve("defaultconfigs").resolve(fileName).toFile();
 
     if (!defaults.exists()) {
@@ -125,7 +125,7 @@ public class Champions {
         Direction direction = source.state().getValue(DispenserBlock.FACING);
         Optional<EntityType<?>> entityType = ChampionEggItem.getType(stack);
         entityType.ifPresent(type -> {
-          Entity entity = type.create(source.level(), stack.getTag(), null,
+          Entity entity = type.create(source.level(), (s) -> stack.getTags(),
             source.pos().relative(direction), MobSpawnType.DISPENSER, true,
             direction != Direction.UP);
 
@@ -155,8 +155,8 @@ public class Champions {
     if (evt.getConfig().getType() == ModConfig.Type.SERVER) {
       synchronized (this) {
 
-        IConfigSpec<?> spec = evt.getConfig().getSpec();
-        CommentedConfig commentedConfig = evt.getConfig().getConfigData();
+        IConfigSpec spec = evt.getConfig().getSpec();
+        CommentedConfig commentedConfig = evt.getConfig().getLoadedConfig().config();
 
         if (evt instanceof ModConfigEvent.Loading) {
           ChampionsConfig.bake();
@@ -192,11 +192,10 @@ public class Champions {
     }
   }
 
-  private void registerNetwork(final RegisterPayloadHandlerEvent event) {
-    final IPayloadRegistrar registrar = event.registrar("champions");
-    registrar.play(SPacketSyncAffixData.ID, SPacketSyncAffixData::new, handler -> handler
-      .client(SPacketSyncAffixData.AffixDataHandler.getInstance()::handle));
-    registrar.play(SPacketSyncChampion.ID, SPacketSyncChampion::new, handler -> handler
-      .client(SPacketSyncChampion.ChampionHandler.getInstance()::handle));
+  private void registerNetwork(final RegisterPayloadHandlersEvent event) {
+    final PayloadRegistrar registrar = event.registrar("champions");
+    registrar.playToClient(SPacketSyncAffixData.TYPE, SPacketSyncAffixData.STREAM_CODEC, SPacketSyncAffixData::handle);
+    registrar.playToClient(SPacketSyncChampion.TYPE, SPacketSyncChampion.STREAM_CODEC,
+      SPacketSyncChampion::handle);
   }
 }

@@ -2,6 +2,7 @@ package top.theillusivec4.champions.common.loot;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -20,7 +21,7 @@ import java.util.Set;
 public record EntityIsChampion(Optional<Integer> minTier, Optional<Integer> maxTier,
                                LootContext.EntityTarget target) implements LootItemCondition {
 
-  public static final Codec<EntityIsChampion> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+  public static final MapCodec<EntityIsChampion> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
     Codec.INT.optionalFieldOf("minTier").forGetter(EntityIsChampion::minTier),
     Codec.INT.optionalFieldOf("maxTier").forGetter(EntityIsChampion::maxTier),
     LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(EntityIsChampion::target)

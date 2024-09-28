@@ -59,7 +59,7 @@ public class ChampionEggItem extends EggItem {
 
   public static Optional<EntityType<?>> getType(ItemStack stack) {
 
-    if (stack.hasTag()) {
+    if (stack.getTags().toList().isEmpty()) {
       CompoundTag entityTag = stack.getTagElement(ENTITY_TAG);
 
       if (entityTag != null) {
@@ -185,7 +185,7 @@ public class ChampionEggItem extends EggItem {
       Optional<EntityType<?>> entitytype = getType(itemstack);
       entitytype.ifPresent(type -> {
         Entity entity = type
-          .create((ServerLevel) world, itemstack.getTag(), null, blockpos1,
+          .create((ServerLevel) world, null, blockpos1,
             MobSpawnType.SPAWN_EGG, true,
             !Objects.equals(blockpos, blockpos1) && direction == Direction.UP);
 

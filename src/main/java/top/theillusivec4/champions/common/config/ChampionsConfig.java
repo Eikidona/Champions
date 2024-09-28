@@ -3,6 +3,7 @@ package top.theillusivec4.champions.common.config;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.conversion.ObjectConverter;
 import com.google.common.collect.Lists;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -20,6 +21,7 @@ import top.theillusivec4.champions.common.config.RanksConfig.RankConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ChampionsConfig {
 
@@ -199,11 +201,11 @@ public class ChampionsConfig {
     infestedInterval = SERVER.infestedInterval.get();
 
     EntityType<?> type = BuiltInRegistries.ENTITY_TYPE
-      .get(new ResourceLocation(SERVER.infestedParasite.get()));
+      .get(ResourceLocation.parse(SERVER.infestedParasite.get()));
     infestedParasite = type != null ? type : EntityType.SILVERFISH;
 
     type = BuiltInRegistries.ENTITY_TYPE
-      .get(new ResourceLocation(SERVER.infestedEnderParasite.get()));
+      .get(ResourceLocation.parse(SERVER.infestedEnderParasite.get()));
     infestedEnderParasite = type != null ? type : EntityType.ENDERMITE;
 
     paralyzingChance = SERVER.paralyzingChance.get();
@@ -226,18 +228,18 @@ public class ChampionsConfig {
       if (s.length < 1) {
         throw new IllegalArgumentException();
       }
-      MobEffect effect = BuiltInRegistries.MOB_EFFECT.get(new ResourceLocation(s[0]));
+      Optional<Holder.Reference<MobEffect>> effect = BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.parse(s[0]));
 
-      if (effect == null) {
+      if (effect.isEmpty()) {
         throw new IllegalArgumentException();
       }
 
       if (s.length < 2) {
-        plaguedEffect = new MobEffectInstance(effect);
+        plaguedEffect = new MobEffectInstance(effect.get());
       } else if (s.length < 3) {
-        plaguedEffect = new MobEffectInstance(effect, Integer.parseInt(s[1]) * 20);
+        plaguedEffect = new MobEffectInstance(effect.get(), Integer.parseInt(s[1]) * 20);
       } else {
-        plaguedEffect = new MobEffectInstance(effect, Integer.parseInt(s[1]) * 20,
+        plaguedEffect = new MobEffectInstance(effect.get(), Integer.parseInt(s[1]) * 20,
           Integer.parseInt(s[2]) - 1);
       }
     } catch (IllegalArgumentException e) {
@@ -258,7 +260,7 @@ public class ChampionsConfig {
     boolean valid = false;
     if (obj instanceof List<?> entityNameList) {
       for (var entityName : entityNameList) {
-        ResourceLocation location = new ResourceLocation((String) entityName);
+        ResourceLocation location = ResourceLocation.parse((String) entityName);
         valid = BuiltInRegistries.ENTITY_TYPE.containsKey(location);
       }
     }

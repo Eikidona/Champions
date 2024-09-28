@@ -38,13 +38,13 @@ import java.util.Collection;
 public class ChampionsCommand {
 
   public static final SuggestionProvider<CommandSourceStack> AFFIXES = SuggestionProviders
-    .register(new ResourceLocation(Champions.MODID, "affixes"),
+    .register(ResourceLocation.fromNamespaceAndPath(Champions.MODID, "affixes"),
       (context, builder) -> SharedSuggestionProvider.suggest(
         ChampionsApiImpl.getInstance().getAffixes().stream().map(IAffix::getIdentifier),
         builder));
 
   public static final SuggestionProvider<CommandSourceStack> MONSTER_ENTITIES = SuggestionProviders
-    .register(new ResourceLocation(Champions.MODID, "monster_entities"),
+    .register(ResourceLocation.fromNamespaceAndPath(Champions.MODID, "monster_entities"),
       (context, builder) -> SharedSuggestionProvider.suggestResource(
         BuiltInRegistries.ENTITY_TYPE.stream()
           .filter(type -> type.getCategory() == MobCategory.MONSTER),
@@ -121,7 +121,7 @@ public class ChampionsCommand {
       final Entity sourceEntity = source.getEntity();
 
       if (sourceEntity != null) {
-        Entity entity = entityType.create((ServerLevel) sourceEntity.level(), null, null,
+        Entity entity = entityType.create((ServerLevel) sourceEntity.level(), null,
           pos != null ? pos : new BlockPos(sourceEntity.blockPosition()), MobSpawnType.COMMAND,
           false, false);
 

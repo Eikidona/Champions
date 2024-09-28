@@ -1,6 +1,6 @@
 package top.theillusivec4.champions.common.registry;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.particles.ParticleType;
@@ -40,7 +40,7 @@ import java.util.Map;
 
 public class ChampionsRegistry {
 
-  public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIER_SERIALIZERS =
+  public static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> LOOT_MODIFIER_SERIALIZERS =
     DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, Champions.MODID);
   private static final DeferredRegister<Item> EGG = DeferredRegister.create(BuiltInRegistries.ITEM, Champions.MODID);
 
@@ -58,7 +58,7 @@ public class ChampionsRegistry {
   public static DeferredHolder<ResourceLocation, ResourceLocation> CHAMPION_MOBS_KILLED;
   public static DeferredHolder<LootItemConditionType, LootItemConditionType> ENTITY_IS_CHAMPION;
   public static DeferredHolder<LootItemConditionType, LootItemConditionType> CHAMPION_PROPERTIES;
-  public static DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<ChampionLootModifier>> CHAMPION_LOOT;
+  public static DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<ChampionLootModifier>> CHAMPION_LOOT;
   public static DeferredHolder<EntityType<?>, EntityType<EnkindlingBulletEntity>> ENKINDLING_BULLET;
   public static DeferredHolder<EntityType<?>, EntityType<ArcticBulletEntity>> ARCTIC_BULLET;
   public static DeferredHolder<Item, ChampionEggItem> CHAMPION_EGG_ITEM;
@@ -117,7 +117,7 @@ public class ChampionsRegistry {
   }
 
   private static DeferredHolder<ResourceLocation, ResourceLocation> makeCustomStat(String key, StatFormatter formatter) {
-    ResourceLocation resourceLocation = new ResourceLocation(CHAMPIONS_STATS.getNamespace(), key);
+    ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(CHAMPIONS_STATS.getNamespace(), key);
     var holder = CHAMPIONS_STATS.register(key, () -> resourceLocation);
     CUSTOM_STAT_FORMATTERS.put(resourceLocation, formatter);
     return holder;
@@ -134,6 +134,7 @@ public class ChampionsRegistry {
     registerCustomStats(bus);
     registerAttachment(bus);
   }
+
   public static void registerFormatter() {
     CUSTOM_STAT_FORMATTERS.forEach(Stats.CUSTOM::get);
   }

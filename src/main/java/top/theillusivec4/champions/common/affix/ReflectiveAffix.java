@@ -17,20 +17,20 @@ import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 
 public class ReflectiveAffix extends BasicAffix {
-  private static final ResourceKey<DamageType> REFLECTION_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Champions.MODID, "reflection"));
+  public static final ResourceKey<DamageType> REFLECTION_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE,  ResourceLocation.fromNamespaceAndPath(Champions.MODID, "reflection"));
 
   public ReflectiveAffix() {
     super("reflective", AffixCategory.OFFENSE, true);
   }
 
   @SubscribeEvent
-  public void onDamageEvent(LivingDamageEvent evt) {
+  public void onDamageEvent(LivingDamageEvent.Pre evt) {
     if (!ChampionsConfig.reflectiveLethal && evt.getSource().is(REFLECTION_DAMAGE)) {
       LivingEntity living = evt.getEntity();
-      float currentDamage = evt.getAmount();
+      float currentDamage = evt.getOriginalDamage();
 
       if (currentDamage >= living.getHealth()) {
-        evt.setAmount(living.getHealth() - 1);
+        evt.setNewDamage(living.getHealth() - 1);
       }
     }
   }
@@ -50,7 +50,7 @@ public class ReflectiveAffix extends BasicAffix {
       float damage = (float) Math.min(amount * (sourceEntity.getRandom().nextFloat() * (ChampionsConfig.reflectiveMaxPercent - min) + min), ChampionsConfig.reflectiveMax);
       if (source.is(DamageTypes.IN_FIRE) || source.is(DamageTypes.ON_FIRE)) {
         if (source.getEntity() instanceof LivingEntity living)
-          living.setSecondsOnFire(champion.getLivingEntity().getRemainingFireTicks());
+          living.setRemainingFireTicks(champion.getLivingEntity().getRemainingFireTicks());
       }
       if (source.is(DamageTypes.EXPLOSION)) {
         newSource = newSources.explosion(sourceEntity, source.getDirectEntity());

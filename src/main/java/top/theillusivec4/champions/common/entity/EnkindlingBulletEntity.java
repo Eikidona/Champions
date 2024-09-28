@@ -4,6 +4,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.damagesource.DamageType;
@@ -43,11 +44,16 @@ public class EnkindlingBulletEntity extends BaseBulletEntity {
       DamageSource damageSource = new DamageSources(target.level().registryAccess()).inFire();
       target.hurt(new DamageSource(new Holder.Direct<>(new DamageType("cinderBullet", 0.1f)), this), 1); //.setIsFire().setMagic()
     }
-    target.setSecondsOnFire(8);
+    target.setRemainingFireTicks(8);
   }
 
   @Override
   protected ParticleOptions getParticle() {
     return ParticleTypes.FLAME;
+  }
+
+  @Override
+  protected void defineSynchedData(SynchedEntityData.Builder pBuilder) {
+
   }
 }
