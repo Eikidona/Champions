@@ -13,7 +13,7 @@ public class DampeningAffix extends BasicAffix {
 
   @Override
   public float onHurt(IChampion champion, DamageSource source, float amount, float newAmount) {
-    return source.isIndirect() ? newAmount * (float) (1.0F
+    return source.isDirect() ? newAmount * (float) (1.0F
       - ChampionsConfig.dampenedDamageReduction) : newAmount;
   }
 }

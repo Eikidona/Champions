@@ -46,7 +46,7 @@ public abstract class BasicAffix implements IAffix {
   public void sync(IChampion champion) {
     LivingEntity livingEntity = champion.getLivingEntity();
     CompoundTag tag = this.writeSyncTag(champion);
-    PacketDistributor.TRACKING_ENTITY.with(livingEntity).send(
+    PacketDistributor.sendToPlayersTrackingEntity(livingEntity,
       new SPacketSyncAffixData(livingEntity.getId(), this.getIdentifier(), tag));
   }
 

@@ -3,6 +3,7 @@ package top.theillusivec4.champions.common.entity;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -36,5 +37,10 @@ public class ArcticBulletEntity extends BaseBulletEntity {
   @Override
   protected ParticleOptions getParticle() {
     return ParticleTypes.ITEM_SNOWBALL;
+  }
+
+  @Override
+  protected void defineSynchedData(SynchedEntityData.Builder pBuilder) {
+
   }
 }

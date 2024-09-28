@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
 
 public class ColorizedBulletRenderer extends EntityRenderer<BaseBulletEntity> {
 
-  private static final ResourceLocation GENERIC_SPARK_TEXTURE = new ResourceLocation(
+  private static final ResourceLocation GENERIC_SPARK_TEXTURE = ResourceLocation.fromNamespaceAndPath(
     Champions.MODID, "textures/entity/generic_spark.png");
   private static final RenderType RENDER_TYPE = RenderType.entityTranslucent(GENERIC_SPARK_TEXTURE);
   private final ShulkerBulletModel<BaseBulletEntity> model;
@@ -56,12 +56,14 @@ public class ColorizedBulletRenderer extends EntityRenderer<BaseBulletEntity> {
     matrixStack.scale(-0.5F, -0.5F, 0.5F);
     this.model.setupAnim(entity, 0.0F, 0.0F, 0.0F, yRot, xRot);
     VertexConsumer vertexconsumer = buffer.getBuffer(this.model.renderType(GENERIC_SPARK_TEXTURE));
+    vertexconsumer.setColor(r,g,b,1);
     this.model.renderToBuffer(matrixStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY,
-      r, g, b, 1.0F);
+      1);
     matrixStack.scale(1.5F, 1.5F, 1.5F);
     VertexConsumer vertexconsumer1 = buffer.getBuffer(RENDER_TYPE);
+    vertexconsumer1.setColor(r,g,b,0.15f);
     this.model.renderToBuffer(matrixStack, vertexconsumer1, packedLight, OverlayTexture.NO_OVERLAY,
-      r, g, b, 0.15F);
+       1);
     matrixStack.popPose();
     super.render(entity, entityYaw, partialTicks, matrixStack, buffer, packedLight);
   }

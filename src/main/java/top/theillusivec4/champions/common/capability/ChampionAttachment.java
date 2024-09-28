@@ -1,5 +1,6 @@
 package top.theillusivec4.champions.common.capability;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -8,6 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import org.jetbrains.annotations.UnknownNullability;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
@@ -22,7 +24,7 @@ import java.util.*;
 
 public class ChampionAttachment {
 
-  public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "champion");
+  public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Champions.MODID, "champion");
 
   private static final String AFFIX_TAG = "affixes";
   private static final String TIER_TAG = "tier";
@@ -170,7 +172,7 @@ public class ChampionAttachment {
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {
       CompoundTag compoundNBT = new CompoundTag();
       IChampion.Server champion = this.champion.getServer();
       champion.getRank().ifPresent(rank -> compoundNBT.putInt(TIER_TAG, rank.getTier()));
@@ -188,7 +190,7 @@ public class ChampionAttachment {
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
       IChampion.Server champion = this.champion.getServer();
 
       if (nbt.contains(TIER_TAG)) {

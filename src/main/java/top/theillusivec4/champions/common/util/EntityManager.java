@@ -35,7 +35,7 @@ public class EntityManager {
         return;
       }
       EntityType<?> type = BuiltInRegistries.ENTITY_TYPE
-        .get(new ResourceLocation(entityConfig.entity));
+        .get(ResourceLocation.parse(entityConfig.entity));
 
       if (type == null) {
         Champions.LOGGER.error("Invalid identifier while building entity settings, skipping...");

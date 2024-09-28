@@ -1,6 +1,7 @@
 package top.theillusivec4.champions.common.util;
 
 import com.google.common.collect.ImmutableSortedMap;
+import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -150,30 +151,30 @@ public class ChampionBuilder {
       return;
     }
     grow(livingEntity, Attributes.MAX_HEALTH, ChampionsConfig.healthGrowth * growthFactor,
-      AttributeModifier.Operation.MULTIPLY_TOTAL);
+      AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     livingEntity.setHealth(livingEntity.getMaxHealth());
     grow(livingEntity, Attributes.ATTACK_DAMAGE, ChampionsConfig.attackGrowth * growthFactor,
-      AttributeModifier.Operation.MULTIPLY_TOTAL);
+      AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     grow(livingEntity, Attributes.ARMOR, ChampionsConfig.armorGrowth * growthFactor,
-      AttributeModifier.Operation.ADDITION);
-    grow(livingEntity, Attributes.ARMOR_TOUGHNESS, ChampionsConfig.toughnessGrowth * growthFactor,
-      AttributeModifier.Operation.ADDITION);
-    grow(livingEntity, Attributes.KNOCKBACK_RESISTANCE,
+      AttributeModifier.Operation.ADD_VALUE);
+    grow(livingEntity, Attributes.ARMOR_TOUGHNESS , ChampionsConfig.toughnessGrowth * growthFactor,
+      AttributeModifier.Operation.ADD_VALUE);
+    grow(livingEntity, Attributes.KNOCKBACK_RESISTANCE ,
       ChampionsConfig.knockbackResistanceGrowth * growthFactor,
-      AttributeModifier.Operation.ADDITION);
+      AttributeModifier.Operation.ADD_VALUE);
   }
 
   private static void grow(
-    final LivingEntity livingEntity, Attribute attribute, double amount,
+    final LivingEntity livingEntity, Holder<Attribute> attribute, double amount,
     AttributeModifier.Operation operation) {
     AttributeInstance attributeInstance = livingEntity.getAttribute(attribute);
 
     if (attributeInstance != null) {
       double oldMax = attributeInstance.getBaseValue();
       double newMax = switch (operation) {
-        case ADDITION -> oldMax + amount;
-        case MULTIPLY_BASE -> oldMax * amount;
-        case MULTIPLY_TOTAL -> oldMax * (1 + amount);
+        case ADD_VALUE -> oldMax + amount;
+        case ADD_MULTIPLIED_BASE -> oldMax * amount;
+        case ADD_MULTIPLIED_TOTAL -> oldMax * (1 + amount);
       };
       attributeInstance.setBaseValue(newMax);
     }

@@ -11,7 +11,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.RestrictSunGoal;
 import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
@@ -34,10 +34,10 @@ public class MoltenAffix extends BasicAffix {
 
     if (livingEntity instanceof Mob mobEntity) {
 
-      mobEntity.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
-      mobEntity.setPathfindingMalus(BlockPathTypes.LAVA, 8.0F);
-      mobEntity.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0.0F);
-      mobEntity.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0.0F);
+      mobEntity.setPathfindingMalus(PathType.WATER, -1.0F);
+      mobEntity.setPathfindingMalus(PathType.LAVA, 8.0F);
+      mobEntity.setPathfindingMalus(PathType.DANGER_FIRE, 0.0F);
+      mobEntity.setPathfindingMalus(PathType.DAMAGE_FIRE, 0.0F);
 
       try {
 
@@ -81,7 +81,7 @@ public class MoltenAffix extends BasicAffix {
   @Override
   public boolean onAttack(IChampion champion, LivingEntity target, DamageSource source,
                           float amount) {
-    target.setSecondsOnFire(10);
+    target.setRemainingFireTicks(10);
     DamageSource inFire = new DamageSources(target.level().registryAccess()).inFire();
     target.hurt(inFire, amount);
     return true;
