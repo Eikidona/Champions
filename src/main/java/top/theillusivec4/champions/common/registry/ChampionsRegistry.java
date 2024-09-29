@@ -126,6 +126,9 @@ public class ChampionsRegistry {
     CUSTOM_STAT_FORMATTERS.put(resourceLocation, formatter);
     return holder;
   }
+  public static void registerComponent(IEventBus bus){
+    COMPONENTS.register(bus);
+  }
 
   public static void register(IEventBus bus) {
     registerItems(bus);
@@ -137,6 +140,7 @@ public class ChampionsRegistry {
     registerArgumentType(bus);
     registerCustomStats(bus);
     registerAttachment(bus);
+    registerComponent(bus);
   }
 
   public static void registerFormatter() {

@@ -42,6 +42,7 @@ import java.util.*;
 public class ChampionEggItem extends EggItem {
 
   private static final String ID_TAG = "Id";
+  private static final String ENTITY_TAG = "EntityTag";
   private static final String TIER_TAG = "Tier";
   private static final String AFFIX_TAG = "Affix";
   private static final String CHAMPION_TAG = "Champion";
@@ -58,11 +59,11 @@ public class ChampionEggItem extends EggItem {
 
   public static Optional<EntityType<?>> getType(ItemStack stack) {
 
-    if (!stack.getComponents().isEmpty()) {
+    if (stack.get(ChampionsRegistry.ENTITY_TAG_COMPONENT) != null) {
       CompoundTag entityTag = stack.get(ChampionsRegistry.ENTITY_TAG_COMPONENT);
 
       if (entityTag != null) {
-        String id = entityTag.get("id").getAsString();
+        String id = entityTag.getCompound(ENTITY_TAG).getString(ID_TAG);
 
         if (!id.isEmpty()) {
           EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(id));
@@ -99,7 +100,7 @@ public class ChampionEggItem extends EggItem {
 
     CompoundTag compoundNBT = new CompoundTag();
     compoundNBT.putString(ID_TAG, entityId.toString());
-    tag.put("entity_tag", compoundNBT);
+    tag.put(ENTITY_TAG, compoundNBT);
 
     CompoundTag compoundNBT1 = new CompoundTag();
     compoundNBT1.putInt(TIER_TAG, tier);
