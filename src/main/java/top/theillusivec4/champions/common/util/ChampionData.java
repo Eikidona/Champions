@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSortedMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.AffixCategory;
@@ -18,7 +19,7 @@ import java.util.*;
 public class ChampionData {
 
   private static final String CHAMPION_KEY = "ChampionsData";
-  private static final Random RAND = new Random();
+  private static final RandomSource RAND = RandomSource.create();
 
   public static boolean read(IChampion champion) {
     LivingEntity livingEntity = champion.getLivingEntity();
