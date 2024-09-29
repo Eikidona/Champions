@@ -11,6 +11,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -266,6 +268,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
+  @OnlyIn(Dist.CLIENT)
   public void onBossBarEvent(final CustomizeGuiOverlayEvent.BossEventProgress evt) {
     if (ChampionsOverlay.isRendering) {
       evt.setCanceled(true);
