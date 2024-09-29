@@ -3,9 +3,11 @@ package top.theillusivec4.champions.common.registry;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.StatFormatter;
 import net.minecraft.stats.Stats;
@@ -43,6 +45,7 @@ public class ChampionsRegistry {
   public static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> LOOT_MODIFIER_SERIALIZERS =
     DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, Champions.MODID);
   private static final DeferredRegister<Item> EGG = DeferredRegister.create(BuiltInRegistries.ITEM, Champions.MODID);
+  private static final DeferredRegister<DataComponentType<?>> COMPONENTS  = DeferredRegister.createDataComponents(Champions.MODID);
 
   // RANK
   private static final DeferredRegister<ParticleType<?>> PARTICLE_TYPE = DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, Champions.MODID);
@@ -66,6 +69,7 @@ public class ChampionsRegistry {
   public static DeferredHolder<MobEffect, ParalysisEffect> PARALYSIS_EFFECT_TYPE;
   public static DeferredHolder<MobEffect, WoundEffect> WOUND_EFFECT_TYPE;
   public static DeferredHolder<ArgumentTypeInfo<?, ?>, AffixArgumentInfo> AFFIX_ARGUMENT_TYPE;
+  public static final DeferredHolder<DataComponentType<?>, DataComponentType<CompoundTag>> ENTITY_TAG_COMPONENT = COMPONENTS.register("entity_tag",()-> DataComponentType.<CompoundTag>builder().persistent(CompoundTag.CODEC).build());
 
   public static void registerItems(IEventBus bus) {
     CHAMPION_EGG_ITEM = EGG.register("champion_egg", ChampionEggItem::new);

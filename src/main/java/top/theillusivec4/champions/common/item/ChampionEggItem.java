@@ -33,16 +33,15 @@ import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
+import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
 public class ChampionEggItem extends EggItem {
 
   private static final String ID_TAG = "Id";
-  private static final String ENTITY_TAG = "EntityTag";
   private static final String TIER_TAG = "Tier";
   private static final String AFFIX_TAG = "Affix";
   private static final String CHAMPION_TAG = "Champion";
@@ -59,14 +58,14 @@ public class ChampionEggItem extends EggItem {
 
   public static Optional<EntityType<?>> getType(ItemStack stack) {
 
-    if (stack.getTags().toList().isEmpty()) {
-      CompoundTag entityTag = stack.getTagElement(ENTITY_TAG);
+    if (!stack.getComponents().isEmpty()) {
+      CompoundTag entityTag = stack.get(ChampionsRegistry.ENTITY_TAG_COMPONENT);
 
       if (entityTag != null) {
-        String id = entityTag.getString(ID_TAG);
+        String id = entityTag.get("id").getAsString();
 
         if (!id.isEmpty()) {
-          EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(id));
+          EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(id));
 
           if (type != null) {
             return Optional.of(type);
@@ -79,8 +78,8 @@ public class ChampionEggItem extends EggItem {
 
   public static void read(IChampion champion, ItemStack stack) {
 
-    if (stack.hasTag()) {
-      CompoundTag tag = stack.getTagElement(CHAMPION_TAG);
+    if (stack.has(ChampionsRegistry.ENTITY_TAG_COMPONENT)) {
+      CompoundTag tag = stack.get(ChampionsRegistry.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
 
       if (tag != null) {
         int tier = tag.getInt(TIER_TAG);
@@ -96,12 +95,11 @@ public class ChampionEggItem extends EggItem {
   public static void write(
     ItemStack stack, ResourceLocation entityId, int tier,
     Collection<IAffix> affixes) {
-    CompoundTag tag = stack.hasTag() ? stack.getTag() : new CompoundTag();
-    assert tag != null;
+    CompoundTag tag = stack.getOrDefault(ChampionsRegistry.ENTITY_TAG_COMPONENT, new CompoundTag());
 
     CompoundTag compoundNBT = new CompoundTag();
     compoundNBT.putString(ID_TAG, entityId.toString());
-    tag.put(ENTITY_TAG, compoundNBT);
+    tag.put("entity_tag", compoundNBT);
 
     CompoundTag compoundNBT1 = new CompoundTag();
     compoundNBT1.putInt(TIER_TAG, tier);
@@ -109,7 +107,7 @@ public class ChampionEggItem extends EggItem {
     affixes.forEach(affix -> listNBT.add(StringTag.valueOf(affix.getIdentifier())));
     compoundNBT1.put(AFFIX_TAG, listNBT);
     tag.put(CHAMPION_TAG, compoundNBT1);
-    stack.setTag(tag);
+    stack.set(ChampionsRegistry.ENTITY_TAG_COMPONENT, tag);
   }
 
   @Nonnull
@@ -118,8 +116,8 @@ public class ChampionEggItem extends EggItem {
     int tier = 0;
     Optional<EntityType<?>> type = getType(stack);
 
-    if (stack.hasTag()) {
-      CompoundTag tag = stack.getOrCreateTag().getCompound(CHAMPION_TAG);
+    if (stack.has(ChampionsRegistry.ENTITY_TAG_COMPONENT)) {
+      CompoundTag tag = stack.get(ChampionsRegistry.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
 
       if (tag != null) {
         tier = tag.getInt(TIER_TAG);
@@ -134,12 +132,12 @@ public class ChampionEggItem extends EggItem {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level worldIn,
+  public void appendHoverText(ItemStack stack, TooltipContext pContext,
                               @Nonnull List<Component> tooltip, @Nonnull TooltipFlag flagIn) {
     boolean hasAffix = false;
 
-    if (stack.hasTag()) {
-      CompoundTag tag = stack.getOrCreateTag().getCompound(CHAMPION_TAG);
+    if (stack.has(ChampionsRegistry.ENTITY_TAG_COMPONENT)) {
+      CompoundTag tag = stack.get(ChampionsRegistry.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
 
       if (tag != null) {
         ListTag listNBT = tag.getList(AFFIX_TAG, CompoundTag.TAG_STRING);
@@ -190,11 +188,11 @@ public class ChampionEggItem extends EggItem {
             !Objects.equals(blockpos, blockpos1) && direction == Direction.UP);
 
         if (entity instanceof LivingEntity livingEntity) {
-            ChampionAttachment.getAttachment(livingEntity).ifPresent(iChampion -> {
-              read(iChampion, itemstack);
-              world.addFreshEntity(entity);
-              itemstack.shrink(1);
-            });
+          ChampionAttachment.getAttachment(livingEntity).ifPresent(iChampion -> {
+            read(iChampion, itemstack);
+            world.addFreshEntity(entity);
+            itemstack.shrink(1);
+          });
         }
       });
     }
@@ -225,7 +223,7 @@ public class ChampionEggItem extends EggItem {
           Optional<EntityType<?>> entityType = getType(itemstack);
           return entityType.map(type -> {
             Entity entity = type
-              .create((ServerLevel) worldIn, itemstack.getTag(), null, blockpos,
+              .create((ServerLevel) worldIn, null, blockpos,
                 MobSpawnType.SPAWN_EGG, false, false);
 
             if (entity instanceof LivingEntity) {
