@@ -11,14 +11,15 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
 import top.theillusivec4.champions.common.particle.RankParticle;
-import top.theillusivec4.champions.common.registry.ChampionsRegistry;
+import top.theillusivec4.champions.common.registry.ModItems;
+import top.theillusivec4.champions.common.registry.ModParticleTypes;
 
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD, modid = Champions.MODID)
 public class ClientEventHandler {
 
   @SubscribeEvent
   public static void onRegisterColor(final RegisterColorHandlersEvent.Item event) {
-    event.register(ChampionEggItem::getColor, ChampionsRegistry.CHAMPION_EGG_ITEM.get());
+    event.register(ChampionEggItem::getColor, ModItems.CHAMPION_EGG_ITEM.get());
   }
 
   @SubscribeEvent
@@ -28,7 +29,7 @@ public class ClientEventHandler {
 
   @SubscribeEvent
   public static void onRegisterParticleProviders(RegisterParticleProvidersEvent evt) {
-    evt.registerSpriteSet(ChampionsRegistry.RANK_PARTICLE_TYPE.get(), RankParticle.RankFactory::new);
+    evt.registerSpriteSet(ModParticleTypes.RANK_PARTICLE_TYPE.get(), RankParticle.RankFactory::new);
   }
 
 }

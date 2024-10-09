@@ -58,6 +58,8 @@ import top.theillusivec4.champions.common.network.SPacketSyncAffixData;
 import top.theillusivec4.champions.common.network.SPacketSyncChampion;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
+import top.theillusivec4.champions.common.registry.ModItems;
+import top.theillusivec4.champions.common.registry.ModStats;
 import top.theillusivec4.champions.common.util.EntityManager;
 import top.theillusivec4.champions.server.command.ChampionSelectorOptions;
 import top.theillusivec4.champions.server.command.ChampionsCommand;
@@ -119,7 +121,7 @@ public class Champions {
     ChampionAttachment.register();
     AffixManager.register();
     evt.enqueueWork(() -> {
-      ChampionsRegistry.registerFormatter();
+      ModStats.registerFormatter();
       ChampionSelectorOptions.setup();
       DispenseItemBehavior dispenseBehavior = (source, stack) -> {
         Direction direction = source.state().getValue(DispenserBlock.FACING);
@@ -138,7 +140,7 @@ public class Champions {
         });
         return stack;
       };
-      DispenserBlock.registerBehavior(ChampionsRegistry.CHAMPION_EGG_ITEM.get(), dispenseBehavior);
+      DispenserBlock.registerBehavior(ModItems.CHAMPION_EGG_ITEM.get(), dispenseBehavior);
     });
   }
 

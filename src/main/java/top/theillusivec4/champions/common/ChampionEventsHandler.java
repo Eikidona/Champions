@@ -22,7 +22,8 @@ import top.theillusivec4.champions.client.ChampionsOverlay;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.rank.Rank;
-import top.theillusivec4.champions.common.registry.ChampionsRegistry;
+import top.theillusivec4.champions.common.registry.ModParticleTypes;
+import top.theillusivec4.champions.common.registry.ModStats;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
 import top.theillusivec4.champions.common.util.ChampionHelper;
 
@@ -49,14 +50,13 @@ public class ChampionEventsHandler {
     Entity entity = explosion.getDirectSourceEntity();
 
     if (entity != null && !entity.level().isClientSide()) {
-      ChampionAttachment.getAttachment(entity)
-        .ifPresent(champion -> champion.getServer().getRank().ifPresent(rank -> {
-          int growth = rank.getGrowthFactor();
+      ChampionAttachment.getAttachment(entity).flatMap(champion -> champion.getServer().getRank()).ifPresent(rank -> {
+        int growth = rank.getGrowthFactor();
 
-          if (growth > 0) {
-            explosion.radius += ChampionsConfig.explosionGrowth * growth;
-          }
-        }));
+        if (growth > 0) {
+          explosion.radius += ChampionsConfig.explosionGrowth * growth;
+        }
+      });
     }
   }
 
@@ -96,7 +96,7 @@ public class ChampionEventsHandler {
               float g = (float) ((color >> 8) & 0xFF) / 255f;
               float b = (float) ((color) & 0xFF) / 255f;
 
-              livingEntity.level().addParticle(ChampionsRegistry.RANK_PARTICLE_TYPE.get(),
+              livingEntity.level().addParticle(ModParticleTypes.RANK_PARTICLE_TYPE.get(),
                 livingEntity.position().x + (livingEntity.getRandom().nextDouble() - 0.5D) *
                   (double) livingEntity.getBbWidth(), livingEntity.position().y +
                   livingEntity.getRandom().nextDouble() * livingEntity.getBbHeight(),
@@ -198,7 +198,7 @@ public class ChampionEventsHandler {
           Entity source = evt.getSource().getEntity();
 
           if (source instanceof ServerPlayer player && !(source instanceof FakePlayer)) {
-            player.awardStat(ChampionsRegistry.CHAMPION_MOBS_KILLED.get());
+            player.awardStat(ModStats.CHAMPION_MOBS_KILLED.get());
             int messageTier = ChampionsConfig.deathMessageTier;
 
             if (messageTier > 0 && rank.getTier() >= messageTier) {

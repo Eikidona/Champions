@@ -28,7 +28,7 @@ import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.impl.ChampionsApiImpl;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
-import top.theillusivec4.champions.common.registry.ChampionsRegistry;
+import top.theillusivec4.champions.common.registry.ModItems;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
 
 import javax.annotation.Nullable;
@@ -147,7 +147,7 @@ public class ChampionsCommand {
     if (entity == null) {
       throw UNKNOWN_ENTITY.create(resourceLocation);
     } else if (source.getEntity() instanceof ServerPlayer playerEntity) {
-      ItemStack egg = new ItemStack(ChampionsRegistry.CHAMPION_EGG_ITEM.get());
+      ItemStack egg = new ItemStack(ModItems.CHAMPION_EGG_ITEM.get());
       ChampionEggItem.write(egg, resourceLocation, tier, affixes);
       ItemHandlerHelper.giveItemToPlayer(playerEntity, egg, 1);
       source.sendSuccess(

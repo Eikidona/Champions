@@ -33,7 +33,7 @@ import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
-import top.theillusivec4.champions.common.registry.ChampionsRegistry;
+import top.theillusivec4.champions.common.registry.ModDataComponents;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
 
 import javax.annotation.Nonnull;
@@ -59,8 +59,8 @@ public class ChampionEggItem extends EggItem {
 
   public static Optional<EntityType<?>> getType(ItemStack stack) {
 
-    if (stack.get(ChampionsRegistry.ENTITY_TAG_COMPONENT) != null) {
-      CompoundTag entityTag = stack.get(ChampionsRegistry.ENTITY_TAG_COMPONENT);
+    if (stack.get(ModDataComponents.ENTITY_TAG_COMPONENT) != null) {
+      CompoundTag entityTag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT);
 
       if (entityTag != null) {
         String id = entityTag.getCompound(ENTITY_TAG).getString(ID_TAG);
@@ -79,8 +79,8 @@ public class ChampionEggItem extends EggItem {
 
   public static void read(IChampion champion, ItemStack stack) {
 
-    if (stack.has(ChampionsRegistry.ENTITY_TAG_COMPONENT)) {
-      CompoundTag tag = stack.get(ChampionsRegistry.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
+    if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
+      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
 
       if (tag != null) {
         int tier = tag.getInt(TIER_TAG);
@@ -96,7 +96,7 @@ public class ChampionEggItem extends EggItem {
   public static void write(
     ItemStack stack, ResourceLocation entityId, int tier,
     Collection<IAffix> affixes) {
-    CompoundTag tag = stack.getOrDefault(ChampionsRegistry.ENTITY_TAG_COMPONENT, new CompoundTag());
+    CompoundTag tag = stack.getOrDefault(ModDataComponents.ENTITY_TAG_COMPONENT, new CompoundTag());
 
     CompoundTag compoundNBT = new CompoundTag();
     compoundNBT.putString(ID_TAG, entityId.toString());
@@ -108,7 +108,7 @@ public class ChampionEggItem extends EggItem {
     affixes.forEach(affix -> listNBT.add(StringTag.valueOf(affix.getIdentifier())));
     compoundNBT1.put(AFFIX_TAG, listNBT);
     tag.put(CHAMPION_TAG, compoundNBT1);
-    stack.set(ChampionsRegistry.ENTITY_TAG_COMPONENT, tag);
+    stack.set(ModDataComponents.ENTITY_TAG_COMPONENT, tag);
   }
 
   @Nonnull
@@ -117,8 +117,8 @@ public class ChampionEggItem extends EggItem {
     int tier = 0;
     Optional<EntityType<?>> type = getType(stack);
 
-    if (stack.has(ChampionsRegistry.ENTITY_TAG_COMPONENT)) {
-      CompoundTag tag = stack.get(ChampionsRegistry.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
+    if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
+      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
 
       if (tag != null) {
         tier = tag.getInt(TIER_TAG);
@@ -137,8 +137,8 @@ public class ChampionEggItem extends EggItem {
                               @Nonnull List<Component> tooltip, @Nonnull TooltipFlag flagIn) {
     boolean hasAffix = false;
 
-    if (stack.has(ChampionsRegistry.ENTITY_TAG_COMPONENT)) {
-      CompoundTag tag = stack.get(ChampionsRegistry.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
+    if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
+      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
 
       if (tag != null) {
         ListTag listNBT = tag.getList(AFFIX_TAG, CompoundTag.TAG_STRING);
