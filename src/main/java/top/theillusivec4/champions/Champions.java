@@ -29,6 +29,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.InterModComms;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
@@ -79,25 +80,25 @@ public class Champions {
   public static boolean scalingHealthLoaded = false;
   public static boolean gameStagesLoaded = false;
 
-  public Champions(IEventBus eventBus) {
+  public Champions(IEventBus modEventBus, ModContainer modContainer) {
 
-    eventBus.addListener(this::enqueueIMC);
-    eventBus.addListener(this::registerNetwork);
-    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
-    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
-    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
+    modEventBus.addListener(this::enqueueIMC);
+    modEventBus.addListener(this::registerNetwork);
+    modContainer.registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
+    modContainer.registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
+    modContainer.registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
     createServerConfig(ChampionsConfig.RANKS_SPEC, "ranks");
     createServerConfig(ChampionsConfig.AFFIXES_SPEC, "affixes");
     createServerConfig(ChampionsConfig.ENTITIES_SPEC, "entities");
 
     if (gameStagesLoaded) {
-      ModLoadingContext.get().getActiveContainer()
+      modContainer
         .registerConfig(ModConfig.Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
     }
-    eventBus.addListener(this::config);
-    eventBus.addListener(this::setup);
+    modEventBus.addListener(this::config);
+    modEventBus.addListener(this::setup);
     NeoForge.EVENT_BUS.addListener(this::registerCommands);
-    ChampionsRegistry.register(eventBus);
+    ChampionsRegistry.register(modEventBus);
     scalingHealthLoaded = ModList.get().isLoaded("scalinghealth");
   }
 
