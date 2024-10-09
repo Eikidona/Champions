@@ -7,7 +7,7 @@ import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
-import top.theillusivec4.champions.common.registry.ChampionsRegistry;
+import top.theillusivec4.champions.common.registry.ModMobEffects;
 
 public class ParalyzingAffix extends BasicAffix {
   public ParalyzingAffix() {
@@ -20,8 +20,8 @@ public class ParalyzingAffix extends BasicAffix {
       float amount) {
 
     if (target.getRandom().nextFloat() < ChampionsConfig.paralyzingChance && !target.hasEffect(
-        ChampionsRegistry.PARALYSIS_EFFECT_TYPE.get())) {
-      target.addEffect(new MobEffectInstance(ChampionsRegistry.PARALYSIS_EFFECT_TYPE.get(), 60, 0));
+        ModMobEffects.PARALYSIS_EFFECT_TYPE.get())) {
+      target.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS_EFFECT_TYPE.get(), 60, 0));
     }
     return true;
   }

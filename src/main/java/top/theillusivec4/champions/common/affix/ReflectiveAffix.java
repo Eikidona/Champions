@@ -1,23 +1,19 @@
 package top.theillusivec4.champions.common.affix;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageSources;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
+import top.theillusivec4.champions.common.registry.ModDamageTypes;
 
 public class ReflectiveAffix extends BasicAffix {
-  private static final ResourceKey<DamageType> REFLECTION_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Champions.MODID, "reflection"));
+
 
   public ReflectiveAffix() {
     super("reflective", AffixCategory.OFFENSE, true);
@@ -25,8 +21,7 @@ public class ReflectiveAffix extends BasicAffix {
 
   @SubscribeEvent
   public void onDamageEvent(LivingDamageEvent evt) {
-    if (!ChampionsConfig.reflectiveLethal && evt.getSource().is(REFLECTION_DAMAGE)) {
-      Champions.LOGGER.debug(REFLECTION_DAMAGE.toString());
+    if (!ChampionsConfig.reflectiveLethal && evt.getSource().is(ModDamageTypes.REFLECTION_DAMAGE)) {
       LivingEntity living = evt.getEntity();
       float currentDamage = evt.getAmount();
 
@@ -41,7 +36,7 @@ public class ReflectiveAffix extends BasicAffix {
 
     if (source.getDirectEntity() instanceof LivingEntity sourceEntity) {
 
-      if (source.is(REFLECTION_DAMAGE) || (source.getEntity() instanceof LivingEntity && source.typeHolder().is(DamageTypes.THORNS))) {
+      if (source.is(ModDamageTypes.REFLECTION_DAMAGE) || (source.getEntity() instanceof LivingEntity && source.typeHolder().is(DamageTypes.THORNS))) {
         return newAmount;
       }
       DamageSources newSources = new DamageSources(champion.getLivingEntity().level().registryAccess());

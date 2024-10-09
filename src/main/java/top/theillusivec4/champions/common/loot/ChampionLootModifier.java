@@ -3,7 +3,6 @@ package top.theillusivec4.champions.common.loot;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -26,7 +25,7 @@ import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums;
 import top.theillusivec4.champions.common.config.ConfigLoot;
 import top.theillusivec4.champions.common.rank.Rank;
-import top.theillusivec4.champions.common.registry.RegistryReference;
+import top.theillusivec4.champions.common.registry.ModLootModifiers;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -70,7 +69,7 @@ public class ChampionLootModifier extends LootModifier {
 
         if (ChampionsConfig.lootSource != ConfigEnums.LootSource.CONFIG) {
           LootTable lootTable = serverWorld.getServer().getLootData()
-            .getLootTable(new ResourceLocation(RegistryReference.CHAMPION_LOOT));
+            .getLootTable(ModLootModifiers.CHAMPION_LOOT.getId());
           LootParams.Builder lootParamsBuilder = new LootParams.Builder(serverWorld)
             .withParameter(LootContextParams.THIS_ENTITY, entity)
             .withParameter(LootContextParams.ORIGIN, entity.position())

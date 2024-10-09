@@ -3,30 +3,25 @@ package top.theillusivec4.champions.common.entity;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import top.theillusivec4.champions.Champions;
-import top.theillusivec4.champions.common.registry.ChampionsRegistry;
+import top.theillusivec4.champions.common.registry.ModDamageTypes;
+import top.theillusivec4.champions.common.registry.ModEntityTypes;
 
 import javax.annotation.Nonnull;
 
 public class EnkindlingBulletEntity extends BaseBulletEntity {
-  private static final ResourceKey<DamageType> CINDER_BULLET_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Champions.MODID, "cinder_bullet_damage"));
 
   public EnkindlingBulletEntity(Level level) {
-    super(ChampionsRegistry.ENKINDLING_BULLET.get(), level);
+    super(ModEntityTypes.ENKINDLING_BULLET.get(), level);
   }
 
   public EnkindlingBulletEntity(Level level, LivingEntity livingEntity, @Nonnull Entity entity,
                                 Direction.Axis axis) {
-    super(ChampionsRegistry.ENKINDLING_BULLET.get(), level, livingEntity, entity, axis);
+    super(ModEntityTypes.ENKINDLING_BULLET.get(), level, livingEntity, entity, axis);
 
   }
 
@@ -43,7 +38,7 @@ public class EnkindlingBulletEntity extends BaseBulletEntity {
       target.hurt(magic, 1);
       target.hurt(fire, 0);
     } else {
-      target.hurt(new DamageSource(target.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(CINDER_BULLET_DAMAGE), this), 1);
+      target.hurt(ModDamageTypes.of(target.level(), ModDamageTypes.CINDER_BULLET, this), 1);
     }
     target.setSecondsOnFire(8);
   }
