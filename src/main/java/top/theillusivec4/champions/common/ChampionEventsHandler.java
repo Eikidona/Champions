@@ -11,6 +11,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -26,7 +28,7 @@ import top.theillusivec4.champions.client.ChampionsOverlay;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.rank.Rank;
-import top.theillusivec4.champions.common.registry.ChampionsRegistry;
+import top.theillusivec4.champions.common.registry.ModParticleTypes;
 import top.theillusivec4.champions.common.stat.ChampionsStats;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
 import top.theillusivec4.champions.common.util.ChampionHelper;
@@ -104,7 +106,7 @@ public class ChampionEventsHandler {
             float g = (float) ((color >> 8) & 0xFF) / 255f;
             float b = (float) ((color) & 0xFF) / 255f;
 
-            livingEntity.level().addParticle(ChampionsRegistry.RANK_PARTICLE_TYPE.get(),
+            livingEntity.level().addParticle(ModParticleTypes.RANK_PARTICLE_TYPE.get(),
               livingEntity.position().x + (livingEntity.getRandom().nextDouble() - 0.5D) *
                 (double) livingEntity.getBbWidth(), livingEntity.position().y +
                 livingEntity.getRandom().nextDouble() * livingEntity.getBbHeight(),
@@ -266,6 +268,7 @@ public class ChampionEventsHandler {
   }
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
+  @OnlyIn(Dist.CLIENT)
   public void onBossBarEvent(final CustomizeGuiOverlayEvent.BossEventProgress evt) {
     if (ChampionsOverlay.isRendering) {
       evt.setCanceled(true);
