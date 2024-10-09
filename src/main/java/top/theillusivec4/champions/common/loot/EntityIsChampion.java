@@ -12,7 +12,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.rank.Rank;
-import top.theillusivec4.champions.common.registry.ChampionsRegistry;
+import top.theillusivec4.champions.common.registry.ModLootItemConditions;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -52,6 +52,6 @@ public record EntityIsChampion(Optional<Integer> minTier, Optional<Integer> maxT
   @Nonnull
   @Override
   public LootItemConditionType getType() {
-    return ChampionsRegistry.ENTITY_IS_CHAMPION.get();
+    return ModLootItemConditions.ENTITY_IS_CHAMPION.get();
   }
 }

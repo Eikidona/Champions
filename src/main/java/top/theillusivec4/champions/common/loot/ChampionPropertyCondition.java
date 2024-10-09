@@ -15,7 +15,7 @@ import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.rank.Rank;
-import top.theillusivec4.champions.common.registry.ChampionsRegistry;
+import top.theillusivec4.champions.common.registry.ModLootItemConditions;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -57,7 +57,7 @@ public record ChampionPropertyCondition(LootContext.EntityTarget target,
   @Nonnull
   @Override
   public LootItemConditionType getType() {
-    return ChampionsRegistry.CHAMPION_PROPERTIES.get();
+    return ModLootItemConditions.CHAMPION_PROPERTIES.get();
   }
 
   private record AffixesPredicate(Set<String> values, MinMaxBounds.Ints matches,

@@ -16,7 +16,7 @@ import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.ChampionEventsHandler;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.rank.RankManager;
-import top.theillusivec4.champions.common.registry.ChampionsRegistry;
+import top.theillusivec4.champions.common.registry.ModAttachments;
 import top.theillusivec4.champions.common.util.ChampionHelper;
 
 import javax.annotation.Nonnull;
@@ -44,7 +44,7 @@ public class ChampionAttachment {
     if (!ChampionHelper.isValidChampion(entity)) {
       return Optional.empty();
     }
-    return Optional.ofNullable(entity.getData(ChampionsRegistry.CHAMPION_ATTACHMENT).champion);
+    return Optional.ofNullable(entity.getData(ModAttachments.CHAMPION_ATTACHMENT).champion);
   }
 
   public static class Champion implements IChampion {
