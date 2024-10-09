@@ -148,7 +148,7 @@ public class Champions {
     ChampionsCommand.register(evt.getDispatcher());
   }
 
-  private void config(final ModConfigEvent evt) {
+  private void config(final ModConfigEvent.Loading evt) {
 
     if (!evt.getConfig().getModId().equals(MODID)) {
       return;
@@ -159,23 +159,20 @@ public class Champions {
 
         IConfigSpec spec = evt.getConfig().getSpec();
         CommentedConfig commentedConfig = evt.getConfig().getLoadedConfig().config();
-
-        if (evt instanceof ModConfigEvent.Loading) {
-          ChampionsConfig.bake();
-          // 重建管理器
-          if (spec == ChampionsConfig.RANKS_SPEC) {
-            ChampionsConfig.transformRanks(commentedConfig);
-            RankManager.buildRanks();
-          } else if (spec == ChampionsConfig.AFFIXES_SPEC) {
-            ChampionsConfig.transformAffixes(commentedConfig);
-            AffixManager.buildAffixSettings();
-          } else if (spec == ChampionsConfig.ENTITIES_SPEC) {
-            ChampionsConfig.transformEntities(commentedConfig);
-            EntityManager.buildEntitySettings();
-          } else if (spec == ChampionsConfig.STAGE_SPEC && Champions.gameStagesLoaded) {
-            ChampionsConfig.entityStages = ChampionsConfig.STAGE.entityStages.get();
-            ChampionsConfig.tierStages = ChampionsConfig.STAGE.tierStages.get();
-          }
+        ChampionsConfig.bake();
+        // 重建管理器
+        if (spec == ChampionsConfig.RANKS_SPEC) {
+          ChampionsConfig.transformRanks(commentedConfig);
+          RankManager.buildRanks();
+        } else if (spec == ChampionsConfig.AFFIXES_SPEC) {
+          ChampionsConfig.transformAffixes(commentedConfig);
+          AffixManager.buildAffixSettings();
+        } else if (spec == ChampionsConfig.ENTITIES_SPEC) {
+          ChampionsConfig.transformEntities(commentedConfig);
+          EntityManager.buildEntitySettings();
+        } else if (spec == ChampionsConfig.STAGE_SPEC && Champions.gameStagesLoaded) {
+          ChampionsConfig.entityStages = ChampionsConfig.STAGE.entityStages.get();
+          ChampionsConfig.tierStages = ChampionsConfig.STAGE.tierStages.get();
         }
       }
     } else if (evt.getConfig().getType() == ModConfig.Type.CLIENT) {
