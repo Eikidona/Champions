@@ -33,5 +33,6 @@
   "advancements.champions.kill_a_champion.title": "冠军猎人",
   "advancements.champions.kill_a_champion.description": "击杀一个强大的敌对怪物",
   "stat.champions.champion_mobs_killed": "冠军怪物击杀数",
-  "command.champions.egg.unknown_entity": "未知生物"
+  "command.champions.egg.unknown_entity": "未知生物",
+  "config.jade.plugin_champions.enable_affix_compact": "启用jade词条兼容"
 }

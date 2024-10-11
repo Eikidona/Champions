@@ -30,5 +30,6 @@
   "affix.champions.enkindling": "Раскалённый",
   "advancements.champions.kill_a_champion.title": "Охотник на Чемпионов",
   "advancements.champions.kill_a_champion.description": "Убейте чемпионского моба",
-  "stat.champions.champion_mobs_killed": "Убито чемпионских мобов"
+  "stat.champions.champion_mobs_killed": "Убито чемпионских мобов",
+  "config.jade.plugin_champions.enable_affix_compact": "Enable Jade affix compact"
 }

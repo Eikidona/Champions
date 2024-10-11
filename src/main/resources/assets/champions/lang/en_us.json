@@ -33,5 +33,6 @@
   "advancements.champions.kill_a_champion.title": "Champion Hunter",
   "advancements.champions.kill_a_champion.description": "Kill a powerful hostile monster",
   "stat.champions.champion_mobs_killed": "Champion Mobs Killed",
-  "command.champions.egg.unknown_entity": "Unknown entity"
+  "command.champions.egg.unknown_entity": "Unknown entity",
+  "config.jade.plugin_champions.enable_affix_compact": "Enable Jade affix compact"
 }

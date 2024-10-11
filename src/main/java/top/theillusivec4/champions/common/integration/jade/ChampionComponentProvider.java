@@ -32,6 +32,6 @@ public enum ChampionComponentProvider implements IEntityComponentProvider {
 
   @Override
   public ResourceLocation getUid() {
-    return ResourceLocation.fromNamespaceAndPath(Champions.MODID, "champion_element");
+    return ResourceLocation.fromNamespaceAndPath(Champions.MODID, "enable_affix_compact");
   }
 }
