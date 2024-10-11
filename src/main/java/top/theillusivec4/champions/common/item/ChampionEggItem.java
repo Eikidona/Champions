@@ -60,7 +60,7 @@ public class ChampionEggItem extends EggItem {
 
   public static Optional<EntityType<?>> getType(ItemStack stack) {
 
-    if (stack.get(ModDataComponents.ENTITY_TAG_COMPONENT) != null) {
+    if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
       CompoundTag entityTag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT);
 
       if (entityTag != null) {
@@ -69,9 +69,7 @@ public class ChampionEggItem extends EggItem {
         if (!id.isEmpty()) {
           EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(id));
 
-          if (type != null) {
-            return Optional.of(type);
-          }
+          return Optional.of(type);
         }
       }
     }
@@ -81,10 +79,10 @@ public class ChampionEggItem extends EggItem {
   public static void read(IChampion champion, ItemStack stack) {
 
     if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
-      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
+      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT);
 
       if (tag != null) {
-        int tier = tag.getInt(TIER_TAG);
+        int tier = tag.getCompound(CHAMPION_TAG).getInt(TIER_TAG);
         ListTag listNBT = tag.getList(AFFIX_TAG, CompoundTag.TAG_STRING);
         List<IAffix> affixes = new ArrayList<>();
         listNBT.forEach(
@@ -119,10 +117,10 @@ public class ChampionEggItem extends EggItem {
     Optional<EntityType<?>> type = getType(stack);
 
     if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
-      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
+      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT);
 
       if (tag != null) {
-        tier = tag.getInt(TIER_TAG);
+        tier = tag.getCompound(CHAMPION_TAG).getInt(TIER_TAG);
       }
     }
     MutableComponent root = Component.translatable("rank.champions.title." + tier);
@@ -134,15 +132,15 @@ public class ChampionEggItem extends EggItem {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, TooltipContext pContext,
+  public void appendHoverText(ItemStack stack,@Nonnull TooltipContext pContext,
                               @Nonnull List<Component> tooltip, @Nonnull TooltipFlag flagIn) {
     boolean hasAffix = false;
 
     if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
-      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
+      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT);
 
       if (tag != null) {
-        ListTag listNBT = tag.getList(AFFIX_TAG, CompoundTag.TAG_STRING);
+        ListTag listNBT = tag.getCompound(CHAMPION_TAG).getList(AFFIX_TAG, CompoundTag.TAG_STRING);
 
         if (!listNBT.isEmpty()) {
           hasAffix = true;
