@@ -33,5 +33,6 @@
   "advancements.champions.kill_a_champion.title": "Чемпіонський мисливець",
   "advancements.champions.kill_a_champion.description": "Убийте потужного ворожого монстра",
   "stat.champions.champion_mobs_killed": "Чемпіонські натовпи вбито",
-  "command.champions.egg.unknown_entity": "Невідомий суб'єкт"
+  "command.champions.egg.unknown_entity": "Невідомий суб'єкт",
+  "config.jade.plugin_champions.enable_affix_compact": "Enable Jade affix compact"
 }
