@@ -18,7 +18,6 @@ import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.common.entity.BaseBulletEntity;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
 
 public class ColorizedBulletRenderer extends EntityRenderer<BaseBulletEntity> {
 
@@ -55,12 +54,15 @@ public class ColorizedBulletRenderer extends EntityRenderer<BaseBulletEntity> {
     matrixStack.scale(-0.5F, -0.5F, 0.5F);
     this.model.setupAnim(entity, 0.0F, 0.0F, 0.0F, yRot, xRot);
     VertexConsumer vertexconsumer = buffer.getBuffer(this.model.renderType(GENERIC_SPARK_TEXTURE));
+    // argb range(0, 255)
+    // 0 transparent 255 complete not transparent.
+    // so need calculate percent to argb range: 100% * 255 = 255, 15% * 255 = 38.25 ~= 38
     this.model.renderToBuffer(matrixStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY,
-      FastColor.ARGB32.color(100,this.color));
+      FastColor.ARGB32.color(255, this.color));
     matrixStack.scale(1.5F, 1.5F, 1.5F);
     VertexConsumer vertexconsumer1 = buffer.getBuffer(RENDER_TYPE);
     this.model.renderToBuffer(matrixStack, vertexconsumer1, packedLight, OverlayTexture.NO_OVERLAY,
-      FastColor.ARGB32.color(15,this.color));
+      FastColor.ARGB32.color(38, this.color));
     matrixStack.popPose();
     super.render(entity, entityYaw, partialTicks, matrixStack, buffer, packedLight);
   }

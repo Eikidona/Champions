@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -54,7 +55,7 @@ public class ChampionEggItem extends EggItem {
   public static int getColor(ItemStack stack, int tintIndex) {
     SpawnEggItem eggItem =
       SpawnEggItem.byId(getType(stack).orElse(EntityType.ZOMBIE));
-    return eggItem != null ? eggItem.getColor(tintIndex) : 0;
+    return eggItem != null ? FastColor.ARGB32.opaque(eggItem.getColor(tintIndex)) : 0;
   }
 
   public static Optional<EntityType<?>> getType(ItemStack stack) {

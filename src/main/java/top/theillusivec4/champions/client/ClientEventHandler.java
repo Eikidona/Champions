@@ -34,6 +34,7 @@ public class ClientEventHandler {
   public static void onRegisterParticleProviders(RegisterParticleProvidersEvent evt) {
     evt.registerSpriteSet(ModParticleTypes.RANK_PARTICLE_TYPE.get(), RankParticle.RankFactory::new);
   }
+
   @SubscribeEvent
   public static void rendererRegistering(final EntityRenderersEvent.RegisterRenderers evt) {
     evt.registerEntityRenderer(ModEntityTypes.ARCTIC_BULLET.get(),
