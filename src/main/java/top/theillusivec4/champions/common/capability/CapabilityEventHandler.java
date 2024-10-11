@@ -64,10 +64,10 @@ public class CapabilityEventHandler {
             ChampionBuilder.copy(oldChampion, newChampion);
             IChampion.Server serverChampion = newChampion.getServer();
             PacketDistributor.sendToPlayersTrackingEntity(entity,
-                new SPacketSyncChampion(outcome.getId(),
-                  serverChampion.getRank().map(Rank::getTier).orElse(0),
-                  serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
-                  serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toSet())));
+              new SPacketSyncChampion(outcome.getId(),
+                serverChampion.getRank().map(Rank::getTier).orElse(0),
+                serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
+                serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toSet())));
           }));
     }
   }
@@ -81,10 +81,10 @@ public class CapabilityEventHandler {
       ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
         PacketDistributor.sendToPlayer(serverPlayer,
-            new SPacketSyncChampion(entity.getId(),
-              serverChampion.getRank().map(Rank::getTier).orElse(0),
-              serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
-              serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toSet())));
+          new SPacketSyncChampion(entity.getId(),
+            serverChampion.getRank().map(Rank::getTier).orElse(0),
+            serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
+            serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toSet())));
       });
     }
   }

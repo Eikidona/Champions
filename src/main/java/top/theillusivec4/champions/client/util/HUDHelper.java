@@ -3,9 +3,9 @@ package top.theillusivec4.champions.client.util;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
@@ -28,27 +28,28 @@ public class HUDHelper {
     return ChampionAttachment.getAttachment(livingEntity).map(champion -> {
       IChampion.Client clientChampion = champion.getClient();
       return clientChampion.getRank().map(rank -> {
-        int num = rank.getA();
+        int championLevel = rank.getA();
         Set<String> affixSet = clientChampion.getAffixes().stream().map(IAffix::getIdentifier)
           .collect(Collectors.toSet());
 
-        if (num > 0 || !affixSet.isEmpty()) {
+        if (championLevel > 0 || !affixSet.isEmpty()) {
           Minecraft client = Minecraft.getInstance();
+          // calculate render position
           int i = client.getWindow().getGuiScaledWidth();
           int k = i / 2 - 91;
           int j = 21;
           int xOffset = ClientChampionsConfig.hudXOffset;
           int yOffset = ClientChampionsConfig.hudYOffset;
           int color = rank.getB();
-          float r = (float) ((color >> 16) & 0xFF) / 255f;
-          float g = (float) ((color >> 8) & 0xFF) / 255f;
-          float b = (float) ((color) & 0xFF) / 255f;
+
+          float r = (float) FastColor.ARGB32.red(color) / 255F;
+          float g = (float) FastColor.ARGB32.green(color) / 255F;
+          float b = (float) FastColor.ARGB32.blue(color) / 255F;
 
           RenderSystem.defaultBlendFunc();
+          // set shader color for render element
           RenderSystem.setShaderColor(r, g, b, 1.0F);
           RenderSystem.enableBlend();
-          RenderSystem.setShader(GameRenderer::getPositionTexShader);
-          RenderSystem.setShaderTexture(0, GUI_BAR_TEXTURES);
           ChampionsOverlay.startX = xOffset + k;
           ChampionsOverlay.startY = yOffset + 1;
 
@@ -61,18 +62,16 @@ public class HUDHelper {
               256);
           }
 
-          RenderSystem.setShaderTexture(0, GUI_STAR);
+          if (championLevel <= 18) {
+            int startStarsX = xOffset + i / 2 - 5 - 5 * (championLevel - 1);
 
-          if (num <= 18) {
-            int startStarsX = xOffset + i / 2 - 5 - 5 * (num - 1);
-
-            for (int tier = 0; tier < num; tier++) {
+            for (int tier = 0; tier < championLevel; tier++) {
               guiGraphics.blit(GUI_STAR, startStarsX, yOffset + 1, 0, 0, 9, 9, 9, 9);
               startStarsX += 10;
             }
           } else {
             int startStarsX = xOffset + i / 2 - 5;
-            String count = "x" + num;
+            String count = "x" + championLevel;
             guiGraphics.blit(GUI_STAR, startStarsX - client.font.width(count) / 2,
               yOffset + 1, 0, 0, 9, 9, 9, 9);
             guiGraphics.drawString(client.font, count,
@@ -83,7 +82,7 @@ public class HUDHelper {
           String name;
 
           if (customName == null) {
-            name = Component.translatable("rank.champions.title." + num).getString();
+            name = Component.translatable("rank.champions.title." + championLevel).getString();
             name += " " + livingEntity.getName().getString();
           } else {
             name = customName.getString();
@@ -91,6 +90,7 @@ public class HUDHelper {
           guiGraphics.drawString(client.font, name,
             xOffset + (float) (i / 2 - client.font.width(name) / 2),
             yOffset + (float) (j - 9), color, true);
+          // reset shader color
           RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
           StringBuilder builder = new StringBuilder();
 
