@@ -7,8 +7,8 @@
   "effect.champions.paralysis": "麻痹",
   "effect.champions.wound": "创伤",
   "death.attack.reflection": "%1$s遭报应了!",
-  "death.attack.cinderBullet": "%1$s被火焰击中",
-  "death.attack.cinderBullet.indirect": "%1$s在与%2$s的战斗中被火焰击中",
+  "death.attack.enkindling_bullet": "%1$s被火焰击中",
+  "death.attack.enkindling_bullet.player": "%1$s在与%2$s的战斗中被火焰击中",
   "rank.champions.title.0": "普通",
   "rank.champions.title.1": "稀有",
   "rank.champions.title.2": "精英",
@@ -33,5 +33,8 @@
   "advancements.champions.kill_a_champion.title": "冠军猎人",
   "advancements.champions.kill_a_champion.description": "击杀一个强大的敌对怪物",
   "stat.champions.champion_mobs_killed": "冠军怪物击杀数",
-  "command.champions.egg.unknown_entity": "未知生物"
+  "command.champions.egg.unknown_entity": "未知生物",
+  "config.jade.plugin_champions.enable_affix_compact": "启用jade词条兼容",
+  "entity.champions.arctic_bullet": "寒冰弹",
+  "entity.champions.enkindling_bullet": "火焰弹"
 }

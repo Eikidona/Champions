@@ -29,6 +29,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.InterModComms;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
@@ -79,25 +80,25 @@ public class Champions {
   public static boolean scalingHealthLoaded = false;
   public static boolean gameStagesLoaded = false;
 
-  public Champions(IEventBus eventBus) {
+  public Champions(IEventBus modEventBus, ModContainer modContainer) {
 
-    eventBus.addListener(this::enqueueIMC);
-    eventBus.addListener(this::registerNetwork);
-    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
-    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
-    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
+    modEventBus.addListener(this::enqueueIMC);
+    modEventBus.addListener(this::registerNetwork);
+    modContainer.registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
+    modContainer.registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
+    modContainer.registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
     createServerConfig(ChampionsConfig.RANKS_SPEC, "ranks");
     createServerConfig(ChampionsConfig.AFFIXES_SPEC, "affixes");
     createServerConfig(ChampionsConfig.ENTITIES_SPEC, "entities");
 
     if (gameStagesLoaded) {
-      ModLoadingContext.get().getActiveContainer()
+      modContainer
         .registerConfig(ModConfig.Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
     }
-    eventBus.addListener(this::config);
-    eventBus.addListener(this::setup);
+    modEventBus.addListener(this::config);
+    modEventBus.addListener(this::setup);
     NeoForge.EVENT_BUS.addListener(this::registerCommands);
-    ChampionsRegistry.register(eventBus);
+    ChampionsRegistry.register(modEventBus);
     scalingHealthLoaded = ModList.get().isLoaded("scalinghealth");
   }
 
@@ -148,7 +149,7 @@ public class Champions {
     ChampionsCommand.register(evt.getDispatcher());
   }
 
-  private void config(final ModConfigEvent evt) {
+  private void config(final ModConfigEvent.Loading evt) {
 
     if (!evt.getConfig().getModId().equals(MODID)) {
       return;
@@ -159,23 +160,20 @@ public class Champions {
 
         IConfigSpec spec = evt.getConfig().getSpec();
         CommentedConfig commentedConfig = evt.getConfig().getLoadedConfig().config();
-
-        if (evt instanceof ModConfigEvent.Loading) {
-          ChampionsConfig.bake();
-          // 重建管理器
-          if (spec == ChampionsConfig.RANKS_SPEC) {
-            ChampionsConfig.transformRanks(commentedConfig);
-            RankManager.buildRanks();
-          } else if (spec == ChampionsConfig.AFFIXES_SPEC) {
-            ChampionsConfig.transformAffixes(commentedConfig);
-            AffixManager.buildAffixSettings();
-          } else if (spec == ChampionsConfig.ENTITIES_SPEC) {
-            ChampionsConfig.transformEntities(commentedConfig);
-            EntityManager.buildEntitySettings();
-          } else if (spec == ChampionsConfig.STAGE_SPEC && Champions.gameStagesLoaded) {
-            ChampionsConfig.entityStages = ChampionsConfig.STAGE.entityStages.get();
-            ChampionsConfig.tierStages = ChampionsConfig.STAGE.tierStages.get();
-          }
+        ChampionsConfig.bake();
+        // 重建管理器
+        if (spec == ChampionsConfig.RANKS_SPEC) {
+          ChampionsConfig.transformRanks(commentedConfig);
+          RankManager.buildRanks();
+        } else if (spec == ChampionsConfig.AFFIXES_SPEC) {
+          ChampionsConfig.transformAffixes(commentedConfig);
+          AffixManager.buildAffixSettings();
+        } else if (spec == ChampionsConfig.ENTITIES_SPEC) {
+          ChampionsConfig.transformEntities(commentedConfig);
+          EntityManager.buildEntitySettings();
+        } else if (spec == ChampionsConfig.STAGE_SPEC && Champions.gameStagesLoaded) {
+          ChampionsConfig.entityStages = ChampionsConfig.STAGE.entityStages.get();
+          ChampionsConfig.tierStages = ChampionsConfig.STAGE.tierStages.get();
         }
       }
     } else if (evt.getConfig().getType() == ModConfig.Type.CLIENT) {

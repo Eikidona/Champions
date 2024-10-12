@@ -11,12 +11,17 @@ import top.theillusivec4.champions.Champions;
 
 public class ModDamageTypes {
   public static final ResourceKey<DamageType> REFLECTION_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(Champions.MODID, "reflection"));
+  public static final ResourceKey<DamageType> ENKINDLING_BULLET = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(Champions.MODID, "enkindling_bullet"));
 
   public static DamageSource of(Level level, ResourceKey<DamageType> key) {
     return new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolder(key).orElseThrow());
   }
 
-  public static DamageSource of(Level level, ResourceKey<DamageType> key, Entity source) {
-    return new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(key), source);
+  public static DamageSource of(ResourceKey<DamageType> key, Entity directEntity) {
+    return new DamageSource(directEntity.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(key), directEntity);
+  }
+
+  public static DamageSource of(ResourceKey<DamageType> key, Entity directEntity, Entity causingEntity) {
+    return new DamageSource(causingEntity.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(key), directEntity, causingEntity);
   }
 }
