@@ -4,7 +4,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,14 +33,11 @@ public class EnkindlingBulletEntity extends BaseBulletEntity {
   protected void bulletEffect(LivingEntity target) {
 
     if (this.getOwner() != null) {
-      DamageSource magic = this.damageSources().indirectMagic(this, this.getOwner());
-      DamageSource fire = this.damageSources().inFire();
-      target.hurt(magic, 1);
-      target.hurt(fire, 0);
+      target.hurt(ModDamageTypes.of(ModDamageTypes.ENKINDLING_BULLET, this, this.getOwner()), 1);
     } else {
-      target.hurt(ModDamageTypes.of(target.level(),ModDamageTypes.REFLECTION_DAMAGE,this), 1); //.setIsFire().setMagic()
+      target.hurt(ModDamageTypes.of(ModDamageTypes.ENKINDLING_BULLET, this), 1);
     }
-    target.setRemainingFireTicks(8);
+    target.setRemainingFireTicks(8 * 20);
   }
 
   @Override

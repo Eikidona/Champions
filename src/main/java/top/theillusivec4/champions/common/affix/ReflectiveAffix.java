@@ -59,7 +59,7 @@ public class ReflectiveAffix extends BasicAffix {
         newSource.scalesWithDifficulty();
       }
 
-      sourceEntity.hurt(newSource, damage);
+      sourceEntity.hurt(ModDamageTypes.of(ModDamageTypes.REFLECTION_DAMAGE, source.getDirectEntity()), damage);
     }
     return newAmount;
   }

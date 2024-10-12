@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -29,6 +30,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
@@ -54,12 +56,12 @@ public class ChampionEggItem extends EggItem {
   public static int getColor(ItemStack stack, int tintIndex) {
     SpawnEggItem eggItem =
       SpawnEggItem.byId(getType(stack).orElse(EntityType.ZOMBIE));
-    return eggItem != null ? eggItem.getColor(tintIndex) : 0;
+    return eggItem != null ? FastColor.ARGB32.opaque(eggItem.getColor(tintIndex)) : 0;
   }
 
   public static Optional<EntityType<?>> getType(ItemStack stack) {
 
-    if (stack.get(ModDataComponents.ENTITY_TAG_COMPONENT) != null) {
+    if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
       CompoundTag entityTag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT);
 
       if (entityTag != null) {
@@ -68,9 +70,7 @@ public class ChampionEggItem extends EggItem {
         if (!id.isEmpty()) {
           EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(id));
 
-          if (type != null) {
-            return Optional.of(type);
-          }
+          return Optional.of(type);
         }
       }
     }
@@ -80,11 +80,11 @@ public class ChampionEggItem extends EggItem {
   public static void read(IChampion champion, ItemStack stack) {
 
     if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
-      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
+      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT);
 
       if (tag != null) {
-        int tier = tag.getInt(TIER_TAG);
-        ListTag listNBT = tag.getList(AFFIX_TAG, CompoundTag.TAG_STRING);
+        int tier = tag.getCompound(CHAMPION_TAG).getInt(TIER_TAG);
+        ListTag listNBT = tag.getCompound(CHAMPION_TAG).getList(AFFIX_TAG, CompoundTag.TAG_STRING);
         List<IAffix> affixes = new ArrayList<>();
         listNBT.forEach(
           affix -> Champions.API.getAffix(affix.getAsString()).ifPresent(affixes::add));
@@ -98,16 +98,16 @@ public class ChampionEggItem extends EggItem {
     Collection<IAffix> affixes) {
     CompoundTag tag = stack.getOrDefault(ModDataComponents.ENTITY_TAG_COMPONENT, new CompoundTag());
 
-    CompoundTag compoundNBT = new CompoundTag();
-    compoundNBT.putString(ID_TAG, entityId.toString());
-    tag.put(ENTITY_TAG, compoundNBT);
+    CompoundTag entityTag = new CompoundTag();
+    entityTag.putString(ID_TAG, entityId.toString());
+    tag.put(ENTITY_TAG, entityTag);
 
-    CompoundTag compoundNBT1 = new CompoundTag();
-    compoundNBT1.putInt(TIER_TAG, tier);
+    CompoundTag tierTag = new CompoundTag();
+    tierTag.putInt(TIER_TAG, tier);
     ListTag listNBT = new ListTag();
     affixes.forEach(affix -> listNBT.add(StringTag.valueOf(affix.getIdentifier())));
-    compoundNBT1.put(AFFIX_TAG, listNBT);
-    tag.put(CHAMPION_TAG, compoundNBT1);
+    tierTag.put(AFFIX_TAG, listNBT);
+    tag.put(CHAMPION_TAG, tierTag);
     stack.set(ModDataComponents.ENTITY_TAG_COMPONENT, tag);
   }
 
@@ -118,10 +118,10 @@ public class ChampionEggItem extends EggItem {
     Optional<EntityType<?>> type = getType(stack);
 
     if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
-      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
+      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT);
 
       if (tag != null) {
-        tier = tag.getInt(TIER_TAG);
+        tier = tag.getCompound(CHAMPION_TAG).getInt(TIER_TAG);
       }
     }
     MutableComponent root = Component.translatable("rank.champions.title." + tier);
@@ -133,15 +133,15 @@ public class ChampionEggItem extends EggItem {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, TooltipContext pContext,
+  public void appendHoverText(ItemStack stack, @NotNull TooltipContext pContext,
                               @Nonnull List<Component> tooltip, @Nonnull TooltipFlag flagIn) {
     boolean hasAffix = false;
 
     if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
-      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT).getCompound(CHAMPION_TAG);
+      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT);
 
       if (tag != null) {
-        ListTag listNBT = tag.getList(AFFIX_TAG, CompoundTag.TAG_STRING);
+        ListTag listNBT = tag.getCompound(CHAMPION_TAG).getList(AFFIX_TAG, CompoundTag.TAG_STRING);
 
         if (!listNBT.isEmpty()) {
           hasAffix = true;
