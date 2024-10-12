@@ -83,7 +83,7 @@ public class ChampionEggItem extends EggItem {
 
       if (tag != null) {
         int tier = tag.getCompound(CHAMPION_TAG).getInt(TIER_TAG);
-        ListTag listNBT = tag.getList(AFFIX_TAG, CompoundTag.TAG_STRING);
+        ListTag listNBT = tag.getCompound(CHAMPION_TAG).getList(AFFIX_TAG, CompoundTag.TAG_STRING);
         List<IAffix> affixes = new ArrayList<>();
         listNBT.forEach(
           affix -> Champions.API.getAffix(affix.getAsString()).ifPresent(affixes::add));
@@ -97,16 +97,16 @@ public class ChampionEggItem extends EggItem {
     Collection<IAffix> affixes) {
     CompoundTag tag = stack.getOrDefault(ModDataComponents.ENTITY_TAG_COMPONENT, new CompoundTag());
 
-    CompoundTag compoundNBT = new CompoundTag();
-    compoundNBT.putString(ID_TAG, entityId.toString());
-    tag.put(ENTITY_TAG, compoundNBT);
+    CompoundTag entityTag = new CompoundTag();
+    entityTag.putString(ID_TAG, entityId.toString());
+    tag.put(ENTITY_TAG, entityTag);
 
-    CompoundTag compoundNBT1 = new CompoundTag();
-    compoundNBT1.putInt(TIER_TAG, tier);
+    CompoundTag tierTag = new CompoundTag();
+    tierTag.putInt(TIER_TAG, tier);
     ListTag listNBT = new ListTag();
     affixes.forEach(affix -> listNBT.add(StringTag.valueOf(affix.getIdentifier())));
-    compoundNBT1.put(AFFIX_TAG, listNBT);
-    tag.put(CHAMPION_TAG, compoundNBT1);
+    tierTag.put(AFFIX_TAG, listNBT);
+    tag.put(CHAMPION_TAG, tierTag);
     stack.set(ModDataComponents.ENTITY_TAG_COMPONENT, tag);
   }
 

@@ -31,5 +31,8 @@
   "advancements.champions.kill_a_champion.title": "Охотник на Чемпионов",
   "advancements.champions.kill_a_champion.description": "Убейте чемпионского моба",
   "stat.champions.champion_mobs_killed": "Убито чемпионских мобов",
-  "config.jade.plugin_champions.enable_affix_compact": "Enable Jade affix compact"
+  "config.jade.plugin_champions.enable_affix_compact": "Enable Jade affix compact",
+  "death.attack.enkindling_bullet": "%1$s was struck by flames",
+  "death.attack.enkindling_bullet.player": "%1$s was struck by flames whilst fighting %2$s",
+  "command.champions.egg.unknown_entity": "Unknown entity"
 }

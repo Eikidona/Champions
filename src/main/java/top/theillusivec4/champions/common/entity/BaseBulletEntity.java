@@ -101,9 +101,6 @@ public abstract class BaseBulletEntity extends Projectile {
     }
   }
 
-  protected void defineSynchedData() {
-  }
-
   @Nullable
   private Direction getMoveDirection() {
     return this.currentMoveDirection;
