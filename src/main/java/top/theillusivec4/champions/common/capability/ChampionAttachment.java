@@ -3,7 +3,6 @@ package top.theillusivec4.champions.common.capability;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,15 +23,13 @@ import java.util.*;
 
 public class ChampionAttachment {
 
-  public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Champions.MODID, "champion");
-
   private static final String AFFIX_TAG = "affixes";
   private static final String TIER_TAG = "tier";
   private static final String DATA_TAG = "data";
   private static final String ID_TAG = "identifier";
 
   public static void register() {
-    NeoForge.EVENT_BUS.register(new CapabilityEventHandler());
+    NeoForge.EVENT_BUS.register(new AttachmentEventHandler());
     NeoForge.EVENT_BUS.register(new ChampionEventsHandler());
   }
 
