@@ -9,7 +9,7 @@ logoBlur=false
   version="${mod_version}"
   displayName="${mod_name}"
   displayURL="https://github.com/CrychicTeam/Champions/"
-  authors="{mod_authors}"
+  authors="${mod_authors}"
   description='''${mod_description}'''
 [[dependencies.${mod_id}]] #optional
   # the modid of the dependency
