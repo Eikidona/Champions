@@ -3,9 +3,6 @@ package top.theillusivec4.champions.common.loot;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -23,20 +20,21 @@ import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import org.jetbrains.annotations.NotNull;
-import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums;
 import top.theillusivec4.champions.common.config.ConfigLoot;
 import top.theillusivec4.champions.common.rank.Rank;
+import top.theillusivec4.champions.common.registry.ModLootTables;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public class ChampionLootModifier extends LootModifier {
   public static final MapCodec<ChampionLootModifier> CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, ChampionLootModifier::new));
-  private static final ResourceKey<LootTable> ChampionLoot = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(Champions.MODID, "champion_loot"));
   private static final ThreadLocal<Boolean> IS_PROCESSING = ThreadLocal.withInitial(() -> false);
 
   public ChampionLootModifier(LootItemCondition[] conditions) {
@@ -74,33 +72,31 @@ public class ChampionLootModifier extends LootModifier {
 
         if (ChampionsConfig.lootSource != ConfigEnums.LootSource.CONFIG) {
           LootTable lootTable = serverWorld.getServer().reloadableRegistries()
-            .getLootTable(ChampionLoot);
-          LootParams.Builder lootParamsBuilder = new LootParams.Builder(serverWorld)
+            .getLootTable(ModLootTables.CHAMPION_LOOT);
+          LootParams.Builder lootParams$builder = new LootParams.Builder(serverWorld)
             .withParameter(LootContextParams.THIS_ENTITY, entity)
             .withParameter(LootContextParams.ORIGIN, entity.position())
             .withParameter(LootContextParams.DAMAGE_SOURCE, damageSource)
             .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, damageSource.getEntity())
-            .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, damageSource.getDirectEntity())
-            .withLuck(context.getLuck());
+            .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, damageSource.getDirectEntity());
 
           if (entity instanceof LivingEntity livingEntity) {
             LivingEntity attackingEntity = livingEntity.getKillCredit();
 
-            if (attackingEntity instanceof Player) {
-              lootParamsBuilder = lootParamsBuilder
-                .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, (Player) attackingEntity)
-                .withLuck(((Player) attackingEntity).getLuck());
+            // using player luck to provider lootParams
+            if (attackingEntity instanceof Player player) {
+              lootParams$builder = lootParams$builder
+//                .withDynamicDrop(ModLootTables.CHAMPION_LOOT.registry(), generatedLoot::forEach)
+                .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)
+                .withLuck(player.getLuck());
             }
           }
-
-          // 使用新的 LootParams 而不是原始的 LootContext
-          LootParams lootParams = lootParamsBuilder.create(LootContextParamSets.ENTITY);
+          LootParams lootParams = lootParams$builder.create(LootContextParamSets.ENTITY);
           lootTable.getRandomItems(lootParams, generatedLoot::add);
         }
 
         if (ChampionsConfig.lootSource != ConfigEnums.LootSource.LOOT_TABLE) {
-          List<ItemStack> loot = ConfigLoot
-            .getLootDrops(serverChampion.getRank().map(Rank::getTier).orElse(0));
+          List<ItemStack> loot = ConfigLoot.getLootDrops(serverChampion.getRank().map(Rank::getTier).orElse(0));
 
           if (!loot.isEmpty()) {
             generatedLoot.addAll(loot);
