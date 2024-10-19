@@ -10,6 +10,7 @@ import top.theillusivec4.champions.client.util.HUDHelper;
 import top.theillusivec4.champions.client.util.MouseHelper;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -24,11 +25,11 @@ public class ChampionsOverlay implements LayeredDraw.Layer {
   }
 
   @Override
+  @ParametersAreNonnullByDefault
   public void render(GuiGraphics pGuiGraphics, DeltaTracker pDeltaTracker) {
     if (ChampionsConfig.showHud) {
       Minecraft mc = Minecraft.getInstance();
-      Optional<LivingEntity> livingEntity =
-        MouseHelper.getMouseOverChampion(mc, pDeltaTracker.getGameTimeDeltaTicks());
+      Optional<LivingEntity> livingEntity = MouseHelper.getMouseOverChampion(mc, pDeltaTracker.getGameTimeDeltaTicks());
       livingEntity.ifPresent(entity -> isRendering = !isBlackListEntity(entity) && HUDHelper.renderHealthBar(pGuiGraphics, entity));
 
       if (livingEntity.isEmpty()) {
