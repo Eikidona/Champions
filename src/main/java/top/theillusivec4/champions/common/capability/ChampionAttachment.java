@@ -20,8 +20,10 @@ import top.theillusivec4.champions.common.registry.ModAttachments;
 import top.theillusivec4.champions.common.util.ChampionHelper;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
+@ParametersAreNonnullByDefault
 public class ChampionAttachment {
 
   public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Champions.MODID, "champion");
@@ -32,7 +34,7 @@ public class ChampionAttachment {
   private static final String ID_TAG = "identifier";
 
   public static void register() {
-    NeoForge.EVENT_BUS.register(new CapabilityEventHandler());
+    NeoForge.EVENT_BUS.register(new AttachmentEventHandler());
     NeoForge.EVENT_BUS.register(new ChampionEventsHandler());
   }
 

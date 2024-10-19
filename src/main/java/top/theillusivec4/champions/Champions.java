@@ -195,7 +195,6 @@ public class Champions {
   private void registerNetwork(final RegisterPayloadHandlersEvent event) {
     final PayloadRegistrar registrar = event.registrar("champions");
     registrar.playToClient(SPacketSyncAffixData.TYPE, SPacketSyncAffixData.STREAM_CODEC, SPacketSyncAffixData::handle);
-    registrar.playToClient(SPacketSyncChampion.TYPE, SPacketSyncChampion.STREAM_CODEC,
-      SPacketSyncChampion::handle);
+    registrar.playToClient(SPacketSyncChampion.TYPE, SPacketSyncChampion.STREAM_CODEC, SPacketSyncChampion::handle);
   }
 }

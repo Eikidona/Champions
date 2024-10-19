@@ -19,18 +19,7 @@ import top.theillusivec4.champions.common.util.ChampionBuilder;
 
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unused")
-public class CapabilityEventHandler {
-
-  /*@SubscribeEvent
-  public void attachCapabilities(final RegisterCapabilitiesEvent evt) {
-    Entity entity = evt.getObject();
-
-    if (ChampionHelper.isValidChampion(entity)) {
-      evt.addCapability(ChampionCapability.ID,
-        ChampionCapability.createProvider((LivingEntity) entity));
-    }
-  }*/
+public class AttachmentEventHandler {
 
   @SubscribeEvent
   public void onSpecialSpawn(MobSpawnEvent.PositionCheck evt) {
@@ -63,7 +52,7 @@ public class CapabilityEventHandler {
           .ifPresent(newChampion -> {
             ChampionBuilder.copy(oldChampion, newChampion);
             IChampion.Server serverChampion = newChampion.getServer();
-            PacketDistributor.sendToPlayersTrackingEntity(entity,
+            PacketDistributor.sendToPlayersTrackingEntity(outcome,
               new SPacketSyncChampion(outcome.getId(),
                 serverChampion.getRank().map(Rank::getTier).orElse(0),
                 serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),

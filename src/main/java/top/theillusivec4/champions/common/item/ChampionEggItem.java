@@ -30,7 +30,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
@@ -39,6 +38,7 @@ import top.theillusivec4.champions.common.registry.ModDataComponents;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
 public class ChampionEggItem extends EggItem {
@@ -61,36 +61,38 @@ public class ChampionEggItem extends EggItem {
 
   public static Optional<EntityType<?>> getType(ItemStack stack) {
 
+    Optional<CompoundTag> entityTag = getTagOrEmpty(stack, ENTITY_TAG);
+    if (entityTag.isPresent()) {
+      String id = entityTag.get().getString(ID_TAG);
+
+      if (!id.isEmpty()) {
+        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(id));
+        return Optional.of(type);
+      }
+    }
+    return Optional.empty();
+  }
+
+  public static Optional<CompoundTag> getTagOrEmpty(ItemStack stack, String tagKey) {
     if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
       CompoundTag entityTag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT);
-
       if (entityTag != null) {
-        String id = entityTag.getCompound(ENTITY_TAG).getString(ID_TAG);
-
-        if (!id.isEmpty()) {
-          EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(id));
-
-          return Optional.of(type);
-        }
+        return Optional.of(entityTag.getCompound(tagKey));
       }
     }
     return Optional.empty();
   }
 
   public static void read(IChampion champion, ItemStack stack) {
+    Optional<CompoundTag> tag = getTagOrEmpty(stack, CHAMPION_TAG);
 
-    if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
-      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT);
-
-      if (tag != null) {
-        int tier = tag.getCompound(CHAMPION_TAG).getInt(TIER_TAG);
-        ListTag listNBT = tag.getCompound(CHAMPION_TAG).getList(AFFIX_TAG, CompoundTag.TAG_STRING);
-        List<IAffix> affixes = new ArrayList<>();
-        listNBT.forEach(
-          affix -> Champions.API.getAffix(affix.getAsString()).ifPresent(affixes::add));
-        ChampionBuilder.spawnPreset(champion, tier, affixes);
-      }
-    }
+    tag.ifPresent(entityTag -> {
+      int tier = entityTag.getInt(TIER_TAG);
+      ListTag affixTag = entityTag.getList(AFFIX_TAG, CompoundTag.TAG_STRING);
+      List<IAffix> affixes = new ArrayList<>();
+      affixTag.forEach(affix -> Champions.API.getAffix(affix.getAsString()).ifPresent(affixes::add));
+      ChampionBuilder.spawnPreset(champion, tier, affixes);
+    });
   }
 
   public static void write(
@@ -116,14 +118,11 @@ public class ChampionEggItem extends EggItem {
   public Component getName(@Nonnull ItemStack stack) {
     int tier = 0;
     Optional<EntityType<?>> type = getType(stack);
-
-    if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
-      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT);
-
-      if (tag != null) {
-        tier = tag.getCompound(CHAMPION_TAG).getInt(TIER_TAG);
-      }
+    Optional<CompoundTag> entityTag = getTagOrEmpty(stack, CHAMPION_TAG);
+    if (entityTag.isPresent()) {
+      tier = entityTag.get().getInt(TIER_TAG);
     }
+
     MutableComponent root = Component.translatable("rank.champions.title." + tier);
     root.append(" ");
     root.append(type.map(EntityType::getDescription).orElse(EntityType.ZOMBIE.getDescription()));
@@ -133,28 +132,27 @@ public class ChampionEggItem extends EggItem {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @NotNull TooltipContext pContext,
-                              @Nonnull List<Component> tooltip, @Nonnull TooltipFlag flagIn) {
+  @ParametersAreNonnullByDefault
+  public void appendHoverText(ItemStack stack, TooltipContext pContext,
+                              List<Component> tooltip, TooltipFlag flagIn) {
     boolean hasAffix = false;
+    Optional<CompoundTag> entityTag = getTagOrEmpty(stack, CHAMPION_TAG);
+    if (entityTag.isPresent()) {
 
-    if (stack.has(ModDataComponents.ENTITY_TAG_COMPONENT)) {
-      CompoundTag tag = stack.get(ModDataComponents.ENTITY_TAG_COMPONENT);
+      ListTag affixTag = entityTag.get().getList(AFFIX_TAG, CompoundTag.TAG_STRING);
 
-      if (tag != null) {
-        ListTag listNBT = tag.getCompound(CHAMPION_TAG).getList(AFFIX_TAG, CompoundTag.TAG_STRING);
-
-        if (!listNBT.isEmpty()) {
-          hasAffix = true;
-        }
-
-        listNBT.forEach(affix -> Champions.API.getAffix(affix.getAsString()).ifPresent(
-          affix1 -> {
-            final MutableComponent component =
-              Component.translatable("affix.champions." + affix1.getIdentifier());
-            component.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
-            tooltip.add(component);
-          }));
+      if (!affixTag.isEmpty()) {
+        hasAffix = true;
       }
+
+      affixTag.forEach(affix -> Champions.API.getAffix(affix.getAsString()).ifPresent(
+        affix1 -> {
+          final MutableComponent component =
+            Component.translatable("affix.champions." + affix1.getIdentifier());
+          component.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
+          tooltip.add(component);
+        }));
+
     }
 
     if (!hasAffix) {
