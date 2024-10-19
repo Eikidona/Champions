@@ -118,7 +118,7 @@ public class ConfigLoot {
       ItemStack loot = stack.copy();
 
       if (enchant) {
-//        EnchantmentHelper.enchantItem(RAND, loot, 30, );
+//        EnchantmentHelper.enchantItem(RAND, loot, 30,  );
       }
       return loot;
     }

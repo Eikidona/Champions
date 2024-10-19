@@ -231,15 +231,6 @@ public class ChampionEventsHandler {
     ChampionHelper.clearBeacons();
   }
 
-  /*@SubscribeEvent
-  public void onBeaconStart(AttachCapabilitiesEvent<BlockEntity> evt) {
-    BlockEntity blockEntity = evt.getObject();
-
-    if (blockEntity instanceof BeaconBlockEntity) {
-      ChampionHelper.addBeacon(blockEntity.getBlockPos());
-    }
-  }*/
-
   @SubscribeEvent
   public void onLivingHeal(LivingHealEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
@@ -258,8 +249,6 @@ public class ChampionEventsHandler {
   @SubscribeEvent(priority = EventPriority.LOWEST)
   @OnlyIn(Dist.CLIENT)
   public void onBossBarEvent(final CustomizeGuiOverlayEvent.BossEventProgress evt) {
-    if (ChampionsOverlay.isRendering) {
-      evt.setCanceled(true);
-    }
+    evt.setCanceled(ChampionsOverlay.isRendering);
   }
 }
