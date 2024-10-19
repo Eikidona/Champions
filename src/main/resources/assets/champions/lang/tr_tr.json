@@ -33,5 +33,6 @@
   "advancements.champions.kill_a_champion.title": "Şampiyon Avcısı",
   "advancements.champions.kill_a_champion.description": "Güçlü bir düşman öldür",
   "stat.champions.champion_mobs_killed": "Öldürülen Şampiyon Sayısı",
-  "command.champions.egg.unknown_entity": "Bilinmeyen Yaratık"
+  "command.champions.egg.unknown_entity": "Bilinmeyen Yaratık",
+  "config.jade.plugin_champions.enable_affix_compact": "Enable Jade affix compact"
 }

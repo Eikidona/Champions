@@ -1,11 +1,11 @@
 modLoader="javafml"
 loaderVersion="${loader_version}"
-license="LGPL-3.0-or-later"
+license="${mod_license}"
 issueTrackerURL="https://github.com/TheIllusiveC4/Champions/issues"
 logoFile="champions_icon.png"
 logoBlur=false
 [[mods]]
-modId="champions"
+modId="${mod_id}"
 version="${version}"
 displayName="Champions"
 displayURL="https://github.com/TheIllusiveC4/Champions/"
@@ -13,19 +13,19 @@ authors="C4, kumoe"
 description='''
 Creates elite mobs of different rarities, with enhanced stats and extra abilities.
 '''
-[[dependencies.champions]]
+[[dependencies.${mod_id}]]
   modId="forge"
   mandatory=true
   versionRange="${forge_version_range}"
   ordering="NONE"
   side="BOTH"
-[[dependencies.champions]]
+[[dependencies.${mod_id}]]
   modId="minecraft"
   mandatory=true
   versionRange="${mc_version_range}"
   ordering="NONE"
   side="BOTH"
-[[dependencies.champions]]
+[[dependencies.${mod_id}]]
   modId="scalinghealth"
   mandatory=false
   versionRange="[6.3.0,)"
