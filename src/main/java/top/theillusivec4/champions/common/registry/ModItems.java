@@ -11,7 +11,7 @@ import top.theillusivec4.champions.common.item.ChampionEggItem;
 public class ModItems {
 
   private static final DeferredRegister<Item> ITEM = DeferredRegister.create(BuiltInRegistries.ITEM, Champions.MODID);
-  public static DeferredHolder<Item, ChampionEggItem> CHAMPION_EGG_ITEM = ITEM.register("champion_egg", ChampionEggItem::new);
+  public static final DeferredHolder<Item, ChampionEggItem> CHAMPION_EGG_ITEM = ITEM.register("champion_egg", ChampionEggItem::new);
 
   public static void register(IEventBus bus) {
     ITEM.register(bus);

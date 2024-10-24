@@ -19,7 +19,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -112,28 +111,20 @@ public class ChampionsCommand {
   private static int summon(CommandSourceStack source, @Nullable BlockPos pos,
                             ResourceLocation resourceLocation, int tier, Collection<IAffix> affixes)
     throws CommandSyntaxException {
-    EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(resourceLocation);
+    var entityType = BuiltInRegistries.ENTITY_TYPE.getOptional(resourceLocation).orElseThrow(() -> UNKNOWN_ENTITY.create(resourceLocation));
+    var sourceEntity = source.getPlayerOrException();
 
+    Entity entity = entityType.create((ServerLevel) sourceEntity.level(), null,
+      pos != null ? pos : new BlockPos(sourceEntity.blockPosition()), MobSpawnType.COMMAND,
+      false, false);
 
-    if (entityType == null) {
-      throw UNKNOWN_ENTITY.create(resourceLocation);
-    } else {
-      final Entity sourceEntity = source.getEntity();
-
-      if (sourceEntity != null) {
-        Entity entity = entityType.create((ServerLevel) sourceEntity.level(), null,
-          pos != null ? pos : new BlockPos(sourceEntity.blockPosition()), MobSpawnType.COMMAND,
-          false, false);
-
-        if (entity instanceof LivingEntity) {
-          ChampionAttachment.getAttachment(entity).ifPresent(
-            champion -> ChampionBuilder.spawnPreset(champion, tier, new ArrayList<>(affixes)));
-          source.getLevel().addFreshEntity(entity);
-          source.sendSuccess(() -> Component.translatable("commands.champions.summon.success",
-            Component.translatable("rank.champions.title." + tier).getString() + " " + entity
-              .getDisplayName().getString()), false);
-        }
-      }
+    if (entity instanceof LivingEntity) {
+      ChampionAttachment.getAttachment(entity).ifPresent(
+        champion -> ChampionBuilder.spawnPreset(champion, tier, new ArrayList<>(affixes)));
+      source.getLevel().addFreshEntity(entity);
+      source.sendSuccess(() -> Component.translatable("commands.champions.summon.success",
+        Component.translatable("rank.champions.title." + tier).getString() + " " + entity
+          .getDisplayName().getString()), false);
     }
 
     return Command.SINGLE_SUCCESS;
@@ -142,17 +133,14 @@ public class ChampionsCommand {
   private static int createEgg(CommandSourceStack source, ResourceLocation resourceLocation,
                                int tier,
                                Collection<IAffix> affixes) throws CommandSyntaxException {
-    EntityType<?> entity = BuiltInRegistries.ENTITY_TYPE.get(resourceLocation);
+    var entityType = BuiltInRegistries.ENTITY_TYPE.getOptional(resourceLocation).orElseThrow(() -> UNKNOWN_ENTITY.create(resourceLocation));
+    var player = source.getPlayerOrException();
 
-    if (entity == null) {
-      throw UNKNOWN_ENTITY.create(resourceLocation);
-    } else if (source.getEntity() instanceof ServerPlayer playerEntity) {
-      ItemStack egg = new ItemStack(ModItems.CHAMPION_EGG_ITEM.get());
-      ChampionEggItem.write(egg, resourceLocation, tier, affixes);
-      ItemHandlerHelper.giveItemToPlayer(playerEntity, egg, 1);
-      source.sendSuccess(
-        () -> Component.translatable("commands.champions.egg.success", egg.getDisplayName()), false);
-    }
+    ItemStack egg = new ItemStack(ModItems.CHAMPION_EGG_ITEM.get());
+    ChampionEggItem.write(egg, resourceLocation, tier, affixes);
+    ItemHandlerHelper.giveItemToPlayer(player, egg, 1);
+    source.sendSuccess(() -> Component.translatable("commands.champions.egg.success", egg.getDisplayName()), false);
+
     return Command.SINGLE_SUCCESS;
   }
 }
