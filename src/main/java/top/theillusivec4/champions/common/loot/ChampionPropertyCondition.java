@@ -4,13 +4,17 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.advancements.critereon.EntitySubPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
+import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
@@ -25,7 +29,7 @@ import java.util.stream.Collectors;
 
 public record ChampionPropertyCondition(LootContext.EntityTarget target,
                                         Optional<MinMaxBounds.Ints> tier, Optional<AffixesPredicate> affixes)
-  implements LootItemCondition {
+  implements LootItemCondition, EntitySubPredicate {
 
   public static final MapCodec<ChampionPropertyCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
     LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(ChampionPropertyCondition::target),
@@ -41,7 +45,32 @@ public record ChampionPropertyCondition(LootContext.EntityTarget target,
 
   @Override
   public boolean test(LootContext context) {
+    if (context.getLevel().isClientSide())
+      return false;
     Entity entity = context.getParamOrNull(this.target.getParam());
+    return isChampionAndMatches(entity);
+  }
+
+  @Nonnull
+  @Override
+  public LootItemConditionType getType() {
+    return ModLootItemConditions.CHAMPION_PROPERTIES.get();
+  }
+
+  @Override
+  public MapCodec<? extends EntitySubPredicate> codec() {
+    return CODEC;
+  }
+
+  @Override
+  public boolean matches(Entity entity, ServerLevel level, @Nullable Vec3 position) {
+    if (level.getLevel().isClientSide())
+      return false;
+
+    return isChampionAndMatches(entity);
+  }
+
+  public boolean isChampionAndMatches(Entity entity) {
     return ChampionAttachment.getAttachment(entity).map(champion -> {
       IChampion.Server server = champion.getServer();
       int tier = server.getRank().map(Rank::getTier).orElse(0);
@@ -51,16 +80,10 @@ public record ChampionPropertyCondition(LootContext.EntityTarget target,
       }
       List<IAffix> affixes = server.getAffixes();
       return this.affixes.map(affixesPredicate -> affixesPredicate.matches(affixes)).orElse(true);
-    }).orElse(true);
+    }).orElse(false);
   }
 
-  @Nonnull
-  @Override
-  public LootItemConditionType getType() {
-    return ModLootItemConditions.CHAMPION_PROPERTIES.get();
-  }
-
-  private record AffixesPredicate(Set<String> values, MinMaxBounds.Ints matches,
+  public record AffixesPredicate(Set<String> values, MinMaxBounds.Ints matches,
                                   MinMaxBounds.Ints count) {
 
     public static final Codec<AffixesPredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -74,15 +97,8 @@ public record ChampionPropertyCondition(LootContext.EntityTarget target,
       if (this.values.isEmpty()) {
         return this.count.matches(input.size());
       } else {
-        Set<String> affixes = input.stream().map(IAffix::getIdentifier).collect(Collectors.toSet());
-        int found = 0;
-
-        for (String affix : this.values) {
-
-          if (affixes.contains(affix)) {
-            found++;
-          }
-        }
+        var affixes = input.stream().map(IAffix::getIdentifier).collect(Collectors.toSet());
+        var found = (int) values.stream().filter(affixes::contains).count();
         return this.matches.matches(found) && this.count.matches(input.size());
       }
     }
