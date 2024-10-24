@@ -21,7 +21,10 @@ package top.theillusivec4.champions;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
 import net.minecraft.core.Direction;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.DataProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -41,6 +44,8 @@ import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -53,12 +58,15 @@ import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.affix.core.AffixManager;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
+import top.theillusivec4.champions.common.datagen.ModAdvancementProvider;
+import top.theillusivec4.champions.common.datagen.ModGlobalLootModifierProvider;
 import top.theillusivec4.champions.common.integration.theoneprobe.TheOneProbePlugin;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
 import top.theillusivec4.champions.common.network.SPacketSyncAffixData;
 import top.theillusivec4.champions.common.network.SPacketSyncChampion;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
+import top.theillusivec4.champions.common.registry.ModDamageTypes;
 import top.theillusivec4.champions.common.registry.ModItems;
 import top.theillusivec4.champions.common.registry.ModStats;
 import top.theillusivec4.champions.common.util.EntityManager;
@@ -67,8 +75,10 @@ import top.theillusivec4.champions.server.command.ChampionsCommand;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 @Mod(Champions.MODID)
 public class Champions {
@@ -84,6 +94,7 @@ public class Champions {
 
     modEventBus.addListener(this::enqueueIMC);
     modEventBus.addListener(this::registerNetwork);
+    modEventBus.addListener(this::onGatherData);
     modContainer.registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
     modContainer.registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
     modContainer.registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
@@ -92,8 +103,7 @@ public class Champions {
     createServerConfig(ChampionsConfig.ENTITIES_SPEC, "entities");
 
     if (gameStagesLoaded) {
-      modContainer
-        .registerConfig(ModConfig.Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
+      modContainer.registerConfig(ModConfig.Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
     }
     modEventBus.addListener(this::config);
     modEventBus.addListener(this::setup);
@@ -109,9 +119,7 @@ public class Champions {
 
     if (!defaults.exists()) {
       try {
-        FileUtils.copyInputStreamToFile(
-          Objects.requireNonNull(Champions.class.getClassLoader().getResourceAsStream(fileName)),
-          defaults);
+        FileUtils.copyInputStreamToFile(Objects.requireNonNull(Champions.class.getClassLoader().getResourceAsStream(fileName)), defaults);
       } catch (IOException e) {
         LOGGER.error("Error creating default config for " + fileName);
       }
@@ -128,13 +136,10 @@ public class Champions {
         Direction direction = source.state().getValue(DispenserBlock.FACING);
         Optional<EntityType<?>> entityType = ChampionEggItem.getType(stack);
         entityType.ifPresent(type -> {
-          Entity entity = type.create(source.level(), (s) -> stack.getTags(),
-            source.pos().relative(direction), MobSpawnType.DISPENSER, true,
-            direction != Direction.UP);
+          Entity entity = type.create(source.level(), (s) -> stack.getTags(), source.pos().relative(direction), MobSpawnType.DISPENSER, true, direction != Direction.UP);
 
           if (entity instanceof LivingEntity) {
-            ChampionAttachment.getAttachment(entity)
-              .ifPresent(champion -> ChampionEggItem.read(champion, stack));
+            ChampionAttachment.getAttachment(entity).ifPresent(champion -> ChampionEggItem.read(champion, stack));
             source.level().addFreshEntity(entity);
             stack.shrink(1);
           }
@@ -187,8 +192,7 @@ public class Champions {
     // register TheOneProbe integration
     if (ModList.get().isLoaded("theoneprobe")) {
       Champions.LOGGER.info("Champions detected TheOneProbe, registering plugin now");
-      InterModComms.sendTo(MODID, "theoneprobe", "getTheOneProbe",
-        TheOneProbePlugin.GetTheOneProbe::new);
+      InterModComms.sendTo(MODID, "theoneprobe", "getTheOneProbe", TheOneProbePlugin.GetTheOneProbe::new);
     }
   }
 
@@ -196,5 +200,21 @@ public class Champions {
     final PayloadRegistrar registrar = event.registrar("champions");
     registrar.playToClient(SPacketSyncAffixData.TYPE, SPacketSyncAffixData.STREAM_CODEC, SPacketSyncAffixData::handle);
     registrar.playToClient(SPacketSyncChampion.TYPE, SPacketSyncChampion.STREAM_CODEC, SPacketSyncChampion::handle);
+  }
+
+  private void onGatherData(GatherDataEvent event) {
+    var generator = event.getGenerator();
+    var packOutput = generator.getPackOutput();
+    var lookupProvider = event.getLookupProvider();
+    var existingFileHelper = event.getExistingFileHelper();
+
+    generator.addProvider(event.includeServer(), new ModGlobalLootModifierProvider(packOutput, lookupProvider));
+    generator.addProvider(event.includeServer(), (DataProvider.Factory<DatapackBuiltinEntriesProvider>) output -> new DatapackBuiltinEntriesProvider(
+      output, lookupProvider,
+      new RegistrySetBuilder().add(Registries.DAMAGE_TYPE, ModDamageTypes::bootstrap),
+      Set.of(Champions.MODID))
+    );
+    generator.addProvider(event.includeServer(), new ModAdvancementProvider(packOutput, lookupProvider, existingFileHelper, List.of(new ModAdvancementProvider.Generator())));
+
   }
 }

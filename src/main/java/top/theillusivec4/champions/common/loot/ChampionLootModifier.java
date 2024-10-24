@@ -86,7 +86,6 @@ public class ChampionLootModifier extends LootModifier {
             // using player luck to provider lootParams
             if (attackingEntity instanceof Player player) {
               lootParams$builder = lootParams$builder
-//                .withDynamicDrop(ModLootTables.CHAMPION_LOOT.registry(), generatedLoot::forEach)
                 .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)
                 .withLuck(player.getLuck());
             }
