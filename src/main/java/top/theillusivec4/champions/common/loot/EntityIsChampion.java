@@ -12,13 +12,11 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.registry.ModLootItemConditions;
 
-import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.Set;
 
@@ -31,7 +29,6 @@ public record EntityIsChampion(Optional<Integer> minTier, Optional<Integer> maxT
     LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(EntityIsChampion::target)
   ).apply(instance, EntityIsChampion::new));
 
-  @NotNull
   @Override
   public Set<LootContextParam<?>> getReferencedContextParams() {
     return ImmutableSet.of(target.getParam());
@@ -43,7 +40,6 @@ public record EntityIsChampion(Optional<Integer> minTier, Optional<Integer> maxT
     return entity != null && isChampion(entity);
   }
 
-  @Nonnull
   @Override
   public LootItemConditionType getType() {
     return ModLootItemConditions.ENTITY_IS_CHAMPION.get();

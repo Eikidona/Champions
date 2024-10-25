@@ -15,14 +15,9 @@ import javax.annotation.Nonnull;
 
 public class EnkindlingBulletEntity extends BaseBulletEntity {
 
-  public EnkindlingBulletEntity(Level level) {
-    super(ModEntityTypes.ENKINDLING_BULLET.get(), level);
-  }
-
   public EnkindlingBulletEntity(Level level, LivingEntity livingEntity, @Nonnull Entity entity,
                                 Direction.Axis axis) {
     super(ModEntityTypes.ENKINDLING_BULLET.get(), level, livingEntity, entity, axis);
-
   }
 
   public EnkindlingBulletEntity(EntityType<? extends EnkindlingBulletEntity> enkindlingBulletEntityEntityType, Level level) {

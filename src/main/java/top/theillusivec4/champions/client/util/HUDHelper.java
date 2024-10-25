@@ -13,6 +13,7 @@ import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.client.ChampionsOverlay;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
+import top.theillusivec4.champions.common.util.ChampionHelper;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ public class HUDHelper {
   public static boolean renderHealthBar(GuiGraphics guiGraphics, final LivingEntity livingEntity) {
     return ChampionAttachment.getAttachment(livingEntity).map(champion -> {
       IChampion.Client clientChampion = champion.getClient();
-      return clientChampion.getRank().map(rank -> {
+      return ChampionHelper.isValidChampion(clientChampion) && clientChampion.getRank().map(rank -> {
         int championLevel = rank.getA();
         Set<String> affixSet = clientChampion.getAffixes().stream().map(IAffix::getIdentifier)
           .collect(Collectors.toSet());

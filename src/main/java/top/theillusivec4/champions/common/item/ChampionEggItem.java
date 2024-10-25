@@ -66,8 +66,7 @@ public class ChampionEggItem extends EggItem {
       String id = entityTag.get().getString(ID_TAG);
 
       if (!id.isEmpty()) {
-        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(id));
-        return Optional.of(type);
+        return BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(id));
       }
     }
     return Optional.empty();
@@ -179,9 +178,9 @@ public class ChampionEggItem extends EggItem {
       } else {
         blockpos1 = blockpos.relative(direction);
       }
-      Optional<EntityType<?>> entitytype = getType(itemstack);
-      entitytype.ifPresent(type -> {
-        Entity entity = type
+      var entityType = getType(itemstack);
+      entityType.ifPresent(type -> {
+        var entity = type
           .create((ServerLevel) world, null, blockpos1,
             MobSpawnType.SPAWN_EGG, true,
             !Objects.equals(blockpos, blockpos1) && direction == Direction.UP);
@@ -207,18 +206,18 @@ public class ChampionEggItem extends EggItem {
     if (worldIn.isClientSide()) {
       return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     } else if (worldIn instanceof ServerLevel) {
-      BlockHitResult raytraceresult = getPlayerPOVHitResult(worldIn, playerIn,
+      BlockHitResult povHitResult = getPlayerPOVHitResult(worldIn, playerIn,
         ClipContext.Fluid.SOURCE_ONLY);
 
-      if (raytraceresult.getType() != HitResult.Type.BLOCK) {
+      if (povHitResult.getType() != HitResult.Type.BLOCK) {
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
       } else {
-        BlockPos blockpos = raytraceresult.getBlockPos();
+        BlockPos blockpos = povHitResult.getBlockPos();
 
         if (!(worldIn.getFluidState(blockpos).getType() instanceof FlowingFluid)) {
           return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
         } else if (worldIn.mayInteract(playerIn, blockpos) && playerIn
-          .mayUseItemAt(blockpos, raytraceresult.getDirection(), itemstack)) {
+          .mayUseItemAt(blockpos, povHitResult.getDirection(), itemstack)) {
           Optional<EntityType<?>> entityType = getType(itemstack);
           return entityType.map(type -> {
             Entity entity = type
