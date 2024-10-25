@@ -90,6 +90,7 @@ public class ChampionEventsHandler {
       if (livingEntity.level().isClientSide()) {
         ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
           IChampion.Client clientChampion = champion.getClient();
+          if (clientChampion.getAffixes().isEmpty()) return;
           clientChampion.getAffixes().forEach(affix -> affix.onClientUpdate(champion));
           clientChampion.getRank().ifPresent(rank -> {
             if (ChampionsConfig.showParticles && rank.getA() > 0) {
@@ -110,14 +111,16 @@ public class ChampionEventsHandler {
       } else if (livingEntity.tickCount % 10 == 0) {
         ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
           IChampion.Server serverChampion = champion.getServer();
-          serverChampion.getAffixes().forEach(affix -> affix.onServerUpdate(champion));
-          serverChampion.getRank().ifPresent(rank -> {
-            if (livingEntity.tickCount % 4 == 0) {
-              var effects = rank.getEffects();
-              effects.forEach(effectPair -> livingEntity.addEffect(
-                new MobEffectInstance(effectPair.getA(), 100, effectPair.getB())));
-            }
-          });
+          if (ChampionHelper.isValidChampion(serverChampion)) {
+            serverChampion.getAffixes().forEach(affix -> affix.onServerUpdate(champion));
+            serverChampion.getRank().ifPresent(rank -> {
+              if (livingEntity.tickCount % 4 == 0) {
+                var effects = rank.getEffects();
+                effects.forEach(effectPair -> livingEntity.addEffect(
+                  new MobEffectInstance(effectPair.getA(), 100, effectPair.getB())));
+              }
+            });
+          }
         });
       }
     }
@@ -127,32 +130,35 @@ public class ChampionEventsHandler {
   public void onLivingAttack(LivingIncomingDamageEvent evt) {
     LivingEntity livingEntity = evt.getEntity();
 
-    if (livingEntity.level().isClientSide()) {
-      return;
-    }
-    ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
-      IChampion.Server serverChampion = champion.getServer();
-      serverChampion.getAffixes().forEach(affix -> {
+    if (!livingEntity.level().isClientSide()) {
+      ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
+        IChampion.Server serverChampion = champion.getServer();
+        if (ChampionHelper.isValidChampion(serverChampion)) {
 
-        if (!affix.onAttacked(champion, evt.getSource(), evt.getAmount())) {
-          evt.setCanceled(true);
+          serverChampion.getAffixes().forEach(affix -> {
+            if (!affix.onAttacked(champion, evt.getSource(), evt.getAmount())) {
+              evt.setCanceled(true);
+            }
+          });
         }
       });
-    });
 
-    if (evt.isCanceled()) {
-      return;
-    }
-    Entity source = evt.getSource().getDirectEntity();
-    ChampionAttachment.getAttachment(source).ifPresent(champion -> {
-      IChampion.Server serverChampion = champion.getServer();
-      serverChampion.getAffixes().forEach(affix -> {
+      if (evt.isCanceled()) {
+        return;
+      }
+      Entity source = evt.getSource().getDirectEntity();
+      ChampionAttachment.getAttachment(source).ifPresent(champion -> {
+        IChampion.Server serverChampion = champion.getServer();
+        if (ChampionHelper.isValidChampion(serverChampion)) {
+          serverChampion.getAffixes().forEach(affix -> {
 
-        if (!affix.onAttack(champion, evt.getEntity(), evt.getSource(), evt.getAmount())) {
-          evt.setCanceled(true);
+            if (!affix.onAttack(champion, evt.getEntity(), evt.getSource(), evt.getAmount())) {
+              evt.setCanceled(true);
+            }
+          });
         }
       });
-    });
+    }
   }
 
   @SubscribeEvent
@@ -163,20 +169,14 @@ public class ChampionEventsHandler {
       float[] amounts = new float[]{evt.getOriginalDamage(), evt.getNewDamage()};
       ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
-        serverChampion.getAffixes().forEach(affix -> amounts[1] = affix
-          .onDamage(champion, evt.getSource(), amounts[0], amounts[1]));
+        if (ChampionHelper.isValidChampion(serverChampion)) {
+          serverChampion.getAffixes().forEach(affix -> amounts[1] = affix
+            .onDamage(champion, evt.getSource(), amounts[0], amounts[1]));
+          serverChampion.getAffixes().forEach(affix -> amounts[1] = affix
+            .onHurt(champion, evt.getSource(), amounts[0], amounts[1]));
+          evt.setNewDamage(amounts[1]);
+        }
       });
-      evt.setNewDamage(amounts[1]);
-    }
-
-    if (!livingEntity.level().isClientSide()) {
-      float[] amounts = new float[]{evt.getOriginalDamage(), evt.getNewDamage()};
-      ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
-        IChampion.Server serverChampion = champion.getServer();
-        serverChampion.getAffixes().forEach(
-          affix -> amounts[1] = affix.onHurt(champion, evt.getSource(), amounts[0], amounts[1]));
-      });
-      evt.setNewDamage(amounts[1]);
     }
   }
 
@@ -189,34 +189,36 @@ public class ChampionEventsHandler {
     }
     ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
       IChampion.Server serverChampion = champion.getServer();
-      serverChampion.getAffixes().forEach(affix -> {
+      if (ChampionHelper.isValidChampion(serverChampion)) {
+        serverChampion.getAffixes().forEach(affix -> {
 
-        if (!affix.onDeath(champion, evt.getSource())) {
-          evt.setCanceled(true);
-        }
-      });
-      serverChampion.getRank().ifPresent(rank -> {
-        if (!evt.isCanceled()) {
-          Entity source = evt.getSource().getEntity();
+          if (!affix.onDeath(champion, evt.getSource())) {
+            evt.setCanceled(true);
+          }
+        });
+        serverChampion.getRank().ifPresent(rank -> {
+          if (!evt.isCanceled()) {
+            Entity source = evt.getSource().getEntity();
 
-          if (source instanceof ServerPlayer player && !(source instanceof FakePlayer)) {
-            player.awardStat(ModStats.CHAMPION_MOBS_KILLED.get());
-            int messageTier = ChampionsConfig.deathMessageTier;
+            if (source instanceof ServerPlayer player && !(source instanceof FakePlayer)) {
+              player.awardStat(ModStats.CHAMPION_MOBS_KILLED.get());
+              int messageTier = ChampionsConfig.deathMessageTier;
 
-            if (messageTier > 0 && rank.getTier() >= messageTier) {
-              MinecraftServer server = livingEntity.getServer();
+              if (messageTier > 0 && rank.getTier() >= messageTier) {
+                MinecraftServer server = livingEntity.getServer();
 
-              if (server != null) {
-                server.getPlayerList().broadcastSystemMessage(
-                  Component.translatable("rank.champions.title." + rank.getTier())
-                    .append(" ")
-                    .append(livingEntity.getCombatTracker().getDeathMessage())
-                  , false);
+                if (server != null) {
+                  server.getPlayerList().broadcastSystemMessage(
+                    Component.translatable("rank.champions.title." + rank.getTier())
+                      .append(" ")
+                      .append(livingEntity.getCombatTracker().getDeathMessage())
+                    , false);
+                }
               }
             }
           }
-        }
-      });
+        });
+      }
     });
   }
 
@@ -239,8 +241,10 @@ public class ChampionEventsHandler {
       float[] amounts = new float[]{evt.getAmount(), evt.getAmount()};
       ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
-        serverChampion.getAffixes()
-          .forEach(affix -> amounts[1] = affix.onHeal(champion, amounts[0], amounts[1]));
+        if (ChampionHelper.isValidChampion(serverChampion)) {
+          serverChampion.getAffixes()
+            .forEach(affix -> amounts[1] = affix.onHeal(champion, amounts[0], amounts[1]));
+        }
       });
       evt.setAmount(amounts[1]);
     }

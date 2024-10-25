@@ -34,16 +34,15 @@ public class EntityManager {
         Champions.LOGGER.error("Missing identifier while building entity settings, skipping...");
         return;
       }
-      EntityType<?> type = BuiltInRegistries.ENTITY_TYPE
-        .get(ResourceLocation.parse(entityConfig.entity));
+      var type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(entityConfig.entity));
 
-      if (type == null) {
+      if (type.isEmpty()) {
         Champions.LOGGER.error("Invalid identifier while building entity settings, skipping...");
         return;
       }
-      EntitySettings settings = new EntitySettings(type, entityConfig.minTier, entityConfig.maxTier,
+      EntitySettings settings = new EntitySettings(type.get(), entityConfig.minTier, entityConfig.maxTier,
         entityConfig.presetAffixes, entityConfig.affixList, entityConfig.affixPermission);
-      SETTINGS.put(type, settings);
+      SETTINGS.put(type.get(), settings);
     });
   }
 
@@ -85,7 +84,7 @@ public class EntityManager {
       try {
         permission = Permission.valueOf(affixPermission);
       } catch (IllegalArgumentException e) {
-        Champions.LOGGER.error("Invalid permission value " + affixPermission);
+        Champions.LOGGER.error("Invalid permission value {}", affixPermission);
       }
       this.affixPermission = permission;
     }

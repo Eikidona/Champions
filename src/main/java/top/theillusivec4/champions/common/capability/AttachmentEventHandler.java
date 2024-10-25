@@ -16,6 +16,7 @@ import top.theillusivec4.champions.common.network.SPacketSyncChampion;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
+import top.theillusivec4.champions.common.util.ChampionHelper;
 
 import java.util.stream.Collectors;
 
@@ -30,7 +31,7 @@ public class AttachmentEventHandler {
       ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
 
-        if (serverChampion.getRank().isEmpty()) {
+        if (ChampionHelper.isValidChampion(serverChampion)) {
 
           if (!ChampionsConfig.championSpawners && evt.getSpawner() != null) {
             serverChampion.setRank(RankManager.getLowestRank());
@@ -49,16 +50,20 @@ public class AttachmentEventHandler {
     if (!entity.level().isClientSide()) {
       LivingEntity outcome = evt.getOutcome();
       ChampionAttachment.getAttachment(entity).ifPresent(
-        oldChampion -> ChampionAttachment.getAttachment(outcome)
-          .ifPresent(newChampion -> {
-            ChampionBuilder.copy(oldChampion, newChampion);
-            IChampion.Server serverChampion = newChampion.getServer();
-            PacketDistributor.sendToPlayersTrackingEntity(outcome,
-              new SPacketSyncChampion(outcome.getId(),
-                serverChampion.getRank().map(Rank::getTier).orElse(0),
-                serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
-                serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toSet())));
-          }));
+        oldChampion -> {
+          if (ChampionHelper.isValidChampion(oldChampion.getServer())) {
+            ChampionAttachment.getAttachment(outcome)
+              .ifPresent(newChampion -> {
+                ChampionBuilder.copy(oldChampion, newChampion);
+                IChampion.Server serverChampion = newChampion.getServer();
+                PacketDistributor.sendToPlayersTrackingEntity(outcome,
+                  new SPacketSyncChampion(outcome.getId(),
+                    serverChampion.getRank().map(Rank::getTier).orElse(0),
+                    serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
+                    serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toSet())));
+              });
+          }
+        });
     }
   }
 
@@ -70,11 +75,14 @@ public class AttachmentEventHandler {
     if (playerEntity instanceof ServerPlayer serverPlayer) {
       ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
-        PacketDistributor.sendToPlayer(serverPlayer,
-          new SPacketSyncChampion(entity.getId(),
-            serverChampion.getRank().map(Rank::getTier).orElse(0),
-            serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
-            serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toSet())));
+        if (ChampionHelper.isValidChampion(serverChampion)) {
+          PacketDistributor.sendToPlayer(serverPlayer,
+            new SPacketSyncChampion(entity.getId(),
+              serverChampion.getRank().map(Rank::getTier).orElse(0),
+              serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
+              serverChampion.getAffixes().stream().map(IAffix::getIdentifier).collect(Collectors.toSet()))
+          );
+        }
       });
     }
   }

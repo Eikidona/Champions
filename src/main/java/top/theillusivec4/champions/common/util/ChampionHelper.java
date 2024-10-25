@@ -1,16 +1,20 @@
 package top.theillusivec4.champions.common.util;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
+import top.theillusivec4.champions.common.rank.Rank;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,11 +24,29 @@ public class ChampionHelper {
   private static final Set<BlockPos> BEACON_POS = new HashSet<>();
 
   private static MinecraftServer server = null;
+
   /**
    * check entity is LivingEntity & Enemy
    */
   public static boolean isValidChampion(final Entity entity) {
     return entity instanceof LivingEntity && entity instanceof Enemy;
+  }
+
+  /**
+   * @param client champion to check
+   * @return True if champion is valid Champion(Has ranks and affixes), else false.
+   */
+  public static boolean isValidChampion(IChampion.Client client) {
+    var rank = client.getRank();
+    return rank.isPresent() && rank.map(Tuple::getA).orElse(0) > 0 && !client.getAffixes().isEmpty();
+  }
+  /**
+   * @param server champion to check
+   * @return True if champion is valid Champion(Has ranks and affixes), else false.
+   */
+  public static boolean isValidChampion(IChampion.Server server) {
+    var rank = server.getRank();
+    return rank.isPresent() && rank.map(Rank::getTier).orElse(-1) > 0 && !server.getAffixes().isEmpty();
   }
 
   public static boolean isPotential(final LivingEntity livingEntity) {
@@ -41,11 +63,8 @@ public class ChampionHelper {
   }
 
   private static boolean isValidEntity(final LivingEntity livingEntity) {
-    ResourceLocation rl = livingEntity.getType().getDefaultLootTable().location();
+    ResourceLocation rl = BuiltInRegistries.ENTITY_TYPE.getKey(livingEntity.getType());
 
-    if (rl == null) {
-      return false;
-    }
     String entity = rl.toString();
 
     if (ChampionsConfig.entitiesPermission == Permission.BLACKLIST) {

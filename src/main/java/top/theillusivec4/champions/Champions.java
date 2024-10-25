@@ -27,7 +27,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;
@@ -69,6 +68,7 @@ import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.registry.ModDamageTypes;
 import top.theillusivec4.champions.common.registry.ModItems;
 import top.theillusivec4.champions.common.registry.ModStats;
+import top.theillusivec4.champions.common.util.ChampionHelper;
 import top.theillusivec4.champions.common.util.EntityManager;
 import top.theillusivec4.champions.server.command.ChampionSelectorOptions;
 import top.theillusivec4.champions.server.command.ChampionsCommand;
@@ -137,12 +137,13 @@ public class Champions {
         Optional<EntityType<?>> entityType = ChampionEggItem.getType(stack);
         entityType.ifPresent(type -> {
           Entity entity = type.create(source.level(), (s) -> stack.getTags(), source.pos().relative(direction), MobSpawnType.DISPENSER, true, direction != Direction.UP);
-
-          if (entity instanceof LivingEntity) {
-            ChampionAttachment.getAttachment(entity).ifPresent(champion -> ChampionEggItem.read(champion, stack));
-            source.level().addFreshEntity(entity);
-            stack.shrink(1);
-          }
+          ChampionAttachment.getAttachment(entity).ifPresent(champion -> {
+            if (ChampionHelper.isValidChampion(champion.getServer())) {
+              ChampionEggItem.read(champion, stack);
+              source.level().addFreshEntity(champion.getLivingEntity());
+              stack.shrink(1);
+            }
+          });
         });
         return stack;
       };

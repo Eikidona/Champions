@@ -14,6 +14,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
@@ -45,20 +46,17 @@ public record ChampionPropertyCondition(LootContext.EntityTarget target,
 
   @Override
   public boolean test(LootContext context) {
-    if (context.getLevel().isClientSide())
-      return false;
-    Entity entity = context.getParamOrNull(this.target.getParam());
-    return isChampionAndMatches(entity);
+    var entity = context.getParamOrNull(this.target.getParam());
+    return entity != null && isChampionAndMatches(entity);
   }
 
-  @Nonnull
   @Override
   public LootItemConditionType getType() {
     return ModLootItemConditions.CHAMPION_PROPERTIES.get();
   }
 
   @Override
-  public MapCodec<? extends EntitySubPredicate> codec() {
+  public @NotNull MapCodec<? extends EntitySubPredicate> codec() {
     return CODEC;
   }
 
@@ -84,7 +82,7 @@ public record ChampionPropertyCondition(LootContext.EntityTarget target,
   }
 
   public record AffixesPredicate(Set<String> values, MinMaxBounds.Ints matches,
-                                  MinMaxBounds.Ints count) {
+                                 MinMaxBounds.Ints count) {
 
     public static final Codec<AffixesPredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(
       NeoForgeExtraCodecs.setOf(Codec.STRING).fieldOf("values").forGetter(AffixesPredicate::values),

@@ -19,7 +19,6 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
@@ -28,11 +27,8 @@ import top.theillusivec4.champions.common.config.ConfigLoot;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.registry.ModLootTables;
 
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-@ParametersAreNonnullByDefault
 public class ChampionLootModifier extends LootModifier {
   public static final MapCodec<ChampionLootModifier> CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, ChampionLootModifier::new));
   private static final ThreadLocal<Boolean> IS_PROCESSING = ThreadLocal.withInitial(() -> false);
@@ -41,7 +37,6 @@ public class ChampionLootModifier extends LootModifier {
     super(conditions);
   }
 
-  @Nonnull
   @Override
   public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
     if (IS_PROCESSING.get()) {
@@ -109,7 +104,6 @@ public class ChampionLootModifier extends LootModifier {
   }
 
   @Override
-  @NotNull
   public MapCodec<? extends IGlobalLootModifier> codec() {
     return CODEC;
   }

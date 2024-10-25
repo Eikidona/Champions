@@ -7,12 +7,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootTable;
 import top.theillusivec4.champions.Champions;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-@ParametersAreNonnullByDefault
 public class ModLootTables {
   private static final Set<ResourceKey<LootTable>> LOCATIONS = new HashSet<>();
   public static final ResourceKey<LootTable> CHAMPION_LOOT = register("champion_loot");

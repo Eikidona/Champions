@@ -16,10 +16,6 @@ import javax.annotation.Nonnull;
 
 public class ArcticBulletEntity extends BaseBulletEntity {
 
-  public ArcticBulletEntity(Level level) {
-    super(ModEntityTypes.ARCTIC_BULLET.get(), level);
-  }
-
   public ArcticBulletEntity(Level level, LivingEntity livingEntity, @Nonnull Entity entity, Direction.Axis axis) {
     super(ModEntityTypes.ARCTIC_BULLET.get(), level, livingEntity, entity, axis);
   }
