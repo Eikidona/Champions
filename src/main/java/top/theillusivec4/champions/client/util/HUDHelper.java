@@ -20,10 +20,8 @@ import java.util.stream.Collectors;
 
 public class HUDHelper {
 
-  private static final ResourceLocation GUI_BAR_TEXTURES = ResourceLocation.fromNamespaceAndPath(Champions.MODID,
-    "textures/gui/bars.png");
-  private static final ResourceLocation GUI_STAR = ResourceLocation.fromNamespaceAndPath(Champions.MODID,
-    "textures/gui/staricon.png");
+  private static final ResourceLocation GUI_BAR_TEXTURES = Champions.getLocation("textures/gui/bars.png");
+  private static final ResourceLocation GUI_STAR = Champions.getLocation("textures/gui/staricon.png");
 
   public static boolean renderHealthBar(GuiGraphics guiGraphics, final LivingEntity livingEntity) {
     return ChampionAttachment.getAttachment(livingEntity).map(champion -> {

@@ -1,6 +1,5 @@
 package top.theillusivec4.champions.common.affix;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -21,9 +20,9 @@ public class HastyAffix extends BasicAffix {
   public void onInitialSpawn(IChampion champion) {
     AttributeInstance speed = champion.getLivingEntity().getAttribute(Attributes.MOVEMENT_SPEED);
     AttributeModifier hastyModifier =
-        new AttributeModifier(ResourceLocation.fromNamespaceAndPath(Champions.MODID, "hasty"),
-             ChampionsConfig.hastyMovementBonus,
-            AttributeModifier.Operation.ADD_VALUE);
+      new AttributeModifier(Champions.getLocation("hasty"),
+        ChampionsConfig.hastyMovementBonus,
+        AttributeModifier.Operation.ADD_VALUE);
 
     if (speed != null && !speed.hasModifier(hastyModifier.id())) {
       speed.addTransientModifier(hastyModifier);

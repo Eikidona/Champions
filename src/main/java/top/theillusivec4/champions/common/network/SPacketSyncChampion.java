@@ -7,7 +7,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
@@ -22,7 +21,7 @@ import java.util.Set;
 public record SPacketSyncChampion(int entityId, int tier, int defaultColor,
                                   Set<String> affixes) implements CustomPacketPayload {
 
-  public static final Type<SPacketSyncChampion> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Champions.MODID, "sync_champion"));
+  public static final Type<SPacketSyncChampion> TYPE = new Type<>(Champions.getLocation("sync_champion"));
 
   public static final StreamCodec<FriendlyByteBuf, SPacketSyncChampion> STREAM_CODEC = StreamCodec.composite(
     ByteBufCodecs.INT,

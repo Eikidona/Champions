@@ -56,7 +56,6 @@ public class AttachmentEventHandler {
               .ifPresent(newChampion -> {
                 ChampionBuilder.copy(oldChampion, newChampion);
                 IChampion.Server serverChampion = newChampion.getServer();
-                serverChampion.getAffixes().forEach(affix -> affix.onSpawn(newChampion));
                 PacketDistributor.sendToPlayersTrackingEntity(outcome,
                   new SPacketSyncChampion(outcome.getId(),
                     serverChampion.getRank().map(Rank::getTier).orElse(0),

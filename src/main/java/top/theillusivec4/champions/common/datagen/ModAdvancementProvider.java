@@ -11,7 +11,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -60,7 +59,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
             Optional.of(new ChampionPropertyCondition.AffixesPredicate(Set.of("hasty", "dampening", "enkindling"), MinMaxBounds.Ints.atLeast(1), MinMaxBounds.Ints.atLeast(1))))
           )))
         .requirements(AdvancementRequirements.allOf(List.of("kill_a_champion")))
-        .save(saver, ResourceLocation.fromNamespaceAndPath(Champions.MODID, "kill_a_champion"), existingFileHelper).value();
+        .save(saver,  Champions.getLocation("kill_a_champion"), existingFileHelper).value();
     }
   }
 }

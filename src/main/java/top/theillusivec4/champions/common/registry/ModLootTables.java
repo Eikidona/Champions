@@ -3,7 +3,6 @@ package top.theillusivec4.champions.common.registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootTable;
 import top.theillusivec4.champions.Champions;
 
@@ -13,14 +12,14 @@ import java.util.Set;
 
 public class ModLootTables {
   private static final Set<ResourceKey<LootTable>> LOCATIONS = new HashSet<>();
-  public static final ResourceKey<LootTable> CHAMPION_LOOT = register("champion_loot");
+  public static final ResourceKey<LootTable> CHAMPION_LOOT = create("champion_loot");
   private static final Set<ResourceKey<LootTable>> IMMUTABLE_LOCATIONS = Collections.unmodifiableSet(LOCATIONS);
 
-  private static ResourceKey<LootTable> register(String name) {
-    return register(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(Champions.MODID, name)));
+  private static ResourceKey<LootTable> create(String name) {
+    return create(ResourceKey.create(Registries.LOOT_TABLE, Champions.getLocation(name)));
   }
 
-  private static ResourceKey<LootTable> register(ResourceKey<LootTable> name) {
+  private static ResourceKey<LootTable> create(ResourceKey<LootTable> name) {
     if (LOCATIONS.add(name)) {
       return name;
     } else {

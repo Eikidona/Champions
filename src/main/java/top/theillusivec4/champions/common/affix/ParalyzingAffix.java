@@ -19,8 +19,7 @@ public class ParalyzingAffix extends BasicAffix {
       IChampion champion, LivingEntity target, DamageSource source,
       float amount) {
 
-    if (target.getRandom().nextFloat() < ChampionsConfig.paralyzingChance && !target.hasEffect(
-      ModMobEffects.PARALYSIS_EFFECT_TYPE )) {
+    if (target.getRandom().nextFloat() < ChampionsConfig.paralyzingChance && !target.hasEffect(ModMobEffects.PARALYSIS_EFFECT_TYPE)) {
       target.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS_EFFECT_TYPE, 60, 0));
     }
     return true;

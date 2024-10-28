@@ -22,6 +22,7 @@ package top.theillusivec4.champions;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
@@ -53,8 +54,8 @@ import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.affix.core.AffixManager;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
-import top.theillusivec4.champions.common.datagen.ModDamageTypeTagsProvider;
 import top.theillusivec4.champions.common.datagen.ModAdvancementProvider;
+import top.theillusivec4.champions.common.datagen.ModDamageTypeTagsProvider;
 import top.theillusivec4.champions.common.datagen.ModDatapackProvider;
 import top.theillusivec4.champions.common.datagen.ModGlobalLootModifierProvider;
 import top.theillusivec4.champions.common.integration.theoneprobe.TheOneProbePlugin;
@@ -120,6 +121,10 @@ public class Champions {
         LOGGER.error("Error creating default config for " + fileName);
       }
     }
+  }
+
+  public static ResourceLocation getLocation(final String path) {
+    return ResourceLocation.fromNamespaceAndPath(MODID, path);
   }
 
   private void setup(final FMLCommonSetupEvent evt) {

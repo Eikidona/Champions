@@ -4,6 +4,8 @@ license="LGPL-3.0-or-later"
 issueTrackerURL="https://github.com/CrychicTeam/Champions/issues"
 logoFile="champions_icon.png"
 logoBlur=false
+[[mixin]]
+config="${mod_id}.mixins.json"
 [[mods]]
   modId="${mod_id}"
   version="${mod_version}"
