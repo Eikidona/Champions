@@ -1,8 +1,11 @@
 package top.theillusivec4.champions.common;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.FastColor;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,6 +15,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
@@ -28,6 +32,7 @@ import top.theillusivec4.champions.common.registry.ModParticleTypes;
 import top.theillusivec4.champions.common.registry.ModStats;
 import top.theillusivec4.champions.common.util.ChampionBuilder;
 import top.theillusivec4.champions.common.util.ChampionHelper;
+import top.theillusivec4.champions.server.command.ChampionsCommand;
 
 import java.util.Optional;
 
@@ -90,23 +95,24 @@ public class ChampionEventsHandler {
       if (livingEntity.level().isClientSide()) {
         ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
           IChampion.Client clientChampion = champion.getClient();
-          if (clientChampion.getAffixes().isEmpty()) return;
-          clientChampion.getAffixes().forEach(affix -> affix.onClientUpdate(champion));
-          clientChampion.getRank().ifPresent(rank -> {
-            if (ChampionsConfig.showParticles && rank.getA() > 0) {
-              int color = rank.getB();
-              float r = (float) ((color >> 16) & 0xFF) / 255f;
-              float g = (float) ((color >> 8) & 0xFF) / 255f;
-              float b = (float) ((color) & 0xFF) / 255f;
+          if (ChampionHelper.isValidChampion(clientChampion)) {
+            clientChampion.getAffixes().forEach(affix -> affix.onClientUpdate(champion));
+            clientChampion.getRank().ifPresent(rank -> {
+              if (ChampionsConfig.showParticles && rank.getA() > 0) {
+                int color = rank.getB();
+                float r = (float) FastColor.ARGB32.red(color) / 255;
+                float g = (float) FastColor.ARGB32.green(color) / 255;
+                float b = (float) FastColor.ARGB32.blue(color) / 255;
 
-              livingEntity.level().addParticle(ModParticleTypes.RANK_PARTICLE_TYPE.get(),
-                livingEntity.position().x + (livingEntity.getRandom().nextDouble() - 0.5D) *
-                  (double) livingEntity.getBbWidth(), livingEntity.position().y +
-                  livingEntity.getRandom().nextDouble() * livingEntity.getBbHeight(),
-                livingEntity.position().z + (livingEntity.getRandom().nextDouble() - 0.5D) *
-                  (double) livingEntity.getBbWidth(), r, g, b);
-            }
-          });
+                livingEntity.level().addParticle(ModParticleTypes.RANK_PARTICLE_TYPE.get(),
+                  livingEntity.position().x + (livingEntity.getRandom().nextDouble() - 0.5D) *
+                    (double) livingEntity.getBbWidth(), livingEntity.position().y +
+                    livingEntity.getRandom().nextDouble() * livingEntity.getBbHeight(),
+                  livingEntity.position().z + (livingEntity.getRandom().nextDouble() - 0.5D) *
+                    (double) livingEntity.getBbWidth(), r, g, b);
+              }
+            });
+          }
         });
       } else if (livingEntity.tickCount % 10 == 0) {
         ChampionAttachment.getAttachment(livingEntity).ifPresent(champion -> {
@@ -252,7 +258,22 @@ public class ChampionEventsHandler {
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
   @OnlyIn(Dist.CLIENT)
-  public void onBossBarEvent(final CustomizeGuiOverlayEvent.BossEventProgress evt) {
-    evt.setCanceled(ChampionsOverlay.isRendering);
+  public void onBossBarEvent(final CustomizeGuiOverlayEvent.BossEventProgress event) {
+    event.setCanceled(ChampionsOverlay.isRendering);
+  }
+
+  @SubscribeEvent(priority = EventPriority.LOWEST)
+  @OnlyIn(Dist.CLIENT)
+  public void onPressPickEgg(final InputEvent.InteractionKeyMappingTriggered event) {
+    if (event.isPickBlock()) {
+      var pickedEntity = Minecraft.getInstance().crosshairPickEntity;
+      var player = Minecraft.getInstance().player;
+      ChampionAttachment.getAttachment(pickedEntity).ifPresent(champion -> {
+        IChampion.Client clientChampion = champion.getClient();
+        if (player != null && player.isCreative() && ChampionHelper.isValidChampion(clientChampion)) {
+          ChampionsCommand.createEgg(player, champion.getLivingEntity().getType(), clientChampion.getRank().map(Tuple::getA).orElseThrow(), clientChampion.getAffixes());
+        }
+      });
+    }
   }
 }

@@ -1,6 +1,5 @@
 package top.theillusivec4.champions.client;
 
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -18,7 +17,7 @@ import top.theillusivec4.champions.common.registry.ModItems;
 import top.theillusivec4.champions.common.registry.ModParticleTypes;
 
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD, modid = Champions.MODID)
-public class ClientEventHandler {
+public class ClientModEventHandler {
 
   @SubscribeEvent
   public static void onRegisterColor(final RegisterColorHandlersEvent.Item event) {
@@ -27,7 +26,7 @@ public class ClientEventHandler {
 
   @SubscribeEvent
   public static void registerGuiOverlayEvent(final RegisterGuiLayersEvent evt) {
-    evt.registerBelow(VanillaGuiLayers.BOSS_OVERLAY, ResourceLocation.fromNamespaceAndPath(Champions.MODID, "health_overlay"), new ChampionsOverlay());
+    evt.registerBelow(VanillaGuiLayers.BOSS_OVERLAY, Champions.getLocation("health_overlay"), new ChampionsOverlay());
   }
 
   @SubscribeEvent

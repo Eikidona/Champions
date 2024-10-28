@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "priority": 1000,
+  "package": "top.theillusivec4.champions.common.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}
