@@ -1,7 +1,7 @@
 package top.theillusivec4.champions.common.affix;
 
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -32,34 +32,29 @@ public class ReflectiveAffix extends BasicAffix {
 
   @Override
   public float onDamage(IChampion champion, DamageSource source, float amount, float newAmount) {
-
+    // getDirectEntity causing damage entity, example arrow entity
+    // getEntity which is using weapon entity.
+    // source which is causing champion damage source.
     if (source.getDirectEntity() instanceof LivingEntity sourceEntity) {
-
-      if (source.is(ModDamageTypes.REFLECTION_DAMAGE) || (source.getEntity() instanceof LivingEntity && source.typeHolder().is(DamageTypes.THORNS))) {
+      // if damage source came from reflection damage ( applied damage to player) or came from self, skipping repeat damage reflection calculation.
+      if (source.is(ModDamageTypes.REFLECTION_DAMAGE) || source.is(DamageTypes.THORNS)) {
         return newAmount;
       }
-      DamageSources newSources = new DamageSources(champion.getLivingEntity().level().registryAccess());
-      DamageSource newSource = newSources.magic();
-      //newSource.setThorns();
+
+      var newSource = ModDamageTypes.of(ModDamageTypes.REFLECTION_DAMAGE, champion.getLivingEntity());
+
+      if (source.getEntity() != null){
+        newSource = ModDamageTypes.of(ModDamageTypes.REFLECTION_DAMAGE, source.getDirectEntity(), champion.getLivingEntity());
+      }
       float min = (float) ChampionsConfig.reflectiveMinPercent;
+
+      if (source.is(DamageTypeTags.IS_FIRE) || source.is(DamageTypeTags.IS_PROJECTILE) || source.is(DamageTypeTags.IS_EXPLOSION) || source.is(DamageTypeTags.DAMAGES_HELMET) || source.is(DamageTypes.MAGIC) || source.is(DamageTypeTags.BYPASSES_ARMOR) || source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+        newSource = new DamageSource(source.typeHolder(), sourceEntity, champion.getLivingEntity());
+      }
+
       float damage = (float) Math.min(amount * (sourceEntity.getRandom().nextFloat() * (ChampionsConfig.reflectiveMaxPercent - min) + min), ChampionsConfig.reflectiveMax);
-      if (source.is(DamageTypes.IN_FIRE) || source.is(DamageTypes.ON_FIRE)) {
-        if (source.getEntity() instanceof LivingEntity living)
-          living.setRemainingFireTicks(champion.getLivingEntity().getRemainingFireTicks());
-      }
-      if (source.is(DamageTypes.EXPLOSION)) {
-        newSource = newSources.explosion(sourceEntity, source.getDirectEntity());
-      }
 
-      if (source.is(DamageTypes.MAGIC)) {
-        newSource = newSources.magic();
-      }
-
-      if (source.scalesWithDifficulty()) {
-        newSource.scalesWithDifficulty();
-      }
-
-      sourceEntity.hurt(ModDamageTypes.of(ModDamageTypes.REFLECTION_DAMAGE, source.getDirectEntity()), damage);
+      sourceEntity.hurt(newSource, damage);
     }
     return newAmount;
   }
