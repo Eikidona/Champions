@@ -21,8 +21,7 @@ import javax.annotation.Nonnull;
 
 public class ColorizedBulletRenderer extends EntityRenderer<BaseBulletEntity> {
 
-  private static final ResourceLocation GENERIC_SPARK_TEXTURE = ResourceLocation.fromNamespaceAndPath(
-    Champions.MODID, "textures/entity/generic_spark.png");
+  private static final ResourceLocation GENERIC_SPARK_TEXTURE = Champions.getLocation("textures/entity/generic_spark.png");
   private static final RenderType RENDER_TYPE = RenderType.entityTranslucent(GENERIC_SPARK_TEXTURE);
   private final ShulkerBulletModel<BaseBulletEntity> model;
 

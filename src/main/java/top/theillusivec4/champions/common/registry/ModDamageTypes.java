@@ -3,7 +3,6 @@ package top.theillusivec4.champions.common.registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageEffects;
 import net.minecraft.world.damagesource.DamageScaling;
 import net.minecraft.world.damagesource.DamageSource;
@@ -37,6 +36,6 @@ public class ModDamageTypes {
   }
 
   private static ResourceKey<DamageType> create(String name) {
-    return ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(Champions.MODID, name));
+    return ResourceKey.create(Registries.DAMAGE_TYPE, Champions.getLocation(name));
   }
 }
