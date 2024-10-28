@@ -13,8 +13,8 @@ import net.minecraft.world.level.Level;
 import top.theillusivec4.champions.Champions;
 
 public class ModDamageTypes {
-  public static final ResourceKey<DamageType> REFLECTION_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(Champions.MODID, "reflection"));
-  public static final ResourceKey<DamageType> ENKINDLING_BULLET = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(Champions.MODID, "enkindling_bullet"));
+  public static final ResourceKey<DamageType> REFLECTION_DAMAGE = create("reflection");
+  public static final ResourceKey<DamageType> ENKINDLING_BULLET = create("enkindling_bullet");
 
   public static DamageSource of(Level level, ResourceKey<DamageType> key) {
     return new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolder(key).orElseThrow());
@@ -34,5 +34,9 @@ public class ModDamageTypes {
   public static void bootstrap(BootstrapContext<DamageType> context) {
     context.register(REFLECTION_DAMAGE, new DamageType("reflection", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER, 0.1F));
     context.register(ENKINDLING_BULLET, new DamageType("enkindling_bullet", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER, 0.1F, DamageEffects.BURNING));
+  }
+
+  private static ResourceKey<DamageType> create(String name) {
+    return ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(Champions.MODID, name));
   }
 }

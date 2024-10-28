@@ -21,10 +21,7 @@ package top.theillusivec4.champions;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
 import net.minecraft.core.Direction;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.data.DataProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
@@ -43,7 +40,6 @@ import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -57,7 +53,9 @@ import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.affix.core.AffixManager;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
+import top.theillusivec4.champions.common.datagen.ModDamageTypeTagsProvider;
 import top.theillusivec4.champions.common.datagen.ModAdvancementProvider;
+import top.theillusivec4.champions.common.datagen.ModDatapackProvider;
 import top.theillusivec4.champions.common.datagen.ModGlobalLootModifierProvider;
 import top.theillusivec4.champions.common.integration.theoneprobe.TheOneProbePlugin;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
@@ -65,7 +63,6 @@ import top.theillusivec4.champions.common.network.SPacketSyncAffixData;
 import top.theillusivec4.champions.common.network.SPacketSyncChampion;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
-import top.theillusivec4.champions.common.registry.ModDamageTypes;
 import top.theillusivec4.champions.common.registry.ModItems;
 import top.theillusivec4.champions.common.registry.ModStats;
 import top.theillusivec4.champions.common.util.ChampionHelper;
@@ -78,7 +75,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 @Mod(Champions.MODID)
 public class Champions {
@@ -208,14 +204,12 @@ public class Champions {
     var packOutput = generator.getPackOutput();
     var lookupProvider = event.getLookupProvider();
     var existingFileHelper = event.getExistingFileHelper();
+    // datapack provider for lookup datapack entries(RegistrySetBuilder).
+    var datapackProvider = generator.addProvider(event.includeServer(), new ModDatapackProvider(packOutput, lookupProvider));
 
     generator.addProvider(event.includeServer(), new ModGlobalLootModifierProvider(packOutput, lookupProvider));
-    generator.addProvider(event.includeServer(), (DataProvider.Factory<DatapackBuiltinEntriesProvider>) output -> new DatapackBuiltinEntriesProvider(
-      output, lookupProvider,
-      new RegistrySetBuilder().add(Registries.DAMAGE_TYPE, ModDamageTypes::bootstrap),
-      Set.of(Champions.MODID))
-    );
     generator.addProvider(event.includeServer(), new ModAdvancementProvider(packOutput, lookupProvider, existingFileHelper, List.of(new ModAdvancementProvider.Generator())));
+    generator.addProvider(event.includeServer(), new ModDamageTypeTagsProvider(packOutput, datapackProvider.getRegistryProvider(), existingFileHelper));
 
   }
 }
