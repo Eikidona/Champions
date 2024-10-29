@@ -5,10 +5,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
-import top.theillusivec4.champions.common.affix.*;
 import top.theillusivec4.champions.common.config.AffixesConfig.AffixConfig;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
+import top.theillusivec4.champions.common.registry.ModAffixTypes;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -18,11 +18,11 @@ public class AffixManager {
   private static final Map<String, AffixSettings> SETTINGS = new HashMap<>();
 
   public static void register() {
-    Champions.API.registerAffixes(new MoltenAffix(), new HastyAffix(), new ReflectiveAffix(),
-      new LivelyAffix(), new MagneticAffix(), new DampeningAffix(), new AdaptableAffix(),
-      new KnockingAffix(), new DesecratingAffix(), new PlaguedAffix(), new InfestedAffix(),
-      new ParalyzingAffix(), new WoundingAffix(), new ShieldingAffix(), new ArcticAffix(),
-      new EnkindlingAffix());
+    Champions.API.registerAffixes(ModAffixTypes.MOLTEN.get(), ModAffixTypes.HASTY.get(), ModAffixTypes.REFLECTIVE.get(),
+      ModAffixTypes.LIVELY.get(), ModAffixTypes.MAGNETIC.get(), ModAffixTypes.DAMPENING.get(), ModAffixTypes.ADAPTABLE.get(),
+      ModAffixTypes.KNOCKING.get(), ModAffixTypes.DESECRATING.get(), ModAffixTypes.PLAGUED.get(), ModAffixTypes.INFESTED.get(),
+      ModAffixTypes.PARALYZING.get(), ModAffixTypes.WOUNDING.get(), ModAffixTypes.SHIELDING.get(), ModAffixTypes.ARCTIC.get(),
+      ModAffixTypes.ENKINDLING.get());
   }
 
   public static Optional<AffixSettings> getSettings(String identifier) {
@@ -75,7 +75,7 @@ public class AffixManager {
       if (mobList != null) {
 
         for (String s : mobList) {
-           BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(s)).map(this.mobList::add);
+          BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(s)).map(this.mobList::add);
         }
       }
       Permission permission = Permission.BLACKLIST;

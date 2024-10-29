@@ -13,11 +13,12 @@ public class ChampionsApiImpl implements IChampionsApi {
 
   private static final ConcurrentHashMap<String, IAffix> affixes = new ConcurrentHashMap<>();
   private static final ConcurrentHashMap<AffixCategory, List<IAffix>> categories =
-      new ConcurrentHashMap<>();
-
+    new ConcurrentHashMap<>();
+  private static final Logger LOGGER = LogManager.getLogger();
   private static ChampionsApiImpl instance = null;
 
-  private static final Logger LOGGER = LogManager.getLogger();
+  private ChampionsApiImpl() {
+  }
 
   public static IChampionsApi getInstance() {
     if (instance == null) {
@@ -30,9 +31,6 @@ public class ChampionsApiImpl implements IChampionsApi {
       }
     }
     return instance;
-  }
-
-  private ChampionsApiImpl() {
   }
 
   @Override

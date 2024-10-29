@@ -8,7 +8,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.Util;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -24,6 +23,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import top.theillusivec4.champions.Champions;
@@ -148,13 +148,13 @@ public class ChampionsCommand {
     return Command.SINGLE_SUCCESS;
   }
 
-  public static void createEgg(LocalPlayer player, EntityType<?> entityType,
+  public static void createEgg(Player player, EntityType<?> entityType,
                                int tier,
                                Collection<IAffix> affixes) {
     ItemStack egg = new ItemStack(ModItems.CHAMPION_EGG_ITEM.get());
-    ChampionEggItem.write(egg, getEntityKey(entityType), tier, affixes);
     if (player.getInventory().hasAnyOf(Set.of(egg.getItem()))) return;
-    ItemHandlerHelper.giveItemToPlayer(player, egg, 1);
+    ChampionEggItem.write(egg, getEntityKey(entityType), tier, affixes);
+    ItemHandlerHelper.giveItemToPlayer(player, egg);
   }
 
   private static ResourceLocation getEntityKey(EntityType<?> entityType) {
