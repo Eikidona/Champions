@@ -96,7 +96,7 @@ public class ChampionData {
     }
     allAffixes.forEach((k, v) -> validAffixes.get(k).addAll(v.stream().filter(affix -> {
       Optional<AffixManager.AffixSettings> settings =
-        AffixManager.getSettings(affix.getIdentifier());
+        AffixManager.getSettings(affix.getIdentifier().toString());
       return !affixes.contains(affix) && entitySettings
         .map(entitySettings1 -> entitySettings1.canApply(affix)).orElse(true) && settings
         .map(affixSettings -> affixSettings.canApply(champion)).orElse(true) && affix

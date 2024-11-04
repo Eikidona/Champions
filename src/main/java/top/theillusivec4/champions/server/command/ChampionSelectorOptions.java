@@ -10,6 +10,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
@@ -109,7 +110,7 @@ public class ChampionSelectorOptions {
         return count.matches(championAffixes.size());
       } else {
         Set<String> ids =
-          championAffixes.stream().map(IAffix::getIdentifier).collect(Collectors.toSet());
+          championAffixes.stream().map(IAffix::getIdentifier).map(ResourceLocation::toString).collect(Collectors.toSet());
         int found = 0;
 
         for (String affix : affixes) {

@@ -136,7 +136,6 @@ public class Champions {
 
   private void setup(final FMLCommonSetupEvent evt) {
     ChampionAttachment.register();
-    AffixManager.register();
     evt.enqueueWork(() -> {
       ModStats.registerFormatter();
       ChampionSelectorOptions.setup();

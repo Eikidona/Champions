@@ -8,7 +8,6 @@ import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.config.AffixesConfig.AffixConfig;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
-import top.theillusivec4.champions.common.registry.ModAffixTypes;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -16,14 +15,6 @@ import java.util.*;
 public class AffixManager {
 
   private static final Map<String, AffixSettings> SETTINGS = new HashMap<>();
-
-  public static void register() {
-    Champions.API.registerAffixes(ModAffixTypes.MOLTEN.get(), ModAffixTypes.HASTY.get(), ModAffixTypes.REFLECTIVE.get(),
-      ModAffixTypes.LIVELY.get(), ModAffixTypes.MAGNETIC.get(), ModAffixTypes.DAMPENING.get(), ModAffixTypes.ADAPTABLE.get(),
-      ModAffixTypes.KNOCKING.get(), ModAffixTypes.DESECRATING.get(), ModAffixTypes.PLAGUED.get(), ModAffixTypes.INFESTED.get(),
-      ModAffixTypes.PARALYZING.get(), ModAffixTypes.WOUNDING.get(), ModAffixTypes.SHIELDING.get(), ModAffixTypes.ARCTIC.get(),
-      ModAffixTypes.ENKINDLING.get());
-  }
 
   public static Optional<AffixSettings> getSettings(String identifier) {
     return Optional.ofNullable(SETTINGS.get(identifier));

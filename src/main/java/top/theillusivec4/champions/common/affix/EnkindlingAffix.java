@@ -19,7 +19,7 @@ import java.util.List;
 public class EnkindlingAffix extends GoalAffix {
 
   public EnkindlingAffix() {
-    super("enkindling", AffixCategory.OFFENSE);
+    super(AffixCategory.OFFENSE);
   }
 
   @Override

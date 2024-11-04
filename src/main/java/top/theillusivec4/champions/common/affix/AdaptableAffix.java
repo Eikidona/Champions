@@ -10,13 +10,13 @@ import top.theillusivec4.champions.common.config.ChampionsConfig;
 
 public class AdaptableAffix extends BasicAffix {
   public AdaptableAffix() {
-    super("adaptable", AffixCategory.DEFENSE);
+    super(AffixCategory.DEFENSE);
   }
 
   @Override
   public float onHurt(IChampion champion, DamageSource source, float amount, float newAmount) {
     String type = source.getMsgId();
-    DamageData damageData = AffixData.getData(champion, this.getIdentifier(), DamageData.class);
+    DamageData damageData = AffixData.getData(champion, getIdentifier().getPath(), DamageData.class);
 
     if (damageData.name.equalsIgnoreCase(type)) {
       newAmount -= (float) (amount * ChampionsConfig.adaptableDamageReductionIncrement * damageData.count);
@@ -27,7 +27,7 @@ public class AdaptableAffix extends BasicAffix {
     }
     damageData.saveData();
     return Math.max(amount * (float) (1.0f - ChampionsConfig.adaptableMaxDamageReduction),
-        newAmount);
+      newAmount);
   }
 
   public static class DamageData extends AffixData {

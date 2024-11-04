@@ -17,7 +17,7 @@ import java.util.List;
 
 public class PlaguedAffix extends BasicAffix {
   public PlaguedAffix() {
-    super("plagued", AffixCategory.OFFENSE);
+    super(AffixCategory.OFFENSE);
   }
 
   @Override

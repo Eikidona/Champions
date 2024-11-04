@@ -14,7 +14,7 @@ import top.theillusivec4.champions.common.registry.ModMobEffects;
 
 public class WoundingAffix extends BasicAffix {
   public WoundingAffix() {
-    super("wounding", AffixCategory.OFFENSE, true);
+    super(AffixCategory.OFFENSE, true);
   }
 
   @SubscribeEvent

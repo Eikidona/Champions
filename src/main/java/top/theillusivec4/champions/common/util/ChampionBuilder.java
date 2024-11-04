@@ -81,7 +81,7 @@ public class ChampionBuilder {
       validAffixes.put(category, new ArrayList<>());
     }
     allAffixes.forEach((k, v) -> validAffixes.get(k).addAll(v.stream().filter(affix -> {
-      Optional<AffixSettings> settings = AffixManager.getSettings(affix.getIdentifier());
+      Optional<AffixSettings> settings = AffixManager.getSettings(affix.getIdentifier().toString());
       return !affixesToAdd.contains(affix) && entitySettings
         .map(entitySettings1 -> entitySettings1.canApply(affix)).orElse(true) && settings
         .map(affixSettings -> affixSettings.canApply(champion)).orElse(true) && affix

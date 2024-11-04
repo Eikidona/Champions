@@ -27,6 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import top.theillusivec4.champions.Champions;
+import top.theillusivec4.champions.api.AffixRegistry;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.impl.ChampionsApiImpl;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
@@ -38,14 +39,13 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ChampionsCommand {
 
   public static final SuggestionProvider<CommandSourceStack> AFFIXES = SuggestionProviders
-    .register(Champions.getLocation("affixes"),
-      (context, builder) -> SharedSuggestionProvider.suggest(
-        ChampionsApiImpl.getInstance().getAffixes().stream().map(IAffix::getIdentifier),
-        builder));
+    .register(Champions.getLocation("affixes"), (context, builder) -> SharedSuggestionProvider.suggestResource(
+      AffixRegistry.AFFIX_REGISTRY.keySet(), builder));
 
   public static final SuggestionProvider<CommandSourceStack> MONSTER_ENTITIES = SuggestionProviders
     .register(Champions.getLocation("monster_entities"),

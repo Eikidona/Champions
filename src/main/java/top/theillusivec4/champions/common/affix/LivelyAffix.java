@@ -11,13 +11,13 @@ import top.theillusivec4.champions.common.config.ChampionsConfig;
 public class LivelyAffix extends BasicAffix {
 
   public LivelyAffix() {
-    super("lively", AffixCategory.DEFENSE);
+    super(AffixCategory.DEFENSE);
   }
 
   @Override
   public float onDamage(IChampion champion, DamageSource source, float amount, float newAmount) {
     AffixData.IntegerData lastAttackTime = AffixData
-        .getData(champion, this.getIdentifier(), AffixData.IntegerData.class);
+        .getData(champion, getIdentifier().getPath(), AffixData.IntegerData.class);
     LivingEntity livingEntity = champion.getLivingEntity();
     lastAttackTime.num = (int) livingEntity.level().getGameTime();
     lastAttackTime.saveData();
@@ -30,7 +30,7 @@ public class LivelyAffix extends BasicAffix {
 
     if (livingEntity.tickCount % 20 == 0) {
       AffixData.IntegerData lastAttackTime =
-          AffixData.getData(champion, this.getIdentifier(), AffixData.IntegerData.class);
+          AffixData.getData(champion, getIdentifier().getPath(), AffixData.IntegerData.class);
 
       if ((lastAttackTime.num + ChampionsConfig.livelyCooldown * 20L) <
           livingEntity.level().getGameTime()) {

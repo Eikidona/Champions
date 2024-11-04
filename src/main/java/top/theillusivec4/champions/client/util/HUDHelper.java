@@ -28,7 +28,7 @@ public class HUDHelper {
       IChampion.Client clientChampion = champion.getClient();
       return ChampionHelper.isValidChampion(clientChampion) && clientChampion.getRank().map(rank -> {
         int championLevel = rank.getA();
-        Set<String> affixSet = clientChampion.getAffixes().stream().map(IAffix::getIdentifier)
+        Set<String> affixSet = clientChampion.getAffixes().stream().map(IAffix::getIdentifier).map(ResourceLocation::getPath)
           .collect(Collectors.toSet());
 
         if (championLevel > 0 || !affixSet.isEmpty()) {

@@ -25,7 +25,7 @@ public enum ChampionComponentProvider implements IEntityComponentProvider {
       champion -> {
         champion.getClient().getRank().ifPresent(rank -> iTooltip.replace(JadeIds.CORE_OBJECT_NAME, getChampionName(rank, champion)));
         champion.getClient().getAffixes().forEach(
-          affix -> iTooltip.add(Component.translatable("affix." + Champions.MODID + "." + affix.getIdentifier()))
+          affix -> iTooltip.add(Component.translatable("affix." + affix.getIdentifier().toLanguageKey()))
         );
       });
   }

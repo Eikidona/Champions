@@ -19,7 +19,7 @@ import java.util.List;
 public class ArcticAffix extends GoalAffix {
 
   public ArcticAffix() {
-    super("arctic", AffixCategory.CC);
+    super(AffixCategory.CC);
   }
 
   @Override

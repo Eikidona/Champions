@@ -18,7 +18,7 @@ import java.util.List;
 public class MagneticAffix extends GoalAffix {
 
   public MagneticAffix() {
-    super("magnetic", AffixCategory.CC);
+    super(AffixCategory.CC);
   }
 
   @Override

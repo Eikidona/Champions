@@ -13,7 +13,7 @@ import top.theillusivec4.champions.common.config.ChampionsConfig;
 public class HastyAffix extends BasicAffix {
 
   public HastyAffix() {
-    super("hasty", AffixCategory.OFFENSE);
+    super(AffixCategory.OFFENSE);
   }
 
   @Override

@@ -1,12 +1,12 @@
 package top.theillusivec4.champions.common.network;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
@@ -19,7 +19,7 @@ import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import java.util.Set;
 
 public record SPacketSyncChampion(int entityId, int tier, int defaultColor,
-                                  Set<String> affixes) implements CustomPacketPayload {
+                                  Set<ResourceLocation> affixes) implements CustomPacketPayload {
 
   public static final Type<SPacketSyncChampion> TYPE = new Type<>(Champions.getLocation("sync_champion"));
 
@@ -30,7 +30,7 @@ public record SPacketSyncChampion(int entityId, int tier, int defaultColor,
     SPacketSyncChampion::tier,
     ByteBufCodecs.INT,
     SPacketSyncChampion::defaultColor,
-    ByteBufCodecs.fromCodec(NeoForgeExtraCodecs.setOf(Codec.STRING)), SPacketSyncChampion::affixes, SPacketSyncChampion::new
+    ByteBufCodecs.fromCodec(NeoForgeExtraCodecs.setOf(ResourceLocation.CODEC)), SPacketSyncChampion::affixes, SPacketSyncChampion::new
   );
 
   public static void handle(final SPacketSyncChampion data, final IPayloadContext cxt) {

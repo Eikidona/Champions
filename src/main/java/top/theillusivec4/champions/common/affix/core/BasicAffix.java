@@ -1,6 +1,7 @@
 package top.theillusivec4.champions.common.affix.core;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -9,22 +10,20 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import top.theillusivec4.champions.api.AffixCategory;
+import top.theillusivec4.champions.api.AffixRegistry;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.network.SPacketSyncAffixData;
 
 public abstract class BasicAffix implements IAffix {
-
-  private final String id;
   private final AffixCategory category;
 
-  public BasicAffix(String id, AffixCategory category) {
-    this(id, category, false);
+  public BasicAffix(AffixCategory category) {
+    this(category, false);
   }
 
-  public BasicAffix(String id, AffixCategory category, boolean hasSubscriptions) {
-    this.id = id;
+  public BasicAffix(AffixCategory category, boolean hasSubscriptions) {
     this.category = category;
 
     if (hasSubscriptions) {
@@ -33,8 +32,13 @@ public abstract class BasicAffix implements IAffix {
   }
 
   @Override
-  public String getIdentifier() {
-    return this.id;
+  public ResourceLocation getIdentifier() {
+    return AffixRegistry.AFFIX_REGISTRY.getKey(this);
+  }
+
+  @Override
+  public String toString() {
+    return this.getIdentifier().toString();
   }
 
   @Override
@@ -47,7 +51,7 @@ public abstract class BasicAffix implements IAffix {
     LivingEntity livingEntity = champion.getLivingEntity();
     CompoundTag tag = this.writeSyncTag(champion);
     PacketDistributor.sendToPlayersTrackingEntity(livingEntity,
-      new SPacketSyncAffixData(livingEntity.getId(), this.getIdentifier(), tag));
+      new SPacketSyncAffixData(livingEntity.getId(), this.toString(), tag));
   }
 
   public static boolean canTarget(LivingEntity livingEntity, LivingEntity target,
