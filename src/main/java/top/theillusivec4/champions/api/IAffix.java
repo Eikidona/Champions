@@ -1,6 +1,7 @@
 package top.theillusivec4.champions.api;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -9,8 +10,7 @@ public interface IAffix {
    * Get IAffix id
    * @return String of IAffix id
    */
-  String getIdentifier();
-
+  ResourceLocation getIdentifier();
   /**
    * Get IAffix's Category
    * @return AffixCategory

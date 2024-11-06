@@ -15,7 +15,7 @@ import top.theillusivec4.champions.common.registry.ModDamageTypes;
 public class ReflectiveAffix extends BasicAffix {
 
   public ReflectiveAffix() {
-    super("reflective", AffixCategory.OFFENSE, true);
+    super(AffixCategory.OFFENSE, true);
   }
 
   @SubscribeEvent

@@ -1,8 +1,10 @@
 package top.theillusivec4.champions.api.impl;
 
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.champions.api.AffixCategory;
+import top.theillusivec4.champions.api.AffixRegistry;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampionsApi;
 
@@ -10,19 +12,16 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ChampionsApiImpl implements IChampionsApi {
-
-  private static final ConcurrentHashMap<String, IAffix> affixes = new ConcurrentHashMap<>();
-  private static final ConcurrentHashMap<AffixCategory, List<IAffix>> categories =
-      new ConcurrentHashMap<>();
-
+  private static final ConcurrentHashMap<AffixCategory, List<IAffix>> categories = new ConcurrentHashMap<>();
+  private static final Logger LOGGER = LogManager.getLogger();
   private static ChampionsApiImpl instance = null;
 
-  private static final Logger LOGGER = LogManager.getLogger();
+  private ChampionsApiImpl() {
+  }
 
   public static IChampionsApi getInstance() {
     if (instance == null) {
       instance = new ChampionsApiImpl();
-      affixes.clear();
       categories.clear();
 
       for (AffixCategory value : AffixCategory.values()) {
@@ -32,42 +31,24 @@ public class ChampionsApiImpl implements IChampionsApi {
     return instance;
   }
 
-  private ChampionsApiImpl() {
-  }
-
-  @Override
-  public void registerAffix(IAffix affix) {
-    String id = affix.getIdentifier();
-    // check if affixes already registered
-    if (affixes.containsKey(id)) {
-      LOGGER.error("Skipping affix with duplicate identifier {}", id);
-      return;
-    }
-    affixes.put(id, affix);
-    categories.get(affix.getCategory()).add(affix);
-  }
-
-  @Override
-  public void registerAffixes(IAffix... affixes) {
-    // register all need registers affixes
-    for (IAffix affix : affixes) {
-      this.registerAffix(affix);
-    }
-  }
-
   @Override
   public Optional<IAffix> getAffix(String id) {
-    return Optional.ofNullable(affixes.get(id));
+    return getAffix(ResourceLocation.parse(id));
+  }
+
+  @Override
+  public Optional<IAffix> getAffix(ResourceLocation id) {
+    return AffixRegistry.AFFIX_REGISTRY.getOptional(id);
   }
 
   @Override
   public List<IAffix> getAffixes() {
-    return List.copyOf(affixes.values());
+    return AffixRegistry.AFFIX_REGISTRY.stream().toList();
   }
 
   @Override
   public List<IAffix> getCategory(AffixCategory category) {
-    return Collections.unmodifiableList(categories.get(category));
+    return getAffixes().stream().filter(affix -> affix.getCategory().equals(category)).toList();
   }
 
   @Override
@@ -80,5 +61,10 @@ public class ChampionsApiImpl implements IChampionsApi {
     Map<AffixCategory, List<IAffix>> copy = new HashMap<>();
     categories.forEach((k, v) -> copy.put(k, Collections.unmodifiableList(v)));
     return Collections.unmodifiableMap(copy);
+  }
+
+  @Override
+  public void addCategory(AffixCategory category, IAffix affix) {
+    categories.get(category).add(affix);
   }
 }

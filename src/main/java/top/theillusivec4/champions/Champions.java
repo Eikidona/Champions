@@ -45,9 +45,11 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import top.theillusivec4.champions.api.AffixRegistry;
 import top.theillusivec4.champions.api.IChampionsApi;
 import top.theillusivec4.champions.api.impl.ChampionsApiImpl;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
@@ -92,6 +94,7 @@ public class Champions {
     modEventBus.addListener(this::enqueueIMC);
     modEventBus.addListener(this::registerNetwork);
     modEventBus.addListener(this::onGatherData);
+    modEventBus.addListener(this::registerRegistries);
     modContainer.registerConfig(ModConfig.Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
     modContainer.registerConfig(ModConfig.Type.SERVER, ChampionsConfig.SERVER_SPEC);
     modContainer.registerConfig(ModConfig.Type.COMMON, ChampionsConfig.COMMON_SPEC);
@@ -127,9 +130,12 @@ public class Champions {
     return ResourceLocation.fromNamespaceAndPath(MODID, path);
   }
 
+  private void registerRegistries(NewRegistryEvent event) {
+    event.register(AffixRegistry.AFFIX_REGISTRY);
+  }
+
   private void setup(final FMLCommonSetupEvent evt) {
     ChampionAttachment.register();
-    AffixManager.register();
     evt.enqueueWork(() -> {
       ModStats.registerFormatter();
       ChampionSelectorOptions.setup();

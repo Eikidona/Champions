@@ -11,7 +11,7 @@ import top.theillusivec4.champions.common.registry.ModMobEffects;
 
 public class ParalyzingAffix extends BasicAffix {
   public ParalyzingAffix() {
-    super("paralyzing", AffixCategory.CC);
+    super(AffixCategory.CC);
   }
 
   @Override

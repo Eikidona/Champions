@@ -11,12 +11,12 @@ import java.util.List;
 
 public abstract class GoalAffix extends BasicAffix {
 
-  public GoalAffix(String id, AffixCategory category) {
-    this(id, category, false);
+  public GoalAffix(AffixCategory category) {
+    this(category, false);
   }
 
-  public GoalAffix(String id, AffixCategory category, boolean hasSubscriptions) {
-    super(id, category, hasSubscriptions);
+  public GoalAffix(AffixCategory category, boolean hasSubscriptions) {
+    super(category, hasSubscriptions);
   }
 
   @Override
@@ -25,7 +25,7 @@ public abstract class GoalAffix extends BasicAffix {
 
     if (livingEntity instanceof Mob mobEntity) {
       this.getGoals(champion)
-          .forEach(goal -> mobEntity.goalSelector.addGoal(goal.getA(), goal.getB()));
+        .forEach(goal -> mobEntity.goalSelector.addGoal(goal.getA(), goal.getB()));
     }
   }
 

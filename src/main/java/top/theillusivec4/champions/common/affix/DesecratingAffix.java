@@ -20,7 +20,7 @@ import java.util.List;
 public class DesecratingAffix extends GoalAffix {
 
   public DesecratingAffix() {
-    super("desecrating", AffixCategory.OFFENSE);
+    super(AffixCategory.OFFENSE);
   }
 
   @Override

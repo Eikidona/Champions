@@ -8,7 +8,7 @@ import top.theillusivec4.champions.common.config.ChampionsConfig;
 
 public class DampeningAffix extends BasicAffix {
   public DampeningAffix() {
-    super("dampening", AffixCategory.DEFENSE);
+    super(AffixCategory.DEFENSE);
   }
 
   @Override

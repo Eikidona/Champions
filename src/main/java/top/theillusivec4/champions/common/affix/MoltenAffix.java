@@ -24,7 +24,7 @@ import java.util.Set;
 public class MoltenAffix extends BasicAffix {
 
   public MoltenAffix() {
-    super("molten", AffixCategory.OFFENSE);
+    super(AffixCategory.OFFENSE);
   }
 
   @Override

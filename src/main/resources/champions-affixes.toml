@@ -1,95 +1,95 @@
 [[affixes]]
-  identifier = "adaptable"
+  identifier = "champions:adaptable"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "arctic"
+  identifier = "champions:arctic"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "dampening"
+  identifier = "champions:dampening"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "desecrating"
+  identifier = "champions:desecrating"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "enkindling"
+  identifier = "champions:enkindling"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "hasty"
+  identifier = "champions:hasty"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "infested"
+  identifier = "champions:infested"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "knocking"
+  identifier = "champions:knocking"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "lively"
+  identifier = "champions:lively"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "magnetic"
+  identifier = "champions:magnetic"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "molten"
+  identifier = "champions:molten"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "paralyzing"
+  identifier = "champions:paralyzing"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "plagued"
+  identifier = "champions:plagued"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "reflective"
+  identifier = "champions:reflective"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "shielding"
+  identifier = "champions:shielding"
   enabled = true
   minTier = 1
   mobList = []
   mobPermission = "BLACKLIST"
 [[affixes]]
-  identifier = "wounding"
+  identifier = "champions:wounding"
   enabled = true
   minTier = 1
   mobList = []

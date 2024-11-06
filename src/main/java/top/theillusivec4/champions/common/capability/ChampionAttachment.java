@@ -3,6 +3,7 @@ package top.theillusivec4.champions.common.capability;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,7 +19,6 @@ import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.registry.ModAttachments;
 import top.theillusivec4.champions.common.util.ChampionHelper;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 public class ChampionAttachment {
@@ -66,7 +66,6 @@ public class ChampionAttachment {
       return this.server;
     }
 
-    @Nonnull
     @Override
     public LivingEntity getLivingEntity() {
       return this.champion;
@@ -74,7 +73,7 @@ public class ChampionAttachment {
 
     public static class Server implements IChampion.Server {
 
-      private final Map<String, CompoundTag> data = new HashMap<>();
+      private final Map<ResourceLocation, CompoundTag> data = new HashMap<>();
       private Rank rank = null;
       private List<IAffix> affixes = new ArrayList<>();
 
@@ -100,20 +99,20 @@ public class ChampionAttachment {
 
       @Override
       public void setData(String identifier, CompoundTag data) {
-        this.data.put(identifier, data);
+        this.data.put(ResourceLocation.parse(identifier), data);
       }
 
       @Override
       public CompoundTag getData(String identifier) {
-        return this.data.getOrDefault(identifier, new CompoundTag());
+        return this.data.getOrDefault(ResourceLocation.parse(identifier), new CompoundTag());
       }
     }
 
     public static class Client implements IChampion.Client {
 
       private final List<IAffix> affixes = new ArrayList<>();
-      private final Map<String, IAffix> idToAffix = new HashMap<>();
-      private final Map<String, CompoundTag> data = new HashMap<>();
+      private final Map<ResourceLocation, IAffix> idToAffix = new HashMap<>();
+      private final Map<ResourceLocation, CompoundTag> data = new HashMap<>();
       private Tuple<Integer, Integer> rank = null;
 
       @Override
@@ -132,10 +131,10 @@ public class ChampionAttachment {
       }
 
       @Override
-      public void setAffixes(Set<String> affixes) {
+      public void setAffixes(Set<ResourceLocation> affixes) {
         this.affixes.clear();
 
-        for (String affix : affixes) {
+        for (ResourceLocation affix : affixes) {
           Champions.API.getAffix(affix).ifPresent(val -> {
             this.affixes.add(val);
             this.idToAffix.put(val.getIdentifier(), val);
@@ -145,17 +144,17 @@ public class ChampionAttachment {
 
       @Override
       public Optional<IAffix> getAffix(String id) {
-        return Optional.ofNullable(this.idToAffix.get(id));
+        return Optional.ofNullable(this.idToAffix.get(ResourceLocation.parse(id)));
       }
 
       @Override
       public void setData(String identifier, CompoundTag data) {
-        this.data.put(identifier, data);
+        this.data.put(ResourceLocation.parse(identifier), data);
       }
 
       @Override
       public CompoundTag getData(String identifier) {
-        return this.data.getOrDefault(identifier, new CompoundTag());
+        return this.data.getOrDefault(ResourceLocation.parse(identifier), new CompoundTag());
       }
     }
   }
@@ -177,7 +176,7 @@ public class ChampionAttachment {
       ListTag list = new ListTag();
       affixes.forEach(affix -> {
         CompoundTag tag = new CompoundTag();
-        String id = affix.getIdentifier();
+        String id = affix.getIdentifier().toString();
         tag.putString(ID_TAG, id);
         tag.put(DATA_TAG, champion.getData(id));
         list.add(tag);

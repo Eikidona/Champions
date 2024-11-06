@@ -106,7 +106,7 @@ public class ChampionEggItem extends EggItem {
     CompoundTag tierTag = new CompoundTag();
     tierTag.putInt(TIER_TAG, tier);
     ListTag listNBT = new ListTag();
-    affixes.forEach(affix -> listNBT.add(StringTag.valueOf(affix.getIdentifier())));
+    affixes.forEach(affix -> listNBT.add(StringTag.valueOf(affix.getIdentifier().toString())));
     tierTag.put(AFFIX_TAG, listNBT);
     tag.put(CHAMPION_TAG, tierTag);
     stack.set(ModDataComponents.ENTITY_TAG_COMPONENT, tag);
@@ -147,7 +147,7 @@ public class ChampionEggItem extends EggItem {
       affixTag.forEach(affix -> Champions.API.getAffix(affix.getAsString()).ifPresent(
         affix1 -> {
           final MutableComponent component =
-            Component.translatable("affix.champions." + affix1.getIdentifier());
+            Component.translatable("affix.champions." + affix1.getIdentifier().getPath());
           component.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
           tooltip.add(component);
         }));

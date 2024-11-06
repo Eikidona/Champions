@@ -12,7 +12,7 @@ import top.theillusivec4.champions.common.config.ChampionsConfig;
 
 public class KnockingAffix extends BasicAffix {
   public KnockingAffix() {
-    super("knocking", AffixCategory.CC);
+    super(AffixCategory.CC);
   }
 
   @Override
