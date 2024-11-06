@@ -33,7 +33,12 @@ public class ChampionsApiImpl implements IChampionsApi {
 
   @Override
   public Optional<IAffix> getAffix(String id) {
-    return AffixRegistry.AFFIX_REGISTRY.getOptional(ResourceLocation.parse(id));
+    return getAffix(ResourceLocation.parse(id));
+  }
+
+  @Override
+  public Optional<IAffix> getAffix(ResourceLocation id) {
+    return AffixRegistry.AFFIX_REGISTRY.getOptional(id);
   }
 
   @Override
@@ -43,7 +48,7 @@ public class ChampionsApiImpl implements IChampionsApi {
 
   @Override
   public List<IAffix> getCategory(AffixCategory category) {
-    return Collections.unmodifiableList(categories.get(category));
+    return getAffixes().stream().filter(affix -> affix.getCategory().equals(category)).toList();
   }
 
   @Override

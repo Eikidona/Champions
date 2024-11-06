@@ -3,5 +3,5 @@
   minTier = 0
   maxTier = 4
   presetAffixes = []
-  affixList = ["knocking", "wounding", "paralyzing", "molten"]
+  affixList = ["champions:knocking", "champions:wounding", "champions:paralyzing", "champions:molten"]
   affixPermission = "BLACKLIST"

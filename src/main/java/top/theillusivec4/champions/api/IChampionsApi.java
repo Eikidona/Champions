@@ -1,5 +1,7 @@
 package top.theillusivec4.champions.api;
 
+import net.minecraft.resources.ResourceLocation;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,12 +15,14 @@ public interface IChampionsApi {
    */
   Optional<IAffix> getAffix(String id);
 
+  Optional<IAffix> getAffix(ResourceLocation id);
+
   /**
    * Get all registered affixes copies
    *
    * @return List of IAffix
    */
-  List<IAffix> getAffixes();
+  List<IAffix>  getAffixes();
 
   /**
    * Get List of IAffix by Affix Category

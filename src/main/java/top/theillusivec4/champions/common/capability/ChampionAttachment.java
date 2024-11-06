@@ -135,7 +135,7 @@ public class ChampionAttachment {
         this.affixes.clear();
 
         for (ResourceLocation affix : affixes) {
-          Champions.API.getAffix(affix.toString()).ifPresent(val -> {
+          Champions.API.getAffix(affix).ifPresent(val -> {
             this.affixes.add(val);
             this.idToAffix.put(val.getIdentifier(), val);
           });

@@ -92,7 +92,7 @@ public class ChampionsConfig {
   public static int reflectiveMax;
   public static boolean reflectiveLethal;
   public static double woundingChance;
-//  public static List<? extends String> scalingHealthSpawnModifiers;
+  //  public static List<? extends String> scalingHealthSpawnModifiers;
   public static List<? extends String> entityStages;
   public static List<? extends String> tierStages;
   public static List<? extends String> bossBarBlackList;
@@ -107,6 +107,7 @@ public class ChampionsConfig {
     STAGE_SPEC = specPair2.getRight();
     STAGE = specPair2.getLeft();
   }
+
   static {
     final Pair<CommonConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder()
       .configure(CommonConfig::new);
@@ -149,7 +150,8 @@ public class ChampionsConfig {
     ENTITIES.entities = new ObjectConverter().toObject(configData, EntitiesConfig::new);
     entities = ENTITIES.entities.entities;
   }
-  public static void bakeCommon(){
+
+  public static void bakeCommon() {
     beaconProtectionRange = COMMON.beaconProtectionRange.get();
     championSpawners = COMMON.championSpawners.get();
     deathMessageTier = COMMON.deathMessageTier.get();
@@ -162,6 +164,7 @@ public class ChampionsConfig {
     enableTOPIntegration = COMMON.enableTOPIntegration.get();
     bossBarBlackList = COMMON.bossBarBlackList.get();
   }
+
   public static void bake() {
 
     fakeLoot = SERVER.fakeLoot.get();
