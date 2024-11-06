@@ -9,6 +9,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
+import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.AffixRegistry;
 import top.theillusivec4.champions.api.IAffix;
@@ -25,9 +26,33 @@ public abstract class BasicAffix implements IAffix {
 
   public BasicAffix(AffixCategory category, boolean hasSubscriptions) {
     this.category = category;
+    Champions.API.addCategory(category, this);
 
     if (hasSubscriptions) {
       NeoForge.EVENT_BUS.register(this);
+    }
+  }
+
+  public static boolean canTarget(LivingEntity livingEntity, LivingEntity target,
+                                  boolean sightCheck) {
+
+    if (target == null || !target.isAlive() || target instanceof ArmorStand || (sightCheck
+      && !hasLineOfSight(livingEntity, target))) {
+      return false;
+    }
+    AttributeInstance attributeInstance = livingEntity.getAttribute(Attributes.FOLLOW_RANGE);
+    double range = attributeInstance == null ? 16.0D : attributeInstance.getValue();
+    range = ChampionsConfig.affixTargetRange == 0 ? range
+      : Math.min(range, ChampionsConfig.affixTargetRange);
+    return livingEntity.distanceTo(target) <= range;
+  }
+
+  private static boolean hasLineOfSight(LivingEntity livingEntity, LivingEntity target) {
+
+    if (livingEntity instanceof Mob mob) {
+      return mob.getSensing().hasLineOfSight(target);
+    } else {
+      return livingEntity.hasLineOfSight(target);
     }
   }
 
@@ -52,28 +77,5 @@ public abstract class BasicAffix implements IAffix {
     CompoundTag tag = this.writeSyncTag(champion);
     PacketDistributor.sendToPlayersTrackingEntity(livingEntity,
       new SPacketSyncAffixData(livingEntity.getId(), this.toString(), tag));
-  }
-
-  public static boolean canTarget(LivingEntity livingEntity, LivingEntity target,
-                                  boolean sightCheck) {
-
-    if (target == null || !target.isAlive() || target instanceof ArmorStand || (sightCheck
-        && !hasLineOfSight(livingEntity, target))) {
-      return false;
-    }
-    AttributeInstance attributeInstance = livingEntity.getAttribute(Attributes.FOLLOW_RANGE);
-    double range = attributeInstance == null ? 16.0D : attributeInstance.getValue();
-    range = ChampionsConfig.affixTargetRange == 0 ? range
-        : Math.min(range, ChampionsConfig.affixTargetRange);
-    return livingEntity.distanceTo(target) <= range;
-  }
-
-  private static boolean hasLineOfSight(LivingEntity livingEntity, LivingEntity target) {
-
-    if (livingEntity instanceof Mob mob) {
-      return mob.getSensing().hasLineOfSight(target);
-    } else {
-      return livingEntity.hasLineOfSight(target);
-    }
   }
 }

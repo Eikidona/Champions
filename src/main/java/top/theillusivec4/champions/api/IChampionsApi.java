@@ -45,4 +45,6 @@ public interface IChampionsApi {
    * @return Map of AffixCategory and List of IAffix
    */
   Map<AffixCategory, List<IAffix>> getCategoryMap();
+
+  void addCategory(AffixCategory category, IAffix affix);
 }

@@ -62,4 +62,9 @@ public class ChampionsApiImpl implements IChampionsApi {
     categories.forEach((k, v) -> copy.put(k, Collections.unmodifiableList(v)));
     return Collections.unmodifiableMap(copy);
   }
+
+  @Override
+  public void addCategory(AffixCategory category, IAffix affix) {
+    categories.get(category).add(affix);
+  }
 }
