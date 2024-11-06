@@ -17,7 +17,7 @@ public class LivelyAffix extends BasicAffix {
   @Override
   public float onDamage(IChampion champion, DamageSource source, float amount, float newAmount) {
     AffixData.IntegerData lastAttackTime = AffixData
-        .getData(champion, getIdentifier().getPath(), AffixData.IntegerData.class);
+        .getData(champion, this.toString(), AffixData.IntegerData.class);
     LivingEntity livingEntity = champion.getLivingEntity();
     lastAttackTime.num = (int) livingEntity.level().getGameTime();
     lastAttackTime.saveData();
@@ -30,7 +30,7 @@ public class LivelyAffix extends BasicAffix {
 
     if (livingEntity.tickCount % 20 == 0) {
       AffixData.IntegerData lastAttackTime =
-          AffixData.getData(champion, getIdentifier().getPath(), AffixData.IntegerData.class);
+          AffixData.getData(champion, this.toString(), AffixData.IntegerData.class);
 
       if ((lastAttackTime.num + ChampionsConfig.livelyCooldown * 20L) <
           livingEntity.level().getGameTime()) {

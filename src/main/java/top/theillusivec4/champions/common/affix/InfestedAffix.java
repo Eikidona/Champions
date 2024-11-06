@@ -60,7 +60,7 @@ public class InfestedAffix extends GoalAffix {
   @Override
   public void onInitialSpawn(IChampion champion) {
     AffixData.IntegerData buffer =
-      AffixData.getData(champion, getIdentifier().getPath(), AffixData.IntegerData.class);
+      AffixData.getData(champion, this.toString(), AffixData.IntegerData.class);
     buffer.num = Math.min(ChampionsConfig.infestedTotal, Math.max(1,
       (int) (champion.getLivingEntity().getMaxHealth() * ChampionsConfig.infestedPerHealth)));
     buffer.saveData();
@@ -70,7 +70,7 @@ public class InfestedAffix extends GoalAffix {
   public float onHeal(IChampion champion, float amount, float newAmount) {
     if (newAmount > 0 && champion.getLivingEntity().getRandom().nextFloat() < 0.5F) {
       AffixData.IntegerData buffer = AffixData
-        .getData(champion, getIdentifier().getPath(), AffixData.IntegerData.class);
+        .getData(champion, this.toString(), AffixData.IntegerData.class);
       buffer.num = Math.min(ChampionsConfig.infestedTotal, buffer.num + 2);
       buffer.saveData();
       return Math.max(0, newAmount - 1);
@@ -81,7 +81,7 @@ public class InfestedAffix extends GoalAffix {
   @Override
   public boolean onDeath(IChampion champion, DamageSource source) {
     AffixData.IntegerData buffer = AffixData
-      .getData(champion, getIdentifier().getPath(), AffixData.IntegerData.class);
+      .getData(champion, this.toString(), AffixData.IntegerData.class);
     LivingEntity target = null;
 
     if (source.getDirectEntity() instanceof LivingEntity) {
@@ -128,7 +128,7 @@ public class InfestedAffix extends GoalAffix {
       if (this.attackTime <= 0) {
         ChampionAttachment.getAttachment(this.mobEntity).ifPresent(champion -> {
           AffixData.IntegerData buffer = AffixData
-            .getData(champion, InfestedAffix.this.getIdentifier().getPath(), AffixData.IntegerData.class);
+            .getData(champion, InfestedAffix.this.toString(), AffixData.IntegerData.class);
 
           if (buffer.num > 0 && this.mobEntity.level() instanceof ServerLevel serverLevel) {
             this.attackTime =

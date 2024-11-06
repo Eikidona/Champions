@@ -16,7 +16,7 @@ public class AdaptableAffix extends BasicAffix {
   @Override
   public float onHurt(IChampion champion, DamageSource source, float amount, float newAmount) {
     String type = source.getMsgId();
-    DamageData damageData = AffixData.getData(champion, getIdentifier().getPath(), DamageData.class);
+    DamageData damageData = AffixData.getData(champion, this.toString(), DamageData.class);
 
     if (damageData.name.equalsIgnoreCase(type)) {
       newAmount -= (float) (amount * ChampionsConfig.adaptableDamageReductionIncrement * damageData.count);

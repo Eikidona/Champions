@@ -147,7 +147,7 @@ public class ChampionEggItem extends EggItem {
       affixTag.forEach(affix -> Champions.API.getAffix(affix.getAsString()).ifPresent(
         affix1 -> {
           final MutableComponent component =
-            Component.translatable("affix.champions." + affix1.getIdentifier().getPath());
+            Component.translatable("affix." + affix1.getIdentifier().toLanguageKey());
           component.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
           tooltip.add(component);
         }));
