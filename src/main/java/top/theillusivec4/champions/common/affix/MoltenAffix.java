@@ -13,7 +13,6 @@ import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.level.pathfinder.PathType;
 import top.theillusivec4.champions.Champions;
-import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
@@ -22,10 +21,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class MoltenAffix extends BasicAffix {
-
-  public MoltenAffix() {
-    super(AffixCategory.OFFENSE);
-  }
 
   @Override
   public void onSpawn(IChampion champion) {

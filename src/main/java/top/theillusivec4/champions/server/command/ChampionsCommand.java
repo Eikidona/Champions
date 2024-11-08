@@ -29,7 +29,6 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.AffixRegistry;
 import top.theillusivec4.champions.api.IAffix;
-import top.theillusivec4.champions.api.impl.ChampionsApiImpl;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
 import top.theillusivec4.champions.common.registry.ModItems;
@@ -38,8 +37,8 @@ import top.theillusivec4.champions.common.util.ChampionBuilder;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ChampionsCommand {
 
@@ -127,8 +126,8 @@ public class ChampionsCommand {
       ChampionBuilder.spawnPreset(champion, tier, new ArrayList<>(affixes));
       source.getLevel().addFreshEntity(champion.getLivingEntity());
       source.sendSuccess(() -> Component.translatable("commands.champions.summon.success",
-        Component.translatable("rank.champions.title." + tier).getString() + " " + entity
-          .getDisplayName().getString()), false);
+        Component.translatable("rank.champions.title." + tier).getString() + " " + Objects.requireNonNull(entity
+          .getDisplayName()).getString()), false);
     });
 
     return Command.SINGLE_SUCCESS;

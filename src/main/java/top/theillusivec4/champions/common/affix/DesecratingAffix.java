@@ -8,7 +8,6 @@ import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.affix.core.GoalAffix;
@@ -19,20 +18,16 @@ import java.util.List;
 
 public class DesecratingAffix extends GoalAffix {
 
-  public DesecratingAffix() {
-    super(AffixCategory.OFFENSE);
-  }
-
   @Override
   public boolean onAttacked(IChampion champion, DamageSource source, float amount) {
     return !(source.getEntity() instanceof AreaEffectCloud)
-        || source.getDirectEntity() != champion.getLivingEntity();
+      || source.getDirectEntity() != champion.getLivingEntity();
   }
 
   @Override
   public List<Tuple<Integer, Goal>> getGoals(IChampion champion) {
     return Collections
-        .singletonList(new Tuple<>(0, new DesecrateGoal((Mob) champion.getLivingEntity())));
+      .singletonList(new Tuple<>(0, new DesecrateGoal((Mob) champion.getLivingEntity())));
   }
 
   public static class DesecrateGoal extends Goal {
@@ -56,10 +51,10 @@ public class DesecratingAffix extends GoalAffix {
 
       if (this.attackTime <= 0 && target != null) {
         this.attackTime =
-            ChampionsConfig.desecratingCloudInterval * 20 +
-                this.mobEntity.getRandom().nextInt(5) * 10;
+          ChampionsConfig.desecratingCloudInterval * 20 +
+            this.mobEntity.getRandom().nextInt(5) * 10;
         AreaEffectCloud cloud = new AreaEffectCloud(target.level(),
-            target.position().x, target.position().y, target.position().z);
+          target.position().x, target.position().y, target.position().z);
         cloud.setOwner(this.mobEntity);
         cloud.setRadius((float) ChampionsConfig.desecratingCloudRadius);
         cloud.setDuration(ChampionsConfig.desecratingCloudDuration * 20);

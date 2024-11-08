@@ -10,28 +10,22 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import top.theillusivec4.champions.Champions;
-import top.theillusivec4.champions.api.AffixCategory;
-import top.theillusivec4.champions.api.AffixRegistry;
-import top.theillusivec4.champions.api.IAffix;
-import top.theillusivec4.champions.api.IChampion;
+import top.theillusivec4.champions.api.*;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.network.SPacketSyncAffixData;
 
 public abstract class BasicAffix implements IAffix {
-  private final AffixCategory category;
+  private AffixCategory category;
+  private boolean hasSubscriptions;
+  private String prefix;
 
-  public BasicAffix(AffixCategory category) {
-    this(category, false);
-  }
+  public BasicAffix() {
 
-  public BasicAffix(AffixCategory category, boolean hasSubscriptions) {
-    this.category = category;
-    Champions.API.addCategory(category, this);
-
-    if (hasSubscriptions) {
+    if (hasSubscriptions()) {
       NeoForge.EVENT_BUS.register(this);
     }
   }
+
 
   public static boolean canTarget(LivingEntity livingEntity, LivingEntity target,
                                   boolean sightCheck) {
@@ -57,6 +51,27 @@ public abstract class BasicAffix implements IAffix {
   }
 
   @Override
+  public void setSubscriptions(boolean hasSubscriptions) {
+    this.hasSubscriptions = hasSubscriptions;
+  }
+
+  @Override
+  public boolean hasSubscriptions() {
+    return hasSubscriptions;
+  }
+
+  @Override
+  public void setCategory(AffixCategory category) {
+    this.category = category;
+    Champions.API.addCategory(this.getCategory(), this);
+  }
+
+  @Override
+  public void setPrefix(String prefix) {
+    this.prefix = prefix;
+  }
+
+  @Override
   public ResourceLocation getIdentifier() {
     return AffixRegistry.AFFIX_REGISTRY.getKey(this);
   }
@@ -69,6 +84,11 @@ public abstract class BasicAffix implements IAffix {
   @Override
   public AffixCategory getCategory() {
     return this.category;
+  }
+
+  @Override
+  public String getPrefix() {
+    return this.prefix == null ? "affix." : this.prefix;
   }
 
   @Override

@@ -2,21 +2,17 @@ package top.theillusivec4.champions.common.affix;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.damagesource.DamageSource;
-import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.AffixData;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 
 public class AdaptableAffix extends BasicAffix {
-  public AdaptableAffix() {
-    super(AffixCategory.DEFENSE);
-  }
 
   @Override
   public float onHurt(IChampion champion, DamageSource source, float amount, float newAmount) {
     String type = source.getMsgId();
-    DamageData damageData = AffixData.getData(champion, getIdentifier().getPath(), DamageData.class);
+    DamageData damageData = AffixData.getData(champion, this.toString(), DamageData.class);
 
     if (damageData.name.equalsIgnoreCase(type)) {
       newAmount -= (float) (amount * ChampionsConfig.adaptableDamageReductionIncrement * damageData.count);

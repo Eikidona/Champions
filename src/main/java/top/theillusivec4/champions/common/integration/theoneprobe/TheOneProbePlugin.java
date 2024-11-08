@@ -49,7 +49,7 @@ public class TheOneProbePlugin implements IProbeInfoEntityProvider {
           for (IAffix affix : serverChampion.getAffixes()) {
             horizontal = vertical.horizontal();
             horizontal.mcText(
-              Component.translatable("affix." + affix.getIdentifier().toLanguageKey()));
+              Component.translatable(affix.toLanguageKey()));
           }
         });
       });

@@ -6,17 +6,12 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.registry.ModDamageTypes;
 
 public class ReflectiveAffix extends BasicAffix {
-
-  public ReflectiveAffix() {
-    super(AffixCategory.OFFENSE, true);
-  }
 
   @SubscribeEvent
   public void onDamageEvent(LivingDamageEvent.Pre evt) {
@@ -43,7 +38,7 @@ public class ReflectiveAffix extends BasicAffix {
 
       var newSource = ModDamageTypes.of(ModDamageTypes.REFLECTION_DAMAGE, champion.getLivingEntity());
 
-      if (source.getEntity() != null){
+      if (source.getEntity() != null) {
         newSource = ModDamageTypes.of(ModDamageTypes.REFLECTION_DAMAGE, source.getDirectEntity(), champion.getLivingEntity());
       }
       float min = (float) ChampionsConfig.reflectiveMinPercent;
