@@ -28,7 +28,7 @@ public class HUDHelper {
       IChampion.Client clientChampion = champion.getClient();
       return ChampionHelper.isValidChampion(clientChampion) && clientChampion.getRank().map(rank -> {
         int championLevel = rank.getA();
-        Set<String> affixSet = clientChampion.getAffixes().stream().map(IAffix::getIdentifier).map(ResourceLocation::getPath)
+        Set<String> affixSet = clientChampion.getAffixes().stream().map(IAffix::toLanguageKey)
           .collect(Collectors.toSet());
 
         if (championLevel > 0 || !affixSet.isEmpty()) {
@@ -93,9 +93,9 @@ public class HUDHelper {
           RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
           StringBuilder builder = new StringBuilder();
 
-          for (String affix : affixSet) {
+          for (var affix : affixSet) {
             builder.append(
-              Component.translatable("affix." + Champions.MODID + "." + affix).getString());
+              Component.translatable(affix).getString());
             builder.append(" ");
           }
           String affixes = builder.toString().trim();
