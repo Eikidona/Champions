@@ -8,16 +8,11 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
-import top.theillusivec4.champions.api.AffixCategory;
-import top.theillusivec4.champions.api.IChampion;
+import top.theillusivec4.champions.api.*;
 import top.theillusivec4.champions.common.affix.core.AffixData;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 
 public class ShieldingAffix extends BasicAffix {
-
-  public ShieldingAffix() {
-    super(AffixCategory.DEFENSE);
-  }
 
   @Override
   public void onClientUpdate(IChampion champion) {

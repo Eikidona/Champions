@@ -20,13 +20,39 @@ public interface IAffix {
    */
   AffixCategory getCategory();
 
+  /**
+   * Set Affix's category
+   * @param category Affix's category
+   */
+  void setCategory(AffixCategory category);
+
   default String toLanguageKey() {
     return getPrefix() + getIdentifier().toLanguageKey();
   }
 
-  default String getPrefix() {
-    return "affix.";
-  }
+  /**
+   * Get affix's prefix, usually used for translate key
+   * @return Affix prefix
+   */
+  String getPrefix();
+
+  /**
+   * Set affix prefix
+   * @param prefix new prefix to set.
+   */
+  void setPrefix(String prefix);
+
+  /**
+   * Dose affix has event
+   * @return True if it has subs, else false.
+   */
+  boolean hasSubscriptions();
+
+  /**
+   * Set this affix have or not have subs
+   * @param hasSubscription new value of subscription, only useful when registering new affix.
+   */
+  void setSubscriptions(boolean hasSubscription);
 
   /**
    * Initial Spawn IChampion mob

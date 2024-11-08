@@ -6,7 +6,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.affix.core.GoalAffix;
@@ -18,14 +17,10 @@ import java.util.List;
 
 public class ArcticAffix extends GoalAffix {
 
-  public ArcticAffix() {
-    super(AffixCategory.CC);
-  }
-
   @Override
   public List<Tuple<Integer, Goal>> getGoals(IChampion champion) {
     return Collections.singletonList(
-        new Tuple<>(0, new AttackGoal((Mob) champion.getLivingEntity())));
+      new Tuple<>(0, new AttackGoal((Mob) champion.getLivingEntity())));
   }
 
   static class AttackGoal extends Goal {
@@ -43,7 +38,7 @@ public class ArcticAffix extends GoalAffix {
 
       if (livingentity != null && livingentity.isAlive()) {
         return BasicAffix.canTarget(this.mobEntity, livingentity, true)
-            && this.mobEntity.level().getDifficulty() != Difficulty.PEACEFUL;
+          && this.mobEntity.level().getDifficulty() != Difficulty.PEACEFUL;
       } else {
         return false;
       }
@@ -67,13 +62,13 @@ public class ArcticAffix extends GoalAffix {
           if (sqrDistance < 400.0D) {
             if (this.attackTime <= 0) {
               this.attackTime = ChampionsConfig.arcticAttackInterval * 20 +
-                  this.mobEntity.getRandom().nextInt(10) * 20 / 2;
+                this.mobEntity.getRandom().nextInt(10) * 20 / 2;
               this.mobEntity.level().addFreshEntity(
-                  new ArcticBulletEntity(this.mobEntity.level(), this.mobEntity, livingentity,
-                      this.mobEntity.getDirection().getAxis()));
+                new ArcticBulletEntity(this.mobEntity.level(), this.mobEntity, livingentity,
+                  this.mobEntity.getDirection().getAxis()));
               this.mobEntity.playSound(SoundEvents.SHULKER_SHOOT,
-                  2.0F, (this.mobEntity.getRandom().nextFloat() -
-                      this.mobEntity.getRandom().nextFloat()) * 0.2F + 1.0F);
+                2.0F, (this.mobEntity.getRandom().nextFloat() -
+                  this.mobEntity.getRandom().nextFloat()) * 0.2F + 1.0F);
             }
           } else {
             this.mobEntity.setTarget(null);

@@ -4,7 +4,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import top.theillusivec4.champions.Champions;
+import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.AffixRegistry;
+import top.theillusivec4.champions.api.BasicAffixBuilder;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.common.affix.*;
 
@@ -30,22 +32,22 @@ public class ModAffixTypes {
   private static final DeferredRegister<IAffix> AFFIXES = DeferredRegister.create(AffixRegistry.AFFIX_REGISTRY, Champions.MODID);
 
   static {
-    ADAPTABLE = register("adaptable", AdaptableAffix::new);
-    ARCTIC = register("arctic", ArcticAffix::new);
-    DAMPENING = register("dampening", DampeningAffix::new);
-    DESECRATING = register("desecrating", DesecratingAffix::new);
-    ENKINDLING = register("enkindling", EnkindlingAffix::new);
-    HASTY = register("hasty", HastyAffix::new);
-    INFESTED = register("infested", InfestedAffix::new);
-    KNOCKING = register("knocking", KnockingAffix::new);
-    LIVELY = register("lively", LivelyAffix::new);
-    MAGNETIC = register("magnetic", MagneticAffix::new);
-    MOLTEN = register("molten", MoltenAffix::new);
-    PARALYZING = register("paralyzing", ParalyzingAffix::new);
-    PLAGUED = register("plagued", PlaguedAffix::new);
-    REFLECTIVE = register("reflective", ReflectiveAffix::new);
-    SHIELDING = register("shielding", ShieldingAffix::new);
-    WOUNDING = register("wounding", WoundingAffix::new);
+    ADAPTABLE = register("adaptable", () -> new BasicAffixBuilder<>(AdaptableAffix::new).setCategory(AffixCategory.DEFENSE).build());
+    ARCTIC = register("arctic", () -> new BasicAffixBuilder<>(ArcticAffix::new).setCategory(AffixCategory.CC).build());
+    DAMPENING = register("dampening", () -> new BasicAffixBuilder<>(DampeningAffix::new).setCategory(AffixCategory.DEFENSE).build());
+    DESECRATING = register("desecrating", () -> new BasicAffixBuilder<>(DesecratingAffix::new).setCategory(AffixCategory.OFFENSE).build());
+    ENKINDLING = register("enkindling", () -> new BasicAffixBuilder<>(EnkindlingAffix::new).setCategory(AffixCategory.OFFENSE).build());
+    HASTY = register("hasty", () -> new BasicAffixBuilder<>(HastyAffix::new).setCategory(AffixCategory.OFFENSE).build());
+    INFESTED = register("infested", () -> new BasicAffixBuilder<>(InfestedAffix::new).setCategory(AffixCategory.OFFENSE).build());
+    KNOCKING = register("knocking", () -> new BasicAffixBuilder<>(KnockingAffix::new).setCategory(AffixCategory.CC).build());
+    LIVELY = register("lively", () -> new BasicAffixBuilder<>(LivelyAffix::new).setCategory(AffixCategory.DEFENSE).build());
+    MAGNETIC = register("magnetic", () -> new BasicAffixBuilder<>(MagneticAffix::new).setCategory(AffixCategory.CC).build());
+    MOLTEN = register("molten", () -> new BasicAffixBuilder<>(MoltenAffix::new).setCategory(AffixCategory.OFFENSE).build());
+    PARALYZING = register("paralyzing", () -> new BasicAffixBuilder<>(ParalyzingAffix::new).setCategory(AffixCategory.CC).build());
+    PLAGUED = register("plagued", () -> new BasicAffixBuilder<>(PlaguedAffix::new).setCategory(AffixCategory.OFFENSE).build());
+    REFLECTIVE = register("reflective", () -> new BasicAffixBuilder<>(ReflectiveAffix::new).setHasSubscriptions(true).setCategory(AffixCategory.OFFENSE).build());
+    SHIELDING = register("shielding", () -> new BasicAffixBuilder<>(ShieldingAffix::new).setCategory(AffixCategory.DEFENSE).build());
+    WOUNDING = register("wounding", () -> new BasicAffixBuilder<>(WoundingAffix::new).setCategory(AffixCategory.OFFENSE).setHasSubscriptions(true).build());
   }
 
   private static <I extends IAffix> DeferredHolder<IAffix, I> register(String name, Supplier<I> supplier) {

@@ -11,8 +11,7 @@ import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.level.Level;
-import top.theillusivec4.champions.api.AffixCategory;
-import top.theillusivec4.champions.api.IChampion;
+import top.theillusivec4.champions.api.*;
 import top.theillusivec4.champions.common.affix.core.AffixData;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.affix.core.GoalAffix;
@@ -25,10 +24,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class InfestedAffix extends GoalAffix {
-
-  public InfestedAffix() {
-    super(AffixCategory.OFFENSE);
-  }
 
   private static void spawnParasites(LivingEntity livingEntity, int amount,
                                      @Nullable LivingEntity target, ServerLevel world) {

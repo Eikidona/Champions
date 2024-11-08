@@ -5,15 +5,11 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import top.theillusivec4.champions.api.AffixCategory;
-import top.theillusivec4.champions.api.IChampion;
+import top.theillusivec4.champions.api.*;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 
 public class KnockingAffix extends BasicAffix {
-  public KnockingAffix() {
-    super(AffixCategory.CC);
-  }
 
   @Override
   public boolean onAttack(IChampion champion, LivingEntity target, DamageSource source,
