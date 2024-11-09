@@ -49,9 +49,14 @@ public class ChampionHelper {
     return rank.isPresent() && rank.map(Rank::getTier).orElse(-1) > 0 && !server.getAffixes().isEmpty();
   }
 
-  public static boolean isPotential(final LivingEntity livingEntity) {
-    return !isValidEntity(livingEntity) ||
-      !isValidDimension(livingEntity.level().dimension().location()) ||
+  /**
+   * Check LivingEntity is potential champion entity.(can have data and spawn etc...)
+   * @param livingEntity that will check for.
+   * @return True if this is not potential champion, else false.
+   */
+  public static boolean notPotential(final LivingEntity livingEntity) {
+    return !isValidEntity(livingEntity) &&
+      !isValidDimension(livingEntity.level().dimension().location()) &&
       nearActiveBeacon(livingEntity);
   }
 
