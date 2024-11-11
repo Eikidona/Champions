@@ -21,6 +21,13 @@ public class ChampionData {
   private static final String CHAMPION_KEY = "ChampionsData";
   private static final RandomSource RAND = RandomSource.create();
 
+  /**
+   * <p>Read tag data from this champion Persistent Data,<br>
+   * if this champion rank > 0, will construct new affixes to champion. </p>
+   *
+   * @param champion to construct data.
+   * @return True, if this champion has proper data, else false.
+   */
   public static boolean read(IChampion champion) {
     LivingEntity livingEntity = champion.getLivingEntity();
     CompoundTag tag = livingEntity.getPersistentData();
@@ -41,6 +48,9 @@ public class ChampionData {
             Integer max = valueTag.contains("max") ? valueTag.getInt("max") : null;
             rank = createRank(livingEntity, min, max);
           }
+        }
+        if (rank == RankManager.getLowestRank()) {
+          return false;
         }
         champion.getServer().setRank(rank);
         List<IAffix> affixes = new ArrayList<>();
@@ -102,25 +112,12 @@ public class ChampionData {
         .map(affixSettings -> affixSettings.canApply(champion)).orElse(true) && affix
         .canApply(champion);
     }).toList()));
-    List<IAffix> randomList = new ArrayList<>();
-    validAffixes.forEach((k, v) -> randomList.addAll(v));
-
-    while (!randomList.isEmpty() && affixes.size() < total) {
-      int randomIndex = RAND.nextInt(randomList.size());
-      IAffix randomAffix = randomList.get(randomIndex);
-
-      if (affixes.stream().allMatch(affix -> affix.isCompatible(randomAffix) &&
-        (randomAffix.getCategory() == AffixCategory.OFFENSE ||
-          (affix.getCategory() != randomAffix.getCategory())))) {
-        affixes.add(randomAffix);
-      }
-      randomList.remove(randomIndex);
-    }
+    ChampionBuilder.addAffixToList(total, affixes, validAffixes, RAND);
   }
 
   private static Rank createRank(final LivingEntity livingEntity, Integer min, Integer max) {
 
-    if (ChampionHelper.isPotential(livingEntity)) {
+    if (ChampionHelper.notPotential(livingEntity)) {
       return RankManager.getLowestRank();
     }
     ImmutableSortedMap<Integer, Rank> ranks = RankManager.getRanks();

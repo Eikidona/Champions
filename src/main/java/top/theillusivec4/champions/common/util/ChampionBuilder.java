@@ -30,6 +30,11 @@ public class ChampionBuilder {
   private static final ResourceLocation ARMOR_TOUGHNESS_MODIFIER = Champions.getLocation("armor_toughness_modifier");
   private static final ResourceLocation KNOCKBACK_RESISTANCE_MODIFIER = Champions.getLocation("knock_back_resistance_modifier");
 
+  /**
+   * Read champion data, or create affix by creating new rank levels.<br/>
+   * only if new rank tier > 0, will set rank and new affixes to this champion
+   * @param champion to read or construct new champion
+   */
   public static void spawn(final IChampion champion) {
 
     if (ChampionData.read(champion)) {
@@ -37,6 +42,9 @@ public class ChampionBuilder {
     }
     LivingEntity entity = champion.getLivingEntity();
     Rank newRank = ChampionBuilder.createRank(entity);
+    if (newRank.getTier() <= 0) {
+      return;
+    }
     champion.getServer().setRank(newRank);
     ChampionBuilder.applyGrowth(entity, newRank.getGrowthFactor());
     List<IAffix> newAffixes = ChampionBuilder.createAffixes(newRank, champion);
@@ -82,31 +90,50 @@ public class ChampionBuilder {
     }
     allAffixes.forEach((k, v) -> validAffixes.get(k).addAll(v.stream().filter(affix -> {
       Optional<AffixSettings> settings = AffixManager.getSettings(affix.getIdentifier().toString());
+      /*
+        return new affix list that can apply with entity and affix settings, and affix can apply to champion.
+       */
       return !affixesToAdd.contains(affix) && entitySettings
         .map(entitySettings1 -> entitySettings1.canApply(affix)).orElse(true) && settings
         .map(affixSettings -> affixSettings.canApply(champion)).orElse(true) && affix
         .canApply(champion);
     }).toList()));
-    List<IAffix> randomList = new ArrayList<>();
-    validAffixes.forEach((k, v) -> randomList.addAll(v));
-
-    while (!randomList.isEmpty() && affixesToAdd.size() < size) {
-      int randomIndex = RAND.nextInt(randomList.size());
-      IAffix randomAffix = randomList.get(randomIndex);
-
-      if (affixesToAdd.stream().allMatch(affix -> affix.isCompatible(randomAffix) && (
-        randomAffix.getCategory() == AffixCategory.OFFENSE || (affix.getCategory() != randomAffix
-          .getCategory())))) {
-        affixesToAdd.add(randomAffix);
-      }
-      randomList.remove(randomIndex);
-    }
+    addAffixToList(size, affixesToAdd, validAffixes, RAND);
     return affixesToAdd;
   }
 
+  /**
+   * Add random affix from random affixes list
+   * @param size How much random affix to add
+   * @param toModifier Affix list that will add random affix to it.
+   * @param validAffixes Affix list that can apply with entity and affix settings, and can apply to champion.
+   * @param rand mojang random source used get affix from random list.
+   */
+  public static void addAffixToList(int size, List<IAffix> toModifier, Map<AffixCategory, List<IAffix>> validAffixes, RandomSource rand) {
+    List<IAffix> randomList = new ArrayList<>();
+    validAffixes.forEach((k, v) -> randomList.addAll(v));
+
+    while (!randomList.isEmpty() && toModifier.size() < size) {
+      int randomIndex = rand.nextInt(randomList.size());
+      IAffix randomAffix = randomList.get(randomIndex);
+
+      if (toModifier.stream().allMatch(affix -> affix.isCompatible(randomAffix) && (
+        randomAffix.getCategory() == AffixCategory.OFFENSE || (affix.getCategory() != randomAffix
+          .getCategory())))) {
+        toModifier.add(randomAffix);
+      }
+      randomList.remove(randomIndex);
+    }
+  }
+
+  /**
+   * Create new rank for this LivingEntity.
+   * @param livingEntity to create new rank with this entity settings
+   * @return lowest rank if this living entity not potential, else living entity with new rank that applied entity settings.
+   */
   public static Rank createRank(final LivingEntity livingEntity) {
 
-    if (ChampionHelper.isPotential(livingEntity)) {
+    if (ChampionHelper.notPotential(livingEntity)) {
       return RankManager.getLowestRank();
     }
     ImmutableSortedMap<Integer, Rank> ranks = RankManager.getRanks();

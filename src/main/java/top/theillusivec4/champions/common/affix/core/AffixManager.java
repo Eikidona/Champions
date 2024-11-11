@@ -65,8 +65,8 @@ public class AffixManager {
 
       if (mobList != null) {
 
-        for (String s : mobList) {
-          BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(s)).map(this.mobList::add);
+        for (String mobId : mobList) {
+          BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(mobId)).map(this.mobList::add);
         }
       }
       Permission permission = Permission.BLACKLIST;

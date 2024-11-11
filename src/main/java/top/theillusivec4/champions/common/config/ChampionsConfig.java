@@ -1,7 +1,7 @@
 package top.theillusivec4.champions.common.config;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
-import com.electronwill.nightconfig.core.conversion.ObjectConverter;
+import com.electronwill.nightconfig.core.serde.ObjectDeserializer;
 import com.google.common.collect.Lists;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -137,17 +137,17 @@ public class ChampionsConfig {
   }
 
   public static void transformRanks(CommentedConfig configData) {
-    RANKS.ranks = new ObjectConverter().toObject(configData, RanksConfig::new);
+    RANKS.ranks = ObjectDeserializer.standard().deserializeFields(configData, RanksConfig::new);
     ranks = RANKS.ranks.ranks;
   }
 
   public static void transformAffixes(CommentedConfig configData) {
-    AFFIXES.affixes = new ObjectConverter().toObject(configData, AffixesConfig::new);
+    AFFIXES.affixes = ObjectDeserializer.standard().deserializeFields(configData, AffixesConfig::new);
     affixes = AFFIXES.affixes.affixes;
   }
 
   public static void transformEntities(CommentedConfig configData) {
-    ENTITIES.entities = new ObjectConverter().toObject(configData, EntitiesConfig::new);
+    ENTITIES.entities = ObjectDeserializer.standard().deserializeFields(configData, EntitiesConfig::new);
     entities = ENTITIES.entities.entities;
   }
 
@@ -203,13 +203,13 @@ public class ChampionsConfig {
     infestedPerHealth = SERVER.infestedPerHealth.get();
     infestedInterval = SERVER.infestedInterval.get();
 
-    EntityType<?> type = BuiltInRegistries.ENTITY_TYPE
-      .get(ResourceLocation.parse(SERVER.infestedParasite.get()));
-    infestedParasite = type != null ? type : EntityType.SILVERFISH;
+    var type = BuiltInRegistries.ENTITY_TYPE
+      .getOptional(ResourceLocation.parse(SERVER.infestedParasite.get()));
+    infestedParasite = type.isPresent() ? type.get() : EntityType.SILVERFISH;
 
     type = BuiltInRegistries.ENTITY_TYPE
-      .get(ResourceLocation.parse(SERVER.infestedEnderParasite.get()));
-    infestedEnderParasite = type != null ? type : EntityType.ENDERMITE;
+      .getOptional(ResourceLocation.parse(SERVER.infestedEnderParasite.get()));
+    infestedEnderParasite = type.isPresent() ? type.get() : EntityType.ENDERMITE;
 
     paralyzingChance = SERVER.paralyzingChance.get();
 
@@ -281,14 +281,14 @@ public class ChampionsConfig {
           A list of entity stages in the format: "stage;modid:entity" or "stage;modid:entity;modid:dimension"
           Example: "test_stage;minecraft:zombie" or "test_stage;minecraft:spider;minecraft:the_nether\"""")
         .translation(CONFIG_PREFIX + "entityStages")
-        .defineList("entityStages", new ArrayList<>(), s -> s instanceof String);
+        .defineListAllowEmpty("entityStages", new ArrayList<>(),()->null, s -> s instanceof String);
 
       tierStages = builder
         .comment("""
           A list of tier stages in the format: "stage;tier" or "stage;tier;modid:dimension"
           Example: "test_stage;2" or "test_stage;3;minecraft:the_nether\"""")
         .translation(CONFIG_PREFIX + "tierStages")
-        .defineList("tierStages", new ArrayList<>(), s -> s instanceof String);
+        .defineListAllowEmpty("tierStages", new ArrayList<>(), () -> null, s -> s instanceof String);
     }
   }
 
@@ -324,7 +324,7 @@ public class ChampionsConfig {
       dimensionList = builder
         .comment("A list of dimension names that are blacklisted/whitelisted for champions")
         .translation(CONFIG_PREFIX + "dimensionList")
-        .defineList("dimensionList", new ArrayList<>(), s -> s instanceof String);
+        .defineListAllowEmpty("dimensionList", new ArrayList<>(), () -> null, s -> s instanceof String);
 
       dimensionPermission = builder
         .comment("Set whether the dimension list is a blacklist or whitelist")
@@ -334,7 +334,7 @@ public class ChampionsConfig {
       entitiesList = builder
         .comment("A list of entities that are blacklisted/whitelisted for champions")
         .translation(CONFIG_PREFIX + "entitiesList")
-        .defineListAllowEmpty(Lists.newArrayList("entitiesList"), ArrayList::new,
+        .defineListAllowEmpty(Lists.newArrayList("entitiesList"), ArrayList::new, () -> null,
           s -> s instanceof String);
 
       entitiesPermission = builder
@@ -347,7 +347,7 @@ public class ChampionsConfig {
         .translation(CONFIG_PREFIX + "showHud").define("showHud", true);
       bossBarBlackList = builder.comment(
           "Set entity id (for example, ['minecraft:end_dragon', 'minecraft:creeper']) to hidden HUD display for champions, including health, affixes, and tier")
-        .translation(CONFIG_PREFIX + "bossBarBlackList").define("bossBarBlackList", List.of(), ChampionsConfig::validateEntityName);
+        .translation(CONFIG_PREFIX + "bossBarBlackList").defineListAllowEmpty("bossBarBlackList", List.of(), () -> null, ChampionsConfig::validateEntityName);
 
       showParticles = builder.comment(
           "Set to true to have champions generate a colored particle effect indicating their rank")
@@ -440,7 +440,7 @@ public class ChampionsConfig {
       lootDrops = builder.comment(
           "List of loot drops from champions if sourced from config\nFormat: [tier];[modid:name];[amount];[enchant(true/false)];[weight]")
         .translation(CONFIG_PREFIX + "lootDrops")
-        .defineList("lootDrops", new ArrayList<>(), s -> s instanceof String);
+        .defineListAllowEmpty("lootDrops", new ArrayList<>(), () -> null, s -> s instanceof String);
 
       lootScaling = builder.comment(
           "Set to true to scale amount of loot drops from champions to tier if sourced from config")
@@ -688,7 +688,7 @@ public class ChampionsConfig {
       scalingHealthSpawnModifiers = builder.comment(
           "Scaling Health\nList of tiers with numbers to multiply spawn rates by difficulty\nFormat: [tier];[percent increase]")
         .translation(CONFIG_PREFIX + "scalingHealthSpawnModifiers")
-        .defineList("scalingHealthSpawnModifiers", new ArrayList<>(), s -> s instanceof String);
+        .defineListAllowEmpty("scalingHealthSpawnModifiers", new ArrayList<>(), () -> null, s -> s instanceof String);
 
       builder.pop();
     }
