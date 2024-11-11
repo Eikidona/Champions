@@ -56,10 +56,7 @@ import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.affix.core.AffixManager;
 import top.theillusivec4.champions.common.capability.ChampionAttachment;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
-import top.theillusivec4.champions.common.datagen.ModAdvancementProvider;
-import top.theillusivec4.champions.common.datagen.ModDamageTypeTagsProvider;
-import top.theillusivec4.champions.common.datagen.ModDatapackProvider;
-import top.theillusivec4.champions.common.datagen.ModGlobalLootModifierProvider;
+import top.theillusivec4.champions.common.datagen.*;
 import top.theillusivec4.champions.common.integration.theoneprobe.TheOneProbePlugin;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
 import top.theillusivec4.champions.common.network.SPacketSyncAffixData;
@@ -221,6 +218,8 @@ public class Champions {
     generator.addProvider(event.includeServer(), new ModGlobalLootModifierProvider(packOutput, lookupProvider));
     generator.addProvider(event.includeServer(), new ModAdvancementProvider(packOutput, lookupProvider, existingFileHelper, List.of(new ModAdvancementProvider.Generator())));
     generator.addProvider(event.includeServer(), new ModDamageTypeTagsProvider(packOutput, datapackProvider.getRegistryProvider(), existingFileHelper));
-
+    // translate
+    generator.addProvider(event.includeClient(), new ModLanguageProvider(packOutput, "en_us"));
+    generator.addProvider(event.includeClient(), new ModLanguageProvider(packOutput, "zh_cn"));
   }
 }
