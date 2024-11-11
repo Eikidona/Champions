@@ -354,7 +354,8 @@ public class ChampionsConfig {
         .translation(CONFIG_PREFIX + "showHud").define("showHud", true);
       bossBarBlackList = builder.comment(
           "Set entity id (for example, ['minecraft:end_dragon', 'minecraft:creeper']) to hidden HUD display for champions, including health, affixes, and tier")
-        .translation(CONFIG_PREFIX + "bossBarBlackList").define("bossBarBlackList", List.of(), ChampionsConfig::validateEntityName);
+        .translation(CONFIG_PREFIX + "bossBarBlackList")
+        .defineListAllowEmpty("bossBarBlackList", List.of(), ChampionsConfig::validateEntityName);
 
       showParticles = builder.comment(
           "Set to true to have champions generate a colored particle effect indicating their rank")
