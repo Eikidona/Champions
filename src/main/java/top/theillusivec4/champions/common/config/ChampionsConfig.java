@@ -288,14 +288,14 @@ public class ChampionsConfig {
           A list of entity stages in the format: "stage;modid:entity" or "stage;modid:entity;modid:dimension"
           Example: "test_stage;minecraft:zombie" or "test_stage;minecraft:spider;minecraft:the_nether\"""")
         .translation(CONFIG_PREFIX + "entityStages")
-        .defineList("entityStages", new ArrayList<>(), s -> s instanceof String);
+        .defineListAllowEmpty("entityStages", new ArrayList<>(), s -> s instanceof String);
 
       tierStages = builder
         .comment("""
           A list of tier stages in the format: "stage;tier" or "stage;tier;modid:dimension"
           Example: "test_stage;2" or "test_stage;3;minecraft:the_nether\"""")
         .translation(CONFIG_PREFIX + "tierStages")
-        .defineList("tierStages", new ArrayList<>(), s -> s instanceof String);
+        .defineListAllowEmpty("tierStages", new ArrayList<>(), s -> s instanceof String);
     }
   }
 
@@ -331,7 +331,7 @@ public class ChampionsConfig {
       dimensionList = builder
         .comment("A list of dimension names that are blacklisted/whitelisted for champions")
         .translation(CONFIG_PREFIX + "dimensionList")
-        .defineList("dimensionList", new ArrayList<>(), s -> s instanceof String);
+        .defineListAllowEmpty("dimensionList", new ArrayList<>(), s -> s instanceof String);
 
       dimensionPermission = builder
         .comment("Set whether the dimension list is a blacklist or whitelist")
@@ -696,7 +696,7 @@ public class ChampionsConfig {
       scalingHealthSpawnModifiers = builder.comment(
           "Scaling Health\nList of tiers with numbers to multiply spawn rates by difficulty\nFormat: [tier];[percent increase]")
         .translation(CONFIG_PREFIX + "scalingHealthSpawnModifiers")
-        .defineList("scalingHealthSpawnModifiers", new ArrayList<>(), s -> s instanceof String);
+        .defineListAllowEmpty("scalingHealthSpawnModifiers", new ArrayList<>(), s -> s instanceof String);
 
       builder.pop();
     }

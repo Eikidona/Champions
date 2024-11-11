@@ -25,6 +25,7 @@ public class ClientChampionsConfig {
     public final IntValue hudYOffset;
     public final IntValue hudRange;
     public final ForgeConfigSpec.BooleanValue enableWailaIntegration;
+    public final ForgeConfigSpec.IntValue lineCount;
 
     public Client(ForgeConfigSpec.Builder builder) {
       builder.push("hud");
@@ -42,7 +43,7 @@ public class ClientChampionsConfig {
         builder.comment("Set to true to move the WAILA overlay underneath the champion HUD")
           .translation(CONFIG_PREFIX + "enableWailaIntegration")
           .define("enableWailaIntegration", true);
-
+      lineCount = builder.comment("The affix line count of the jade compact").defineInRange("lineCount",5,1,20);
       builder.pop();
     }
   }
@@ -50,6 +51,7 @@ public class ClientChampionsConfig {
   public static int hudXOffset;
   public static int hudYOffset;
   public static int hudRange;
+  public static int lineCount;
   public static boolean enableWailaIntegration;
 
   public static void bake() {
@@ -57,5 +59,6 @@ public class ClientChampionsConfig {
     hudYOffset = CLIENT.hudYOffset.get();
     hudRange = CLIENT.hudRange.get();
     enableWailaIntegration = CLIENT.enableWailaIntegration.get();
+    lineCount = CLIENT.lineCount.get();
   }
 }
