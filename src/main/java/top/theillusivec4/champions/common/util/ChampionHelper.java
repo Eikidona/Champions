@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
@@ -17,6 +18,7 @@ import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
 import top.theillusivec4.champions.common.rank.Rank;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ChampionHelper {
@@ -40,6 +42,7 @@ public class ChampionHelper {
     var rank = client.getRank();
     return rank.isPresent() && rank.map(Tuple::getA).orElse(0) > 0 && !client.getAffixes().isEmpty();
   }
+
   /**
    * @param server champion to check
    * @return True if champion is valid Champion(Has ranks and affixes), else false.
@@ -51,6 +54,7 @@ public class ChampionHelper {
 
   /**
    * Check LivingEntity is potential champion entity.(can have data and spawn etc...)
+   *
    * @param livingEntity that will check for.
    * @return True if this is not potential champion, else false.
    */
@@ -77,6 +81,19 @@ public class ChampionHelper {
     } else {
       return ChampionsConfig.entitiesList.contains(entity);
     }
+  }
+
+  public static boolean areEntitiesNearby(BlockPos pos, List<LivingEntity> livingEntities, EntityType<?> entityType) {
+    for (LivingEntity livingentity : livingEntities) {
+      if (livingentity.isAlive()
+        && !livingentity.isRemoved()
+        && pos.closerToCenterThan(livingentity.position(), 32.0)
+        && livingentity.getType() == entityType) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private static boolean isValidDimension(final ResourceLocation resourceLocation) {
