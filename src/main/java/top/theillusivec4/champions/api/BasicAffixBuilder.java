@@ -42,8 +42,6 @@ public class BasicAffixBuilder<T extends IAffix> implements IAffixBuilder<T> {
   public T build() {
     var affix = affixSupplier.get();
     apply(affix);
-
-    ChampionsEvents.onCustomAffixBuild(affix);
     return affix;
   }
 
