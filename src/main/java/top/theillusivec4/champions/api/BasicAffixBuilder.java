@@ -1,5 +1,7 @@
 package top.theillusivec4.champions.api;
 
+import top.theillusivec4.champions.common.integration.kubejs.ChampionsEvents;
+
 import java.util.function.Supplier;
 
 /**
@@ -40,6 +42,9 @@ public class BasicAffixBuilder<T extends IAffix> implements IAffixBuilder<T> {
   public T build() {
     var affix = affixSupplier.get();
     apply(affix);
+
+    // 发布自定义事件
+    ChampionsEvents.onCustomAffixBuild(affix);
     return affix;
   }
 
