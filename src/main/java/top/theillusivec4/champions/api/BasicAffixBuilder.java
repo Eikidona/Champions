@@ -43,7 +43,6 @@ public class BasicAffixBuilder<T extends IAffix> implements IAffixBuilder<T> {
     var affix = affixSupplier.get();
     apply(affix);
 
-    // 发布自定义事件
     ChampionsEvents.onCustomAffixBuild(affix);
     return affix;
   }
