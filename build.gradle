@@ -44,11 +44,9 @@ minecraft {
 
       property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
       property 'forge.logging.console.level', 'debug'
-      property 'mixin.env.remapRefMap', 'true'
-      property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
       mods {
-        champions {
+        "${modid}" {
           source sourceSets.main
         }
       }
@@ -59,11 +57,9 @@ minecraft {
 
       property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
       property 'forge.logging.console.level', 'debug'
-      property 'mixin.env.remapRefMap', 'true'
-      property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
       mods {
-        champions {
+        "${modid}" {
           source sourceSets.main
         }
       }
@@ -78,10 +74,13 @@ minecraft {
     }
   }
 }
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
 mixin {
   add sourceSets.main, "${mod_id}.refmap.json"
   config "${mod_id}.mixins.json"
 }
+
 repositories {
 
   maven {
@@ -131,22 +130,14 @@ dependencies {
 //  implementation fg.deobf("curse.maven:serverconfig-updater-365281:4612683")
 }
 
-sourceSets {
-  main {
-    resources {
-      srcDirs += 'docs'
-    }
-  }
-}
-
 
 tasks.named('processResources', ProcessResources).configure {
   var replaceProperties = [
-    minecraft_version   : minecraft_version, minecraft_version_range: minecraft_version_range,
-    forge_version       : forge_version, forge_version_range: forge_version_range,
-    loader_version_range: loader_version_range,
-    mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-    mod_authors         : mod_authors, mod_description: mod_description,
+    minecraft_version          : minecraft_version, minecraft_version_range: minecraft_version_range,
+    forge_version              : forge_version, forge_version_range: forge_version_range,
+    loader_version_range       : loader_version_range,
+    mod_id                     : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+    mod_authors                : mod_authors, mod_description: mod_description,
     scalinghealth_version_range: scalinghealth_version_range
   ]
   inputs.properties replaceProperties
