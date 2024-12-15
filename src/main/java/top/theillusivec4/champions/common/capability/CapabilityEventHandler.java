@@ -1,5 +1,6 @@
 package top.theillusivec4.champions.common.capability;
 
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -71,7 +72,7 @@ public class CapabilityEventHandler {
               .send(PacketDistributor.TRACKING_ENTITY.with(() -> outcome),
                 new SPacketSyncChampion(outcome.getId(),
                   serverChampion.getRank().map(Rank::getTier).orElse(0),
-                  serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
+                  serverChampion.getRank().map(Rank::getDefaultColor).orElse(TextColor.fromRgb(0)).toString(),
                   serverChampion.getAffixes().stream().map(IAffix::getIdentifier)
                     .collect(Collectors.toSet())));
           }));
@@ -91,7 +92,7 @@ public class CapabilityEventHandler {
           .send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) playerEntity),
             new SPacketSyncChampion(entity.getId(),
               serverChampion.getRank().map(Rank::getTier).orElse(0),
-              serverChampion.getRank().map(Rank::getDefaultColor).orElse(0),
+              serverChampion.getRank().map(Rank::getDefaultColor).orElse(TextColor.fromRgb(0)).toString(),
               serverChampion.getAffixes().stream().map(IAffix::getIdentifier)
                 .collect(Collectors.toSet())));
       });

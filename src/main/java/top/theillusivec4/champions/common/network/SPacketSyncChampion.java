@@ -17,11 +17,11 @@ public class SPacketSyncChampion {
 
   private final int entityId;
   private final int tier;
-  private final int defaultColor;
+  private final String defaultColor;
   private final Set<String> affixes;
   private final int affixSize;
 
-  public SPacketSyncChampion(int entityId, int tier, int defaultColor, Set<String> affixes) {
+  public SPacketSyncChampion(int entityId, int tier, String defaultColor, Set<String> affixes) {
     this.entityId = entityId;
     this.tier = tier;
     this.affixSize = affixes.size();
@@ -33,7 +33,7 @@ public class SPacketSyncChampion {
     buf.writeInt(msg.entityId);
     buf.writeInt(msg.tier);
     buf.writeInt(msg.affixSize);
-    buf.writeInt(msg.defaultColor);
+    buf.writeUtf(msg.defaultColor);
     msg.affixes.forEach(buf::writeUtf);
   }
 
@@ -42,7 +42,7 @@ public class SPacketSyncChampion {
     int tier = buf.readInt();
     Set<String> affixes = new HashSet<>();
     int affixSize = buf.readInt();
-    int defaultColor = buf.readInt();
+    String defaultColor = buf.readUtf();
 
     for (int i = 0; i < affixSize; i++) {
       affixes.add(buf.readUtf());

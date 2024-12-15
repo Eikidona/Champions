@@ -9,20 +9,20 @@ import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.impl.ui.TextElement;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
+import top.theillusivec4.champions.common.rank.Rank;
 
 import java.util.ArrayList;
 
 public enum ChampionComponentProvider implements IEntityComponentProvider {
   INSTANCE;
 
-  private static Component getChampionName(Tuple<Integer, Integer> rank, IChampion champion) {
-    return Component.translatable("rank.champions.title." + rank.getA()).append(" " + champion.getLivingEntity().getName().getString()).withStyle(Style.EMPTY.withColor(rank.getB()));
+  private static Component getChampionName(Tuple<Integer, String> rank, IChampion champion) {
+    return Component.translatable("rank.champions.title." + rank.getA()).append(" " + champion.getLivingEntity().getName().getString()).withStyle(Style.EMPTY.withColor(Rank.getColor(rank.getB())));
   }
 
   private static Component getChampionDescription(IAffix affix) {
@@ -52,6 +52,6 @@ public enum ChampionComponentProvider implements IEntityComponentProvider {
 
   @Override
   public ResourceLocation getUid() {
-    return new ResourceLocation(Champions.MODID, "enable_affix_compact");
+    return Champions.getLocation("enable_affix_compact");
   }
 }

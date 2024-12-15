@@ -4,13 +4,12 @@ import com.google.common.collect.ImmutableSortedMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
-import top.theillusivec4.champions.common.affix.core.AffixManager;
-import top.theillusivec4.champions.common.integration.scalinghealth.ScalingHealthPlugin;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.rank.RankManager;
 
@@ -19,8 +18,15 @@ import java.util.*;
 public class ChampionData {
 
   private static final String CHAMPION_KEY = "ChampionsData";
-  private static final Random RAND = new Random();
+  private static final RandomSource RAND = RandomSource.create();
 
+  /**
+   * <p>Read tag data from this champion Persistent Data,<br>
+   * if this champion rank < 0, will construct new affixes to champion. </p>
+   *
+   * @param champion to construct data.
+   * @return True, if this champion has proper data, else false.
+   */
   public static boolean read(IChampion champion) {
     LivingEntity livingEntity = champion.getLivingEntity();
     CompoundTag tag = livingEntity.getPersistentData();
@@ -41,6 +47,10 @@ public class ChampionData {
             Integer max = valueTag.contains("max") ? valueTag.getInt("max") : null;
             rank = createRank(livingEntity, min, max);
           }
+        }
+        if (rank.getTier() < 1) {
+          Champions.LOGGER.error("Rank cannot be empty");
+          return false;
         }
         champion.getServer().setRank(rank);
         List<IAffix> affixes = new ArrayList<>();
@@ -94,41 +104,23 @@ public class ChampionData {
     for (AffixCategory category : Champions.API.getCategories()) {
       validAffixes.put(category, new ArrayList<>());
     }
-    allAffixes.forEach((k, v) -> validAffixes.get(k).addAll(v.stream().filter(affix -> {
-      Optional<AffixManager.AffixSettings> settings =
-        AffixManager.getSettings(affix.getIdentifier());
-      return !affixes.contains(affix) && entitySettings
-        .map(entitySettings1 -> entitySettings1.canApply(affix)).orElse(true) && settings
-        .map(affixSettings -> affixSettings.canApply(champion)).orElse(true) && affix
-        .canApply(champion);
-    }).toList()));
-    List<IAffix> randomList = new ArrayList<>();
-    validAffixes.forEach((k, v) -> randomList.addAll(v));
-
-    while (!randomList.isEmpty() && affixes.size() < total) {
-      int randomIndex = RAND.nextInt(randomList.size());
-      IAffix randomAffix = randomList.get(randomIndex);
-
-      if (affixes.stream().allMatch(affix -> affix.isCompatible(randomAffix) &&
-        (randomAffix.getCategory() == AffixCategory.OFFENSE ||
-          (affix.getCategory() != randomAffix.getCategory())))) {
-        affixes.add(randomAffix);
-      }
-      randomList.remove(randomIndex);
-    }
+    allAffixes.forEach((k, v) -> validAffixes.get(k).addAll(v.stream().filter(affix -> !affixes.contains(affix)
+      && entitySettings.map(entitySettings1 -> entitySettings1.canApply(affix)).orElse(true)
+      && affix.canApply(champion)).toList()));
+    ChampionBuilder.addAffixToList(total, affixes, validAffixes, RAND);
   }
 
   private static Rank createRank(final LivingEntity livingEntity, Integer min, Integer max) {
 
-    if (!ChampionHelper.checkPotential(livingEntity)) {
-      return RankManager.getLowestRank();
+    if (ChampionHelper.notPotential(livingEntity)) {
+      return RankManager.getEmptyRank();
     }
     ImmutableSortedMap<Integer, Rank> ranks = RankManager.getRanks();
 
     if (ranks.isEmpty()) {
       Champions.LOGGER.error(
         "No rank configuration found! Please check the 'champions-ranks.toml' file in the 'serverconfigs'.");
-      return RankManager.getLowestRank();
+      return RankManager.getEmptyRank();
     }
     Integer[] tierRange = new Integer[]{min, max};
     Integer firstTier = tierRange[0] != null ? tierRange[0] : ranks.firstKey();
@@ -139,7 +131,7 @@ public class ChampionData {
     if (result == null) {
       Champions.LOGGER.error("Tier {} cannot be found in {}! Assigning lowest available rank to {}",
         firstTier, ranks, livingEntity);
-      return RankManager.getLowestRank();
+      return RankManager.getEmptyRank();
     }
 
     while (iter.hasNext() && (result.getTier() < maxTier || maxTier == -1)) {
@@ -148,11 +140,7 @@ public class ChampionData {
       if (rank == null) {
         return result;
       }
-      float chance = rank.getChance();
-
-      if (Champions.scalingHealthLoaded) {
-        chance += (float) ScalingHealthPlugin.getSpawnIncrease(rank.getTier(), livingEntity);
-      }
+      float chance = rank.getWeight();
 
       if (RAND.nextFloat() < chance) {
         result = rank;

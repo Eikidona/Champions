@@ -1,6 +1,7 @@
 package top.theillusivec4.champions.common.rank;
 
 import com.google.common.collect.ImmutableSortedMap;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.effect.MobEffect;
@@ -13,6 +14,7 @@ import top.theillusivec4.champions.common.config.RanksConfig.RankConfig;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.TreeMap;
 
 public class RankManager {
@@ -32,14 +34,18 @@ public class RankManager {
     if (rank != null) {
       return rank;
     } else if (RANKS.isEmpty()) {
-      return EMPTY_RANK;
+      return getEmptyRank();
     } else {
       return RANKS.firstEntry().getValue();
     }
   }
 
   public static Rank getLowestRank() {
-    return RANKS.isEmpty() ? EMPTY_RANK : RANKS.firstEntry().getValue();
+    return RANKS.isEmpty() ? getEmptyRank() : RANKS.firstEntry().getValue();
+  }
+
+  public static Rank getEmptyRank() {
+    return EMPTY_RANK;
   }
 
   public static Rank getHighestRank() {
@@ -65,9 +71,9 @@ public class RankManager {
   }
 
   private static Rank getRankFromConfig(RankConfig rank) throws IllegalArgumentException {
-    if (rank.tier == null || rank.numAffixes == null || rank.chance == null
-        || rank.defaultColor == null || rank.growthFactor == null || rank.effects == null
-        || rank.presetAffixes == null) {
+    if (rank.tier == null || rank.numAffixes == null || rank.weight == null
+      || rank.defaultColor == null || rank.growthFactor == null || rank.effects == null
+      || rank.presetAffixes == null) {
       throw new IllegalArgumentException("Missing rank attribute");
     }
     int tier;
@@ -84,14 +90,14 @@ public class RankManager {
     } else {
       numAffixes = rank.numAffixes;
     }
-    double chance;
+    int weight;
 
-    if (rank.chance < 0) {
+    if (rank.weight < 0) {
       throw new IllegalArgumentException("Non-positive chance");
     } else {
-      chance = rank.chance;
+      weight = rank.weight;
     }
-    int defaultColor = rank.defaultColor;
+    var defaultColor = rank.defaultColor;
 
     int growthFactor;
 
@@ -100,13 +106,13 @@ public class RankManager {
     } else {
       growthFactor = rank.growthFactor;
     }
-    List<Tuple<MobEffect, Integer>> effects = new ArrayList<>();
+    List<Tuple<Holder<MobEffect>, Integer>> effects = new ArrayList<>();
 
     rank.effects.forEach(effect -> {
       String[] parsed = effect.split(";");
-      MobEffect found = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(parsed[0]));
+      Optional<Holder<MobEffect>> found = ForgeRegistries.MOB_EFFECTS.getHolder(new ResourceLocation(parsed[0]));
 
-      if (found != null) {
+      if (found.isPresent()) {
         int amplifier = 0;
 
         if (parsed.length > 1) {
@@ -114,17 +120,17 @@ public class RankManager {
             amplifier = Integer.parseInt(parsed[1]);
           } catch (NumberFormatException e) {
             Champions.LOGGER
-                .error("Found invalid amplifier value for effect, setting to default 1");
+              .error("Found invalid amplifier value for effect, setting to default 1");
           }
         }
-        effects.add(new Tuple<>(found, amplifier));
+        effects.add(new Tuple<>(found.get(), amplifier));
       }
     });
 
     List<IAffix> presetAffixes = new ArrayList<>();
     rank.presetAffixes
-        .forEach(affix -> Champions.API.getAffix(affix).ifPresent(presetAffixes::add));
-    return new Rank(tier, numAffixes, growthFactor, (float) chance, defaultColor, effects,
-        presetAffixes);
+      .forEach(affix -> Champions.API.getAffix(affix).ifPresent(presetAffixes::add));
+    return new Rank(tier, numAffixes, growthFactor, weight, defaultColor, effects,
+      presetAffixes);
   }
 }

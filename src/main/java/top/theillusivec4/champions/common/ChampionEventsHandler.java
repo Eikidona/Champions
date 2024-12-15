@@ -1,8 +1,10 @@
 package top.theillusivec4.champions.common;
 
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -83,9 +85,9 @@ public class ChampionEventsHandler {
         }
         serverChampion.getAffixes().forEach(affix -> affix.onSpawn(champion));
         serverChampion.getRank().ifPresent(rank -> {
-          List<Tuple<MobEffect, Integer>> effects = rank.getEffects();
+          List<Tuple<Holder<MobEffect>, Integer>> effects = rank.getEffects();
           effects.forEach(effectPair -> champion.getLivingEntity()
-            .addEffect(new MobEffectInstance(effectPair.getA(), 200, effectPair.getB())));
+            .addEffect(new MobEffectInstance(effectPair.getA().get(), 200, effectPair.getB())));
         });
       });
     }
@@ -101,10 +103,11 @@ public class ChampionEventsHandler {
         clientChampion.getAffixes().forEach(affix -> affix.onClientUpdate(champion));
         clientChampion.getRank().ifPresent(rank -> {
           if (ChampionsConfig.showParticles && rank.getA() > 0) {
-            int color = rank.getB();
-            float r = (float) ((color >> 16) & 0xFF) / 255f;
-            float g = (float) ((color >> 8) & 0xFF) / 255f;
-            float b = (float) ((color) & 0xFF) / 255f;
+            String colorCode = rank.getB();
+            int color = Rank.getColor(colorCode);
+            float r = (float) FastColor.ARGB32.red(color) / 255;
+            float g = (float) FastColor.ARGB32.green(color) / 255;
+            float b = (float) FastColor.ARGB32.blue(color) / 255;
 
             livingEntity.level().addParticle(ModParticleTypes.RANK_PARTICLE_TYPE.get(),
               livingEntity.position().x + (livingEntity.getRandom().nextDouble() - 0.5D) *
@@ -121,9 +124,9 @@ public class ChampionEventsHandler {
         serverChampion.getAffixes().forEach(affix -> affix.onServerUpdate(champion));
         serverChampion.getRank().ifPresent(rank -> {
           if (livingEntity.tickCount % 4 == 0) {
-            List<Tuple<MobEffect, Integer>> effects = rank.getEffects();
+            List<Tuple<Holder<MobEffect>, Integer>> effects = rank.getEffects();
             effects.forEach(effectPair -> livingEntity.addEffect(
-              new MobEffectInstance(effectPair.getA(), 100, effectPair.getB())));
+              new MobEffectInstance(effectPair.getA().get(), 100, effectPair.getB())));
           }
         });
       });

@@ -1,7 +1,6 @@
 package top.theillusivec4.champions.common.network;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -20,14 +19,14 @@ public class NetworkHandler {
   private static int id = 0;
 
   public static void register() {
-    INSTANCE = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(Champions.MODID, "main"))
-        .networkProtocolVersion(() -> PTC_VERSION).clientAcceptedVersions(PTC_VERSION::equals)
-        .serverAcceptedVersions(PTC_VERSION::equals).simpleChannel();
+    INSTANCE = NetworkRegistry.ChannelBuilder.named(Champions.getLocation("main"))
+      .networkProtocolVersion(() -> PTC_VERSION).clientAcceptedVersions(PTC_VERSION::equals)
+      .serverAcceptedVersions(PTC_VERSION::equals).simpleChannel();
 
     register(SPacketSyncChampion.class, SPacketSyncChampion::encode, SPacketSyncChampion::decode,
-        SPacketSyncChampion::handle);
+      SPacketSyncChampion::handle);
     register(SPacketSyncAffixData.class, SPacketSyncAffixData::encode, SPacketSyncAffixData::decode,
-        SPacketSyncAffixData::handle);
+      SPacketSyncAffixData::handle);
   }
 
   private static <M> void register(Class<M> messageType, BiConsumer<M, FriendlyByteBuf> encoder,

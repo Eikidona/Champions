@@ -3,30 +3,39 @@ buildscript {
     maven { url = 'https://files.minecraftforge.net/maven' }
     maven { url = 'https://plugins.gradle.org/m2/' }
     maven { url = 'https://maven.parchmentmc.org' }
+    maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
     maven {
       url "https://plugins.gradle.org/m2/"
     }
   }
   dependencies {
-    classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-    classpath group: 'gradle.plugin.com.matthewprenger', name: 'CurseGradle', version: '1.4.0'
+    classpath group: "org.spongepowered", name: "mixingradle", version: "${mixingradle_version}"
     classpath group: 'org.parchmentmc', name: 'librarian', version: '1.+'
   }
 }
 
+plugins {
+  id 'idea'
+  id 'maven-publish'
+  id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+  id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+}
+
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
-apply plugin: 'eclipse'
+apply plugin: 'org.spongepowered.mixin'
 
 version = "${mod_version}"
-group = "top.theillusivec4.champions"
-archivesBaseName = "champions-forge"
+group = "${mod_group_id}"
+
+base {
+  archivesName = mod_id + "forge"
+}
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-  mappings channel: 'parchment', version: '2023.09.03-1.20.1'
+  mappings channel: mapping_channel, version: mapping_version
   accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
   runs {
@@ -69,8 +78,12 @@ minecraft {
     }
   }
 }
-
+mixin {
+  add sourceSets.main, "${mod_id}.refmap.json"
+  config "${mod_id}.mixins.json"
+}
 repositories {
+
   maven {
     name = "CurseMaven"
     url = "https://www.cursemaven.com"
@@ -79,12 +92,26 @@ repositories {
     name = "GameStages"
     url = "https://maven.blamejared.com"
   }
+  mavenLocal()
+  mavenCentral()
 }
 
 dependencies {
-  minecraft "net.minecraftforge:forge:${forge_version}"
+  minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+
 
 //  implementation fg.deobf("net.darkhax.gamestages:GameStages-Forge-1.18.2:${gamestages_version}")
+  compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
+  if (rootMod.toBoolean()) {
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}")) {
+      transitive = false
+      jarJar.ranged(it, "[${mixin_extras_version},)")
+    }
+  } else {
+    implementation("io.github.llamalad7.mixinextras:mixinextras-forge:${mixin_extras_version}")
+  }
+
+  annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
 
   compileOnly fg.deobf("curse.maven:silent-lib-242998:${cf_silentlib}")
@@ -112,16 +139,22 @@ sourceSets {
   }
 }
 
-jar {
+// Example for how to get properties into the manifest for reading at runtime.
+tasks.named('jar', Jar).configure {
   manifest {
-    attributes(["Specification-Title"     : "Champions",
-                "Specification-Vendor"    : "C4",
-                "Specification-Version"   : "1",
-                "Implementation-Title"    : "Champions",
-                "Implementation-Version"  : "${getArchiveVersion()}",
-                "Implementation-Vendor"   : "C4",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")])
+    attributes([
+      'Specification-Title'     : mod_id,
+      'Specification-Vendor'    : mod_authors,
+      'Specification-Version'   : '1', // We are version 1 of ourselves
+      'Implementation-Title'    : project.name,
+      'Implementation-Version'  : project.jar.archiveVersion,
+      'Implementation-Vendor'   : mod_authors,
+      'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+    ])
   }
+
+  // This is the preferred method to reobfuscate your jar file
+  finalizedBy 'reobfJar'
 }
 
 def replaceResources = tasks.register("replaceResources", Copy) {
@@ -132,7 +165,7 @@ def replaceResources = tasks.register("replaceResources", Copy) {
     expand 'version': version, 'mc_version_range': mc_version_range,
       'forge_version_range': forge_version_range,
       "loader_version": loader_version,
-      "mod_license":mod_license,"mod_id":mod_id,"mod_authors":mod_authors
+      "mod_license": mod_license, "mod_id": mod_id, "mod_authors": mod_authors
   }
   it.into "$buildDir/resources/main/"
 }
@@ -152,22 +185,3 @@ artifacts {
   archives sourcesJar
 }
 
-jar.finalizedBy('reobfJar')
-
-curseforge {
-
-  project {
-    apiKey = findProperty('curseKey') ?: 0
-    id = "307152"
-    releaseType = "${curse_release}"
-    changelogType = 'markdown'
-    changelog = file('docs/CHANGELOG.md')
-    addArtifact(sourcesJar)
-    "${curse_versions}".split(',').each {
-      addGameVersion "${it}"
-    }
-    relations {
-      optionalDependency 'scaling-health'
-    }
-  }
-}

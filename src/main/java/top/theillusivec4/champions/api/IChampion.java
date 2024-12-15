@@ -14,9 +14,9 @@ public interface IChampion {
 
   interface Client {
 
-    Optional<Tuple<Integer, Integer>> getRank();
+    Optional<Tuple<Integer, String>> getRank();
 
-    void setRank(Tuple<Integer, Integer> rank);
+    void setRank(Tuple<Integer, String> rank);
 
     Optional<IAffix> getAffix(String id);
 

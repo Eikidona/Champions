@@ -1,20 +1,24 @@
 package top.theillusivec4.champions.common.util;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import top.theillusivec4.champions.Champions;
+import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
-import top.theillusivec4.champions.common.integration.gamestages.GameStagesPlugin;
+import top.theillusivec4.champions.common.rank.Rank;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ChampionHelper {
@@ -23,15 +27,41 @@ public class ChampionHelper {
 
   private static MinecraftServer server = null;
 
+  /**
+   * check entity is LivingEntity & Enemy
+   */
   public static boolean isValidChampion(final Entity entity) {
     return entity instanceof LivingEntity && entity instanceof Enemy;
   }
 
-  public static boolean checkPotential(final LivingEntity livingEntity) {
-    return isValidEntity(livingEntity) &&
-      isValidDimension(livingEntity.level().dimension().location()) &&
-      !nearActiveBeacon(livingEntity)&&
-      (!Champions.gameStagesLoaded || GameStagesPlugin.hasEntityStage(livingEntity));
+  /**
+   * @param client champion to check
+   * @return True if champion is valid Champion(Has ranks and affixes), else false.
+   */
+  public static boolean isValidChampion(IChampion.Client client) {
+    var rank = client.getRank();
+    return rank.isPresent() && rank.map(Tuple::getA).orElse(0) > 0 && !client.getAffixes().isEmpty();
+  }
+
+  /**
+   * @param server champion to check
+   * @return True if champion is valid Champion(Has ranks and affixes), else false.
+   */
+  public static boolean isValidChampion(IChampion.Server server) {
+    var rank = server.getRank();
+    return rank.isPresent() && rank.map(Rank::getTier).orElse(-1) > 0 && !server.getAffixes().isEmpty();
+  }
+
+  /**
+   * Check LivingEntity is potential champion entity.(can have data and spawn etc...)
+   *
+   * @param livingEntity that will check for.
+   * @return True if this is not potential champion, else false.
+   */
+  public static boolean notPotential(final LivingEntity livingEntity) {
+    return !isValidEntity(livingEntity) &&
+      !isValidDimension(livingEntity.level().dimension().location()) &&
+      nearActiveBeacon(livingEntity);
   }
 
   public static void addBeacon(BlockPos pos) {
@@ -42,11 +72,8 @@ public class ChampionHelper {
   }
 
   private static boolean isValidEntity(final LivingEntity livingEntity) {
-    ResourceLocation rl = livingEntity.getType().getDefaultLootTable();
+    ResourceLocation rl = BuiltInRegistries.ENTITY_TYPE.getKey(livingEntity.getType());
 
-    if (rl == null) {
-      return false;
-    }
     String entity = rl.toString();
 
     if (ChampionsConfig.entitiesPermission == Permission.BLACKLIST) {
@@ -54,6 +81,19 @@ public class ChampionHelper {
     } else {
       return ChampionsConfig.entitiesList.contains(entity);
     }
+  }
+
+  public static boolean areEntitiesNearby(BlockPos pos, List<LivingEntity> livingEntities, EntityType<?> entityType) {
+    for (LivingEntity livingentity : livingEntities) {
+      if (livingentity.isAlive()
+        && !livingentity.isRemoved()
+        && pos.closerToCenterThan(livingentity.position(), 32.0)
+        && livingentity.getType() == entityType) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private static boolean isValidDimension(final ResourceLocation resourceLocation) {

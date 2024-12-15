@@ -124,6 +124,10 @@ public class Champions {
     }
   }
 
+  public static ResourceLocation getLocation(final String path) {
+    return new ResourceLocation(MODID, path);
+  }
+
   private void setup(final FMLCommonSetupEvent evt) {
     ChampionCapability.register();
     NetworkHandler.register();
@@ -132,9 +136,9 @@ public class Champions {
       ChampionsStats.setup();
       ChampionSelectorOptions.setup();
       Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE,
-        new ResourceLocation(Champions.MODID, "entity_champion"), EntityIsChampion.type);
+        Champions.getLocation("entity_champion"), EntityIsChampion.type);
       Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE,
-        new ResourceLocation(Champions.MODID, "champion_properties"),
+        Champions.getLocation("champion_properties"),
         LootItemChampionPropertyCondition.INSTANCE);
       DispenseItemBehavior dispenseBehavior = (source, stack) -> {
         Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);

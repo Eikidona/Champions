@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
@@ -13,6 +14,7 @@ import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.client.ChampionsOverlay;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
+import top.theillusivec4.champions.common.rank.Rank;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,8 +23,7 @@ public class HUDHelper {
 
   private static final ResourceLocation GUI_BAR_TEXTURES = new ResourceLocation(
     "textures/gui/bars.png");
-  private static final ResourceLocation GUI_STAR = new ResourceLocation(Champions.MODID,
-    "textures/gui/staricon.png");
+  private static final ResourceLocation GUI_STAR = Champions.getLocation("textures/gui/staricon.png");
 
   public static boolean renderHealthBar(GuiGraphics guiGraphics, final LivingEntity livingEntity) {
     return ChampionCapability.getCapability(livingEntity).map(champion -> {
@@ -39,10 +40,12 @@ public class HUDHelper {
           int j = 21;
           int xOffset = ClientChampionsConfig.hudXOffset;
           int yOffset = ClientChampionsConfig.hudYOffset;
-          int color = rank.getB();
-          float r = (float) ((color >> 16) & 0xFF) / 255f;
-          float g = (float) ((color >> 8) & 0xFF) / 255f;
-          float b = (float) ((color) & 0xFF) / 255f;
+          String colorCode = rank.getB();
+          int color = Rank.getColor(colorCode);
+
+          float r = FastColor.ARGB32.red(color) / 255.0F;
+          float g = FastColor.ARGB32.green(color) / 255.0F;
+          float b = FastColor.ARGB32.blue(color) / 255.0F;
 
           RenderSystem.defaultBlendFunc();
           RenderSystem.setShaderColor(r, g, b, 1.0F);

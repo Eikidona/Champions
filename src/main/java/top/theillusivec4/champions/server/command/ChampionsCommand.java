@@ -15,10 +15,10 @@ import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -38,13 +38,13 @@ import java.util.Collection;
 public class ChampionsCommand {
 
   public static final SuggestionProvider<CommandSourceStack> AFFIXES = SuggestionProviders
-    .register(new ResourceLocation(Champions.MODID, "affixes"),
+    .register(Champions.getLocation("affixes"),
       (context, builder) -> SharedSuggestionProvider.suggest(
         ChampionsApiImpl.getInstance().getAffixes().stream().map(IAffix::getIdentifier),
         builder));
 
   public static final SuggestionProvider<CommandSourceStack> MONSTER_ENTITIES = SuggestionProviders
-    .register(new ResourceLocation(Champions.MODID, "monster_entities"),
+    .register(Champions.getLocation("monster_entities"),
       (context, builder) -> SharedSuggestionProvider.suggestResource(
         ForgeRegistries.ENTITY_TYPES.getValues().stream()
           .filter(type -> type.getCategory() == MobCategory.MONSTER),
@@ -142,17 +142,29 @@ public class ChampionsCommand {
   private static int createEgg(CommandSourceStack source, ResourceLocation resourceLocation,
                                int tier,
                                Collection<IAffix> affixes) throws CommandSyntaxException {
-    EntityType<?> entity = ForgeRegistries.ENTITY_TYPES.getValue(resourceLocation);
+    var entityType = getTypeOrThrow(resourceLocation);
+    var player = source.getPlayerOrException();
 
-    if (entity == null) {
-      throw UNKNOWN_ENTITY.create(resourceLocation);
-    } else if (source.getEntity() instanceof ServerPlayer playerEntity) {
-      ItemStack egg = new ItemStack(ModItems.CHAMPION_EGG_ITEM.get());
-      ChampionEggItem.write(egg, resourceLocation, tier, affixes);
-      ItemHandlerHelper.giveItemToPlayer(playerEntity, egg, 1);
-      source.sendSuccess(
-        () -> Component.translatable("commands.champions.egg.success", egg.getDisplayName()), false);
-    }
+    ItemStack egg = createEgg(entityType, tier, affixes);
+    ItemHandlerHelper.giveItemToPlayer(player, egg, 1);
+    source.sendSuccess(() -> Component.translatable("commands.champions.egg.success", egg.getDisplayName()), false);
+
     return Command.SINGLE_SUCCESS;
+  }
+
+  public static ItemStack createEgg(EntityType<?> entityType,
+                                    int tier,
+                                    Collection<IAffix> affixes) {
+    ItemStack egg = new ItemStack(ModItems.CHAMPION_EGG_ITEM.get());
+    ChampionEggItem.write(egg, getEntityKey(entityType), tier, affixes);
+    return egg;
+  }
+
+  private static EntityType<?> getTypeOrThrow(ResourceLocation resourceLocation) throws CommandSyntaxException {
+    return BuiltInRegistries.ENTITY_TYPE.getOptional(resourceLocation).orElseThrow(() -> UNKNOWN_ENTITY.create(resourceLocation));
+  }
+
+  private static ResourceLocation getEntityKey(EntityType<?> entityType) {
+    return BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
   }
 }

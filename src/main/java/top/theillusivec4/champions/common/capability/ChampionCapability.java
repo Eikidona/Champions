@@ -33,7 +33,7 @@ public class ChampionCapability {
     CapabilityManager.get(new CapabilityToken<>() {
     });
 
-  public static final ResourceLocation ID = new ResourceLocation(Champions.MODID, "champion");
+  public static final ResourceLocation ID = Champions.getLocation("champion");
 
   private static final String AFFIX_TAG = "affixes";
   private static final String TIER_TAG = "tier";
@@ -49,7 +49,6 @@ public class ChampionCapability {
     return new Provider(livingEntity);
   }
 
-  @Deprecated
   public static LazyOptional<IChampion> getCapability(final LivingEntity entity) {
     return getCapability((Entity) entity);
   }
@@ -132,15 +131,15 @@ public class ChampionCapability {
       private final List<IAffix> affixes = new ArrayList<>();
       private final Map<String, IAffix> idToAffix = new HashMap<>();
       private final Map<String, CompoundTag> data = new HashMap<>();
-      private Tuple<Integer, Integer> rank = null;
+      private Tuple<Integer, String> rank = null;
 
       @Override
-      public Optional<Tuple<Integer, Integer>> getRank() {
+      public Optional<Tuple<Integer, String>> getRank() {
         return Optional.ofNullable(rank);
       }
 
       @Override
-      public void setRank(Tuple<Integer, Integer> rank) {
+      public void setRank(Tuple<Integer, String> rank) {
         this.rank = rank;
       }
 
