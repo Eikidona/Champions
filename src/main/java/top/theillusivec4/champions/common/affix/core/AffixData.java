@@ -5,6 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 
 public abstract class AffixData {
@@ -43,6 +44,7 @@ public abstract class AffixData {
     }
   }
 
+  @Nullable
   public static <T extends AffixData> T getData(IChampion champion, String id, Class<T> clazz) {
     T data = null;
 
@@ -50,7 +52,7 @@ public abstract class AffixData {
       data = clazz.getDeclaredConstructor().newInstance();
       data.readData(champion, id);
     } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
-      Champions.LOGGER.error("Error reading data from class " + clazz);
+      Champions.LOGGER.error("Error reading data from class {}", clazz);
     }
     return data;
   }

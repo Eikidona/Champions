@@ -18,7 +18,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Set;
 
-@Deprecated
 public class EntityIsChampion implements LootItemCondition {
 
   public static LootItemConditionType type =

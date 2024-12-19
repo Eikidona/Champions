@@ -129,8 +129,8 @@ public class ChampionCapability {
     public static class Client implements IChampion.Client {
 
       private final List<IAffix> affixes = new ArrayList<>();
-      private final Map<String, IAffix> idToAffix = new HashMap<>();
-      private final Map<String, CompoundTag> data = new HashMap<>();
+      private final Map<ResourceLocation, IAffix> idToAffix = new HashMap<>();
+      private final Map<ResourceLocation, CompoundTag> data = new HashMap<>();
       private Tuple<Integer, String> rank = null;
 
       @Override
@@ -149,10 +149,10 @@ public class ChampionCapability {
       }
 
       @Override
-      public void setAffixes(Set<String> affixes) {
+      public void setAffixes(Set<ResourceLocation> affixes) {
         this.affixes.clear();
 
-        for (String affix : affixes) {
+        for (ResourceLocation affix : affixes) {
           Champions.API.getAffix(affix).ifPresent(val -> {
             this.affixes.add(val);
             this.idToAffix.put(val.getIdentifier(), val);
@@ -162,17 +162,17 @@ public class ChampionCapability {
 
       @Override
       public Optional<IAffix> getAffix(String id) {
-        return Optional.ofNullable(this.idToAffix.get(id));
+        return Optional.ofNullable(this.idToAffix.get(ResourceLocation.tryParse(id)));
       }
 
       @Override
       public void setData(String identifier, CompoundTag data) {
-        this.data.put(identifier, data);
+        this.data.put(ResourceLocation.tryParse(identifier), data);
       }
 
       @Override
       public CompoundTag getData(String identifier) {
-        return this.data.getOrDefault(identifier, new CompoundTag());
+        return this.data.getOrDefault(ResourceLocation.tryParse(identifier), new CompoundTag());
       }
     }
   }
@@ -203,7 +203,7 @@ public class ChampionCapability {
       ListTag list = new ListTag();
       affixes.forEach(affix -> {
         CompoundTag tag = new CompoundTag();
-        String id = affix.getIdentifier();
+        String id = affix.getIdentifier().toString();
         tag.putString(ID_TAG, id);
         tag.put(DATA_TAG, champion.getData(id));
         list.add(tag);

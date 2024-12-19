@@ -7,8 +7,9 @@ import net.minecraft.util.Tuple;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
-import snownee.jade.api.Identifiers;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.IElement;
+import snownee.jade.impl.ui.TextElement;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
@@ -26,13 +27,13 @@ public enum ChampionComponentProvider implements IEntityComponentProvider {
   }
 
   private static Component getChampionDescription(IAffix affix) {
-    return Component.translatable("affix." + Champions.MODID + "." + affix.getIdentifier());
+    return Component.translatable(affix.toLanguageKey());
   }
 
   @Override
   public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
     ChampionCapability.getCapability(entityAccessor.getEntity()).ifPresent(champion -> {
-      champion.getClient().getRank().ifPresent(rank -> iTooltip.add(getChampionName(rank, champion), Identifiers.CORE_OBJECT_NAME));
+      champion.getClient().getRank().ifPresent(rank -> iTooltip.get(0, IElement.Align.LEFT).set(0, new TextElement(getChampionName(rank,champion))));
       var affixes = champion.getClient().getAffixes();
       ArrayList<Component> components = new ArrayList<>();
       StringBuilder line = new StringBuilder();

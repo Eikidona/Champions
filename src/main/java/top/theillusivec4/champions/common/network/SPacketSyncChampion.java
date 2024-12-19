@@ -3,6 +3,7 @@ package top.theillusivec4.champions.common.network;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.NetworkEvent;
@@ -18,10 +19,10 @@ public class SPacketSyncChampion {
   private final int entityId;
   private final int tier;
   private final String defaultColor;
-  private final Set<String> affixes;
+  private final Set<ResourceLocation> affixes;
   private final int affixSize;
 
-  public SPacketSyncChampion(int entityId, int tier, String defaultColor, Set<String> affixes) {
+  public SPacketSyncChampion(int entityId, int tier, String defaultColor, Set<ResourceLocation> affixes) {
     this.entityId = entityId;
     this.tier = tier;
     this.affixSize = affixes.size();
@@ -34,18 +35,18 @@ public class SPacketSyncChampion {
     buf.writeInt(msg.tier);
     buf.writeInt(msg.affixSize);
     buf.writeUtf(msg.defaultColor);
-    msg.affixes.forEach(buf::writeUtf);
+    msg.affixes.forEach(buf::writeResourceLocation);
   }
 
   public static SPacketSyncChampion decode(FriendlyByteBuf buf) {
     int entityId = buf.readInt();
     int tier = buf.readInt();
-    Set<String> affixes = new HashSet<>();
+    Set<ResourceLocation> affixes = new HashSet<>();
     int affixSize = buf.readInt();
     String defaultColor = buf.readUtf();
 
     for (int i = 0; i < affixSize; i++) {
-      affixes.add(buf.readUtf());
+      affixes.add(buf.readResourceLocation());
     }
     return new SPacketSyncChampion(entityId, tier, defaultColor, affixes);
   }

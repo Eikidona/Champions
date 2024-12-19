@@ -11,6 +11,7 @@ import net.minecraft.world.phys.Vec3;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
+import top.theillusivec4.champions.common.util.ChampionHelper;
 
 import java.util.Optional;
 
@@ -37,7 +38,9 @@ public class MouseHelper {
 
         if (entityraytraceresult != null) {
           Entity entity1 = entityraytraceresult.getEntity();
-          return ChampionCapability.getCapability(entity1).map(IChampion::getLivingEntity);
+          var champion = ChampionCapability.getCapability(entity1).resolve();
+          if (champion.isPresent() && ChampionHelper.isValidChampion(champion.get().getClient()))
+            return champion.map(IChampion::getLivingEntity);
         }
         mc.getProfiler().pop();
       }

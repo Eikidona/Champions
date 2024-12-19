@@ -1,5 +1,7 @@
 package top.theillusivec4.champions.common.registry;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -17,5 +19,12 @@ public class ModEntityTypes {
 
   public static void register(IEventBus bus) {
     ENTITY_TYPE.register(bus);
+  }
+  public static class Tags {
+    public static final TagKey<EntityType<?>> IS_ENDER = create("is_ender");
+
+    private static TagKey<EntityType<?>> create(String name) {
+      return TagKey.create(Registries.ENTITY_TYPE, Champions.getLocation(name));
+    }
   }
 }

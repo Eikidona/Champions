@@ -34,8 +34,6 @@ public class ChampionsConfig {
   public static final StageConfig STAGE;
   public static final ForgeConfigSpec RANKS_SPEC;
   public static final Ranks RANKS;
-  public static final ForgeConfigSpec AFFIXES_SPEC;
-  public static final Affixes AFFIXES;
   public static final ForgeConfigSpec ENTITIES_SPEC;
   public static final Entities ENTITIES;
   private static final String CONFIG_PREFIX = "gui." + Champions.MODID + ".config.";
@@ -123,13 +121,6 @@ public class ChampionsConfig {
   }
 
   static {
-    final Pair<Affixes, ForgeConfigSpec> specPair = new Builder()
-      .configure(Affixes::new);
-    AFFIXES_SPEC = specPair.getRight();
-    AFFIXES = specPair.getLeft();
-  }
-
-  static {
     final Pair<Entities, ForgeConfigSpec> specPair = new Builder()
       .configure(Entities::new);
     ENTITIES_SPEC = specPair.getRight();
@@ -139,11 +130,6 @@ public class ChampionsConfig {
   public static void transformRanks(CommentedConfig configData) {
     RANKS.ranks = new ObjectConverter().toObject(configData, RanksConfig::new);
     ranks = RANKS.ranks.ranks;
-  }
-
-  public static void transformAffixes(CommentedConfig configData) {
-    AFFIXES.affixes = new ObjectConverter().toObject(configData, AffixesConfig::new);
-    affixes = AFFIXES.affixes.affixes;
   }
 
   public static void transformEntities(CommentedConfig configData) {
@@ -708,16 +694,6 @@ public class ChampionsConfig {
 
     public Ranks(Builder builder) {
       builder.comment("List of ranks").define("ranks", new ArrayList<>());
-      builder.build();
-    }
-  }
-
-  public static class Affixes {
-
-    public AffixesConfig affixes;
-
-    public Affixes(Builder builder) {
-      builder.comment("List of affix configurations").define("affixes", new ArrayList<>());
       builder.build();
     }
   }

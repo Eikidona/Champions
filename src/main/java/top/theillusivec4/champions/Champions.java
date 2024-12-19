@@ -27,17 +27,16 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig.Type;
@@ -49,13 +48,14 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import top.theillusivec4.champions.api.AffixDataLoader;
+import top.theillusivec4.champions.api.ChampionsApiImpl;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.api.IChampionsApi;
-import top.theillusivec4.champions.api.impl.ChampionsApiImpl;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
-import top.theillusivec4.champions.common.affix.core.AffixManager;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
+import top.theillusivec4.champions.common.datagen.*;
 import top.theillusivec4.champions.common.integration.theoneprobe.TheOneProbePlugin;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
 import top.theillusivec4.champions.common.loot.EntityIsChampion;
@@ -65,6 +65,7 @@ import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.registry.ModItems;
 import top.theillusivec4.champions.common.stat.ChampionsStats;
+import top.theillusivec4.champions.common.util.ChampionHelper;
 import top.theillusivec4.champions.common.util.EntityManager;
 import top.theillusivec4.champions.server.command.ChampionSelectorOptions;
 import top.theillusivec4.champions.server.command.ChampionsCommand;
@@ -80,48 +81,50 @@ public class Champions {
   public static final String MODID = "champions";
   public static final Logger LOGGER = LogManager.getLogger();
   public static final IChampionsApi API = ChampionsApiImpl.getInstance();
+  private static final AffixDataLoader dataLoader = new AffixDataLoader();
 
   public static boolean scalingHealthLoaded = false;
   public static boolean gameStagesLoaded = false;
 
-  public Champions() {
-    IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+  public Champions(FMLJavaModLoadingContext modContext) {
+    IEventBus eventBus = modContext.getModEventBus();
     eventBus.addListener(this::enqueueIMC);
-    ModLoadingContext.get().registerConfig(Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
-    ModLoadingContext.get().registerConfig(Type.SERVER, ChampionsConfig.SERVER_SPEC);
-    ModLoadingContext.get().registerConfig(Type.COMMON, ChampionsConfig.COMMON_SPEC);
-    createServerConfig(ChampionsConfig.RANKS_SPEC, "ranks");
-    createServerConfig(ChampionsConfig.AFFIXES_SPEC, "affixes");
-    createServerConfig(ChampionsConfig.ENTITIES_SPEC, "entities");
+    modContext.registerConfig(Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
+    modContext.registerConfig(Type.SERVER, ChampionsConfig.SERVER_SPEC);
+    modContext.registerConfig(Type.COMMON, ChampionsConfig.COMMON_SPEC);
+    createServerConfig(modContext, ChampionsConfig.RANKS_SPEC, "ranks");
+    createServerConfig(modContext, ChampionsConfig.ENTITIES_SPEC, "entities");
     gameStagesLoaded = ModList.get().isLoaded("gamestages");
 
     if (gameStagesLoaded) {
-      ModLoadingContext.get()
-        .registerConfig(Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
+      modContext.registerConfig(Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
     }
 
     eventBus.addListener(this::config);
     eventBus.addListener(this::setup);
     eventBus.addListener(this::registerCaps);
+    eventBus.addListener(this::onGatherData);
     MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
     ChampionsRegistry.register(eventBus);
     scalingHealthLoaded = ModList.get().isLoaded("scalinghealth");
   }
 
-  private static void createServerConfig(ForgeConfigSpec spec, String suffix) {
+  private static void createServerConfig(FMLJavaModLoadingContext modContext, ForgeConfigSpec spec, String suffix) {
     String fileName = "champions-" + suffix + ".toml";
-    ModLoadingContext.get().registerConfig(Type.SERVER, spec, fileName);
+    modContext.registerConfig(Type.SERVER, spec, fileName);
     File defaults = FMLPaths.GAMEDIR.get().resolve("defaultconfigs").resolve(fileName).toFile();
 
     if (!defaults.exists()) {
       try {
-        FileUtils.copyInputStreamToFile(
-          Objects.requireNonNull(Champions.class.getClassLoader().getResourceAsStream(fileName)),
-          defaults);
+        FileUtils.copyInputStreamToFile(Objects.requireNonNull(Champions.class.getClassLoader().getResourceAsStream(fileName)), defaults);
       } catch (IOException e) {
-        LOGGER.error("Error creating default config for " + fileName);
+        LOGGER.error("Error creating default config for {}", fileName);
       }
     }
+  }
+
+  public static AffixDataLoader getDataLoader() {
+    return dataLoader;
   }
 
   public static ResourceLocation getLocation(final String path) {
@@ -131,28 +134,25 @@ public class Champions {
   private void setup(final FMLCommonSetupEvent evt) {
     ChampionCapability.register();
     NetworkHandler.register();
-    AffixManager.register();
     evt.enqueueWork(() -> {
       ChampionsStats.setup();
       ChampionSelectorOptions.setup();
-      Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE,
-        Champions.getLocation("entity_champion"), EntityIsChampion.type);
-      Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE,
-        Champions.getLocation("champion_properties"),
-        LootItemChampionPropertyCondition.INSTANCE);
+      Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE, Champions.getLocation("entity_champion"), EntityIsChampion.type);
+      Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE, Champions.getLocation("champion_properties"), LootItemChampionPropertyCondition.INSTANCE);
       DispenseItemBehavior dispenseBehavior = (source, stack) -> {
         Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
         Optional<EntityType<?>> entityType = ChampionEggItem.getType(stack);
         entityType.ifPresent(type -> {
-          Entity entity = type.create(source.getLevel(), stack.getTag(), null,
-            source.getPos().relative(direction), MobSpawnType.DISPENSER, true,
-            direction != Direction.UP);
+          Entity entity = type.create(source.getLevel(), stack.getTag(), null, source.getPos().relative(direction), MobSpawnType.DISPENSER, true, direction != Direction.UP);
 
-          if (entity instanceof LivingEntity) {
-            ChampionCapability.getCapability(entity)
-              .ifPresent(champion -> ChampionEggItem.read(champion, stack));
-            source.getLevel().addFreshEntity(entity);
-            stack.shrink(1);
+          if (entity != null) {
+            ChampionCapability.getCapability(entity).ifPresent(champion -> {
+              if (ChampionHelper.isValidChampion(champion.getServer())) {
+                ChampionEggItem.read(champion, stack);
+                source.getLevel().addFreshEntity(champion.getLivingEntity());
+                stack.shrink(1);
+              }
+            });
           }
         });
         return stack;
@@ -187,9 +187,6 @@ public class Champions {
           if (spec == ChampionsConfig.RANKS_SPEC) {
             ChampionsConfig.transformRanks(commentedConfig);
             RankManager.buildRanks();
-          } else if (spec == ChampionsConfig.AFFIXES_SPEC) {
-            ChampionsConfig.transformAffixes(commentedConfig);
-            AffixManager.buildAffixSettings();
           } else if (spec == ChampionsConfig.ENTITIES_SPEC) {
             ChampionsConfig.transformEntities(commentedConfig);
             EntityManager.buildEntitySettings();
@@ -210,8 +207,29 @@ public class Champions {
     // register TheOneProbe integration
     if (ModList.get().isLoaded("theoneprobe")) {
       Champions.LOGGER.info("Champions detected TheOneProbe, registering plugin now");
-      InterModComms.sendTo(MODID, "theoneprobe", "getTheOneProbe",
-        TheOneProbePlugin.GetTheOneProbe::new);
+      InterModComms.sendTo(MODID, "theoneprobe", "getTheOneProbe", TheOneProbePlugin.GetTheOneProbe::new);
     }
+  }
+
+  private void onGatherData(GatherDataEvent event) {
+    var generator = event.getGenerator();
+    var packOutput = generator.getPackOutput();
+    var lookupProvider = event.getLookupProvider();
+    var existingFileHelper = event.getExistingFileHelper();
+    // datapack provider for lookup datapack entries(RegistrySetBuilder).
+    var datapackProvider = generator.addProvider(event.includeServer(), new ModDatapackProvider(packOutput, lookupProvider));
+
+//    generator.addProvider(event.includeServer(),  new ModGlobalLootModifierProvider(generator));
+    generator.addProvider(event.includeServer(), new ModDamageTypeTagsProvider(packOutput, datapackProvider.getRegistryProvider(), existingFileHelper));
+    generator.addProvider(event.includeServer(), new AffixConfigProvider(packOutput, datapackProvider.getRegistryProvider()));
+    generator.addProvider(event.includeServer(), new ModEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
+    // translate
+    generator.addProvider(event.includeClient(), new ModLanguageProvider(packOutput));
+    generator.addProvider(event.includeClient(), new ModLanguageProvider(packOutput, "zh_cn"));
+    // add more translate to data generation
+    generator.addProvider(event.includeClient(), new ModLanguageProvider(packOutput, "ko_kr"));
+    generator.addProvider(event.includeClient(), new ModLanguageProvider(packOutput, "ru_ru"));
+    generator.addProvider(event.includeClient(), new ModLanguageProvider(packOutput, "tr_tr"));
+    generator.addProvider(event.includeClient(), new ModLanguageProvider(packOutput, "uk_ua"));
   }
 }

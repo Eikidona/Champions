@@ -78,17 +78,19 @@ public class ChampionEventsHandler {
     if (!entity.level().isClientSide()) {
       ChampionCapability.getCapability(entity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
-        Optional<Rank> maybeRank = serverChampion.getRank();
+        if (ChampionHelper.isValidChampion(serverChampion)) {
+          Optional<Rank> maybeRank = serverChampion.getRank();
 
-        if (maybeRank.isEmpty()) {
-          ChampionBuilder.spawn(champion);
+          if (maybeRank.isEmpty()) {
+            ChampionBuilder.spawn(champion);
+          }
+          serverChampion.getAffixes().forEach(affix -> affix.onSpawn(champion));
+          serverChampion.getRank().ifPresent(rank -> {
+            List<Tuple<Holder<MobEffect>, Integer>> effects = rank.getEffects();
+            effects.forEach(effectPair -> champion.getLivingEntity()
+              .addEffect(new MobEffectInstance(effectPair.getA().get(), 200, effectPair.getB())));
+          });
         }
-        serverChampion.getAffixes().forEach(affix -> affix.onSpawn(champion));
-        serverChampion.getRank().ifPresent(rank -> {
-          List<Tuple<Holder<MobEffect>, Integer>> effects = rank.getEffects();
-          effects.forEach(effectPair -> champion.getLivingEntity()
-            .addEffect(new MobEffectInstance(effectPair.getA().get(), 200, effectPair.getB())));
-        });
       });
     }
   }
@@ -100,35 +102,39 @@ public class ChampionEventsHandler {
     if (livingEntity.level().isClientSide()) {
       ChampionCapability.getCapability(livingEntity).ifPresent(champion -> {
         IChampion.Client clientChampion = champion.getClient();
-        clientChampion.getAffixes().forEach(affix -> affix.onClientUpdate(champion));
-        clientChampion.getRank().ifPresent(rank -> {
-          if (ChampionsConfig.showParticles && rank.getA() > 0) {
-            String colorCode = rank.getB();
-            int color = Rank.getColor(colorCode);
-            float r = (float) FastColor.ARGB32.red(color) / 255;
-            float g = (float) FastColor.ARGB32.green(color) / 255;
-            float b = (float) FastColor.ARGB32.blue(color) / 255;
+        if (ChampionHelper.isValidChampion(clientChampion)) {
+          clientChampion.getAffixes().forEach(affix -> affix.onClientUpdate(champion));
+          clientChampion.getRank().ifPresent(rank -> {
+            if (ChampionsConfig.showParticles && rank.getA() > 0) {
+              String colorCode = rank.getB();
+              int color = Rank.getColor(colorCode);
+              float r = (float) FastColor.ARGB32.red(color) / 255;
+              float g = (float) FastColor.ARGB32.green(color) / 255;
+              float b = (float) FastColor.ARGB32.blue(color) / 255;
 
-            livingEntity.level().addParticle(ModParticleTypes.RANK_PARTICLE_TYPE.get(),
-              livingEntity.position().x + (livingEntity.getRandom().nextDouble() - 0.5D) *
-                (double) livingEntity.getBbWidth(), livingEntity.position().y +
-                livingEntity.getRandom().nextDouble() * livingEntity.getBbHeight(),
-              livingEntity.position().z + (livingEntity.getRandom().nextDouble() - 0.5D) *
-                (double) livingEntity.getBbWidth(), r, g, b);
-          }
-        });
+              livingEntity.level().addParticle(ModParticleTypes.RANK_PARTICLE_TYPE.get(),
+                livingEntity.position().x + (livingEntity.getRandom().nextDouble() - 0.5D) *
+                  (double) livingEntity.getBbWidth(), livingEntity.position().y +
+                  livingEntity.getRandom().nextDouble() * livingEntity.getBbHeight(),
+                livingEntity.position().z + (livingEntity.getRandom().nextDouble() - 0.5D) *
+                  (double) livingEntity.getBbWidth(), r, g, b);
+            }
+          });
+        }
       });
     } else if (livingEntity.tickCount % 10 == 0) {
       ChampionCapability.getCapability(livingEntity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
-        serverChampion.getAffixes().forEach(affix -> affix.onServerUpdate(champion));
-        serverChampion.getRank().ifPresent(rank -> {
-          if (livingEntity.tickCount % 4 == 0) {
-            List<Tuple<Holder<MobEffect>, Integer>> effects = rank.getEffects();
-            effects.forEach(effectPair -> livingEntity.addEffect(
-              new MobEffectInstance(effectPair.getA().get(), 100, effectPair.getB())));
-          }
-        });
+        if (ChampionHelper.isValidChampion(serverChampion)) {
+          serverChampion.getAffixes().forEach(affix -> affix.onServerUpdate(champion));
+          serverChampion.getRank().ifPresent(rank -> {
+            if (livingEntity.tickCount % 4 == 0) {
+              List<Tuple<Holder<MobEffect>, Integer>> effects = rank.getEffects();
+              effects.forEach(effectPair -> livingEntity.addEffect(
+                new MobEffectInstance(effectPair.getA().get(), 100, effectPair.getB())));
+            }
+          });
+        }
       });
     }
   }
@@ -142,12 +148,14 @@ public class ChampionEventsHandler {
     }
     ChampionCapability.getCapability(livingEntity).ifPresent(champion -> {
       IChampion.Server serverChampion = champion.getServer();
-      serverChampion.getAffixes().forEach(affix -> {
+      if (ChampionHelper.isValidChampion(serverChampion)) {
+        serverChampion.getAffixes().forEach(affix -> {
 
-        if (!affix.onAttacked(champion, evt.getSource(), evt.getAmount())) {
-          evt.setCanceled(true);
-        }
-      });
+          if (!affix.onAttacked(champion, evt.getSource(), evt.getAmount())) {
+            evt.setCanceled(true);
+          }
+        });
+      }
     });
 
     if (evt.isCanceled()) {
@@ -156,12 +164,14 @@ public class ChampionEventsHandler {
     Entity source = evt.getSource().getDirectEntity();
     ChampionCapability.getCapability(source).ifPresent(champion -> {
       IChampion.Server serverChampion = champion.getServer();
-      serverChampion.getAffixes().forEach(affix -> {
+      if (ChampionHelper.isValidChampion(serverChampion)) {
+        serverChampion.getAffixes().forEach(affix -> {
 
-        if (!affix.onAttack(champion, evt.getEntity(), evt.getSource(), evt.getAmount())) {
-          evt.setCanceled(true);
-        }
-      });
+          if (!affix.onAttack(champion, evt.getEntity(), evt.getSource(), evt.getAmount())) {
+            evt.setCanceled(true);
+          }
+        });
+      }
     });
   }
 

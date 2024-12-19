@@ -36,7 +36,11 @@ public record LootItemChampionPropertyCondition(LootContext.EntityTarget target,
 
   @Override
   public boolean test(LootContext context) {
-    Entity entity = context.getParamOrNull(this.target.getParam());
+    var entity = context.getParamOrNull(this.target.getParam());
+    return entity != null && isChampionAndMatches(entity);
+  }
+
+  public boolean isChampionAndMatches(Entity entity) {
     return ChampionCapability.getCapability(entity).map(champion -> {
       IChampion.Server server = champion.getServer();
       int tier = server.getRank().map(Rank::getTier).orElse(0);
@@ -69,7 +73,7 @@ public record LootItemChampionPropertyCondition(LootContext.EntityTarget target,
     @Nonnull
     @Override
     public LootItemChampionPropertyCondition deserialize(JsonObject json, @Nonnull
-      JsonDeserializationContext context) {
+    JsonDeserializationContext context) {
       MinMaxBounds.Ints tier = MinMaxBounds.Ints.fromJson(json.get("tier"));
       AffixesPredicate affixes = AffixesPredicate.fromJson(json.get("affixes"));
       return new LootItemChampionPropertyCondition(
@@ -78,29 +82,11 @@ public record LootItemChampionPropertyCondition(LootContext.EntityTarget target,
     }
   }
 
-  private record AffixesPredicate(Set<String> values, MinMaxBounds.Ints matches,
+  public record AffixesPredicate(Set<String> values, MinMaxBounds.Ints matches,
                                   MinMaxBounds.Ints count) {
 
     private static final AffixesPredicate ANY =
       new AffixesPredicate(new HashSet<>(), MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY);
-
-    private boolean matches(List<IAffix> input) {
-
-      if (this.values.isEmpty()) {
-        return this.count.matches(input.size());
-      } else {
-        Set<String> affixes = input.stream().map(IAffix::getIdentifier).collect(Collectors.toSet());
-        int found = 0;
-
-        for (String affix : this.values) {
-
-          if (affixes.contains(affix)) {
-            found++;
-          }
-        }
-        return this.matches.matches(found) && this.count.matches(input.size());
-      }
-    }
 
     private static AffixesPredicate fromJson(JsonElement json) {
 
@@ -145,6 +131,24 @@ public record LootItemChampionPropertyCondition(LootContext.EntityTarget target,
         }
       }
       return ANY;
+    }
+
+    private boolean matches(List<IAffix> input) {
+
+      if (this.values.isEmpty()) {
+        return this.count.matches(input.size());
+      } else {
+        Set<String> affixes = input.stream().map(IAffix::toString).collect(Collectors.toSet());
+        int found = 0;
+
+        for (String affix : this.values) {
+
+          if (affixes.contains(affix)) {
+            found++;
+          }
+        }
+        return this.matches.matches(found) && this.count.matches(input.size());
+      }
     }
 
     public JsonElement serializeToJson() {

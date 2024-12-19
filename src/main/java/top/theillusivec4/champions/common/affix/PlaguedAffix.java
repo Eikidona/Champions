@@ -6,7 +6,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
@@ -14,9 +13,6 @@ import top.theillusivec4.champions.common.config.ChampionsConfig;
 import java.util.List;
 
 public class PlaguedAffix extends BasicAffix {
-  public PlaguedAffix() {
-    super("plagued", AffixCategory.OFFENSE);
-  }
 
   @Override
   public void onClientUpdate(IChampion champion) {

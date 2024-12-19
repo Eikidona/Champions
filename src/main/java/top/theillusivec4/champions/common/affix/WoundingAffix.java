@@ -6,16 +6,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.registry.ModMobEffects;
 
 public class WoundingAffix extends BasicAffix {
-  public WoundingAffix() {
-    super("wounding", AffixCategory.OFFENSE, true);
-  }
 
   @SubscribeEvent
   public void onHeal(LivingHealEvent evt) {

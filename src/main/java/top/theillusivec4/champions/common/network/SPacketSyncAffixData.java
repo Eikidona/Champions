@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.NetworkEvent;
 import top.theillusivec4.champions.api.IChampion;
@@ -14,10 +15,10 @@ import java.util.function.Supplier;
 public class SPacketSyncAffixData {
 
   private final int entityId;
-  private final String id;
+  private final ResourceLocation id;
   private final CompoundTag data;
 
-  public SPacketSyncAffixData(int entityId, String id, CompoundTag data) {
+  public SPacketSyncAffixData(int entityId, ResourceLocation id, CompoundTag data) {
     this.entityId = entityId;
     this.data = data;
     this.id = id;
@@ -25,12 +26,12 @@ public class SPacketSyncAffixData {
 
   public static void encode(SPacketSyncAffixData msg, FriendlyByteBuf buf) {
     buf.writeInt(msg.entityId);
-    buf.writeUtf(msg.id);
+    buf.writeResourceLocation(msg.id);
     buf.writeNbt(msg.data);
   }
 
   public static SPacketSyncAffixData decode(FriendlyByteBuf buf) {
-    return new SPacketSyncAffixData(buf.readInt(), buf.readUtf(), buf.readNbt());
+    return new SPacketSyncAffixData(buf.readInt(), buf.readResourceLocation(), buf.readNbt());
   }
 
   public static void handle(SPacketSyncAffixData msg, Supplier<NetworkEvent.Context> ctx) {
@@ -41,7 +42,7 @@ public class SPacketSyncAffixData {
         Entity entity = world.getEntity(msg.entityId);
         ChampionCapability.getCapability(entity).ifPresent(champion -> {
           IChampion.Client clientChampion = champion.getClient();
-          clientChampion.getAffix(msg.id)
+          clientChampion.getAffix(msg.id.toString())
               .ifPresent(affix -> affix.readSyncTag(champion, msg.data));
         });
       }

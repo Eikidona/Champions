@@ -109,7 +109,7 @@ public class ChampionSelectorOptions {
         return count.matches(championAffixes.size());
       } else {
         Set<String> ids =
-          championAffixes.stream().map(IAffix::getIdentifier).collect(Collectors.toSet());
+          championAffixes.stream().map(IAffix::toString).collect(Collectors.toSet());
         int found = 0;
 
         for (String affix : affixes) {

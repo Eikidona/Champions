@@ -8,7 +8,6 @@ import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.affix.core.GoalAffix;
@@ -18,11 +17,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class DesecratingAffix extends GoalAffix {
-
-  public DesecratingAffix() {
-    super("desecrating", AffixCategory.OFFENSE);
-  }
-
   @Override
   public boolean onAttacked(IChampion champion, DamageSource source, float amount) {
     return !(source.getEntity() instanceof AreaEffectCloud)

@@ -15,7 +15,6 @@ import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -24,8 +23,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.Champions;
+import top.theillusivec4.champions.api.AffixRegistry;
 import top.theillusivec4.champions.api.IAffix;
-import top.theillusivec4.champions.api.impl.ChampionsApiImpl;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.item.ChampionEggItem;
 import top.theillusivec4.champions.common.registry.ModItems;
@@ -34,14 +33,13 @@ import top.theillusivec4.champions.common.util.ChampionBuilder;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 public class ChampionsCommand {
 
   public static final SuggestionProvider<CommandSourceStack> AFFIXES = SuggestionProviders
-    .register(Champions.getLocation("affixes"),
-      (context, builder) -> SharedSuggestionProvider.suggest(
-        ChampionsApiImpl.getInstance().getAffixes().stream().map(IAffix::getIdentifier),
-        builder));
+    .register(Champions.getLocation("affixes"), (context, builder) -> SharedSuggestionProvider.suggestResource(
+      AffixRegistry.getRegistry(), builder, IAffix::getIdentifier, affix -> Component.translatable(affix.toLanguageKey())));
 
   public static final SuggestionProvider<CommandSourceStack> MONSTER_ENTITIES = SuggestionProviders
     .register(Champions.getLocation("monster_entities"),
@@ -63,7 +61,7 @@ public class ChampionsCommand {
 
     championsCommand.then(Commands.literal("egg").then(
       Commands.argument("entity", ResourceLocationArgument.id()).suggests(MONSTER_ENTITIES)
-        .then(Commands.argument("tier", IntegerArgumentType.integer()).executes(
+        .then(Commands.argument("tier", IntegerArgumentType.integer(1)).executes(
           context -> createEgg(context.getSource(),
             ResourceLocationArgument.getId(context, "entity"),
             IntegerArgumentType.getInteger(context, "tier"), new ArrayList<>())).then(
@@ -75,7 +73,7 @@ public class ChampionsCommand {
 
     championsCommand.then(Commands.literal("summon").then(
       Commands.argument("entity", ResourceLocationArgument.id()).suggests(MONSTER_ENTITIES)
-        .then(Commands.argument("tier", IntegerArgumentType.integer()).executes(
+        .then(Commands.argument("tier", IntegerArgumentType.integer(1)).executes(
           context -> summon(context.getSource(),
             ResourceLocationArgument.getId(context, "entity"),
             IntegerArgumentType.getInteger(context, "tier"), new ArrayList<>())).then(
@@ -89,7 +87,7 @@ public class ChampionsCommand {
       Commands.argument("pos", BlockPosArgument.blockPos()).then(
         Commands.argument("entity", ResourceLocationArgument.id())
           .suggests(MONSTER_ENTITIES).then(
-            Commands.argument("tier", IntegerArgumentType.integer()).executes(
+            Commands.argument("tier", IntegerArgumentType.integer(1)).executes(
               context -> summon(context.getSource(),
                 BlockPosArgument.getSpawnablePos(context, "pos"),
                 ResourceLocationArgument.getId(context, "entity"),
@@ -161,10 +159,10 @@ public class ChampionsCommand {
   }
 
   private static EntityType<?> getTypeOrThrow(ResourceLocation resourceLocation) throws CommandSyntaxException {
-    return BuiltInRegistries.ENTITY_TYPE.getOptional(resourceLocation).orElseThrow(() -> UNKNOWN_ENTITY.create(resourceLocation));
+    return ForgeRegistries.ENTITY_TYPES.getDelegate(resourceLocation).orElseThrow(() -> UNKNOWN_ENTITY.create(resourceLocation)).get();
   }
 
   private static ResourceLocation getEntityKey(EntityType<?> entityType) {
-    return BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
+    return Optional.ofNullable(ForgeRegistries.ENTITY_TYPES.getKey(entityType)).orElse(new ResourceLocation("minecraft:pig"));
   }
 }

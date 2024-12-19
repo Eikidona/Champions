@@ -1,7 +1,6 @@
 package top.theillusivec4.champions.common.util;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Tuple;
@@ -12,6 +11,7 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
@@ -72,7 +72,7 @@ public class ChampionHelper {
   }
 
   private static boolean isValidEntity(final LivingEntity livingEntity) {
-    ResourceLocation rl = BuiltInRegistries.ENTITY_TYPE.getKey(livingEntity.getType());
+    ResourceLocation rl = ForgeRegistries.ENTITY_TYPES.getDelegateOrThrow(livingEntity.getType()).key().registry();
 
     String entity = rl.toString();
 

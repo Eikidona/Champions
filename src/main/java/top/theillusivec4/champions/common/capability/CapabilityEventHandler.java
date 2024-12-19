@@ -64,18 +64,22 @@ public class CapabilityEventHandler {
       entity.reviveCaps();
       LivingEntity outcome = evt.getOutcome();
       ChampionCapability.getCapability(entity).ifPresent(
-        oldChampion -> ChampionCapability.getCapability(outcome)
-          .ifPresent(newChampion -> {
-            ChampionBuilder.copy(oldChampion, newChampion);
-            IChampion.Server serverChampion = newChampion.getServer();
-            NetworkHandler.INSTANCE
-              .send(PacketDistributor.TRACKING_ENTITY.with(() -> outcome),
-                new SPacketSyncChampion(outcome.getId(),
-                  serverChampion.getRank().map(Rank::getTier).orElse(0),
-                  serverChampion.getRank().map(Rank::getDefaultColor).orElse(TextColor.fromRgb(0)).toString(),
-                  serverChampion.getAffixes().stream().map(IAffix::getIdentifier)
-                    .collect(Collectors.toSet())));
-          }));
+        oldChampion -> {
+          if (ChampionHelper.isValidChampion(oldChampion.getServer())) {
+            ChampionCapability.getCapability(outcome)
+              .ifPresent(newChampion -> {
+                ChampionBuilder.copy(oldChampion, newChampion);
+                IChampion.Server serverChampion = newChampion.getServer();
+                NetworkHandler.INSTANCE
+                  .send(PacketDistributor.TRACKING_ENTITY.with(() -> outcome),
+                    new SPacketSyncChampion(outcome.getId(),
+                      serverChampion.getRank().map(Rank::getTier).orElse(0),
+                      serverChampion.getRank().map(Rank::getDefaultColor).orElse(TextColor.fromRgb(0)).toString(),
+                      serverChampion.getAffixes().stream().map(IAffix::getIdentifier)
+                        .collect(Collectors.toSet())));
+              });
+          }
+        });
       entity.invalidateCaps();
     }
   }
@@ -88,13 +92,15 @@ public class CapabilityEventHandler {
     if (playerEntity instanceof ServerPlayer) {
       ChampionCapability.getCapability(entity).ifPresent(champion -> {
         IChampion.Server serverChampion = champion.getServer();
-        NetworkHandler.INSTANCE
-          .send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) playerEntity),
-            new SPacketSyncChampion(entity.getId(),
-              serverChampion.getRank().map(Rank::getTier).orElse(0),
-              serverChampion.getRank().map(Rank::getDefaultColor).orElse(TextColor.fromRgb(0)).toString(),
-              serverChampion.getAffixes().stream().map(IAffix::getIdentifier)
-                .collect(Collectors.toSet())));
+        if (ChampionHelper.isValidChampion(serverChampion)) {
+          NetworkHandler.INSTANCE
+            .send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) playerEntity),
+              new SPacketSyncChampion(entity.getId(),
+                serverChampion.getRank().map(Rank::getTier).orElse(0),
+                serverChampion.getRank().map(Rank::getDefaultColor).orElse(TextColor.fromRgb(0)).toString(),
+                serverChampion.getAffixes().stream().map(IAffix::getIdentifier)
+                  .collect(Collectors.toSet())));
+        }
       });
     }
   }

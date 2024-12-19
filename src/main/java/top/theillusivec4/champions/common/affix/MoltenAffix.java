@@ -1,7 +1,11 @@
 package top.theillusivec4.champions.common.affix;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +17,6 @@ import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import top.theillusivec4.champions.Champions;
-import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
@@ -22,10 +25,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class MoltenAffix extends BasicAffix {
-
-  public MoltenAffix() {
-    super("molten", AffixCategory.OFFENSE);
-  }
 
   @Override
   public void onSpawn(IChampion champion) {
@@ -72,8 +71,8 @@ public class MoltenAffix extends BasicAffix {
       livingEntity.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 40, 0, true, false));
 
       if (!ChampionsConfig.moltenWaterResistance && livingEntity.isInWaterOrRain()) {
-        DamageSource drown = new DamageSources(livingEntity.level().registryAccess()).drown();
-        livingEntity.hurt(drown, 1.0F);
+        Holder.Reference<DamageType> drown = livingEntity.level().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.DROWN);
+        livingEntity.hurt(new DamageSource(drown), 1.0F);
       }
     }
   }

@@ -6,7 +6,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.affix.core.GoalAffix;
@@ -16,10 +15,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class MagneticAffix extends GoalAffix {
-
-  public MagneticAffix() {
-    super("magnetic", AffixCategory.CC);
-  }
 
   @Override
   public List<Tuple<Integer, Goal>> getGoals(IChampion champion) {

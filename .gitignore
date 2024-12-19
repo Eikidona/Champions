@@ -26,3 +26,5 @@ build
 eclipse
 run
 /runs/
+/src/generated/
+/run-data/
