@@ -33,6 +33,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.InterModComms;
@@ -45,6 +46,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,6 +63,7 @@ import top.theillusivec4.champions.common.item.ChampionEggItem;
 import top.theillusivec4.champions.common.loot.EntityIsChampion;
 import top.theillusivec4.champions.common.loot.LootItemChampionPropertyCondition;
 import top.theillusivec4.champions.common.network.NetworkHandler;
+import top.theillusivec4.champions.common.network.SPacketSyncAffixSetting;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.registry.ModItems;
@@ -104,6 +107,7 @@ public class Champions {
     eventBus.addListener(this::setup);
     eventBus.addListener(this::registerCaps);
     eventBus.addListener(this::onGatherData);
+    MinecraftForge.EVENT_BUS.addListener(this::onDatapackSync);
     MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
     ChampionsRegistry.register(eventBus);
     scalingHealthLoaded = ModList.get().isLoaded("scalinghealth");
@@ -231,5 +235,13 @@ public class Champions {
     generator.addProvider(event.includeClient(), new ModLanguageProvider(packOutput, "ru_ru"));
     generator.addProvider(event.includeClient(), new ModLanguageProvider(packOutput, "tr_tr"));
     generator.addProvider(event.includeClient(), new ModLanguageProvider(packOutput, "uk_ua"));
+  }
+
+  private void onDatapackSync(OnDatapackSyncEvent event) {
+    // send to single player login or reload for all relevant players.
+    var relevantPlayers = event.getPlayers();
+    // sync datapack to client
+    var syncAffixSetting = new SPacketSyncAffixSetting(getDataLoader().getLoadedData());
+    relevantPlayers.forEach(player -> NetworkHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), syncAffixSetting));
   }
 }
