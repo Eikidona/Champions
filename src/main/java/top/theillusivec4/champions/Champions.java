@@ -38,6 +38,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig.Type;
@@ -90,8 +91,8 @@ public class Champions {
   public static boolean gameStagesLoaded = false;
 
   public Champions() {
-    var modContext = FMLJavaModLoadingContext.get();
-    IEventBus eventBus = modContext.getModEventBus();
+    var modContext = ModLoadingContext.get();
+    IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     eventBus.addListener(this::enqueueIMC);
     modContext.registerConfig(Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
     modContext.registerConfig(Type.SERVER, ChampionsConfig.SERVER_SPEC);
@@ -114,7 +115,7 @@ public class Champions {
     scalingHealthLoaded = ModList.get().isLoaded("scalinghealth");
   }
 
-  private static void createServerConfig(FMLJavaModLoadingContext modContext, ForgeConfigSpec spec, String suffix) {
+  private static void createServerConfig(ModLoadingContext modContext, ForgeConfigSpec spec, String suffix) {
     String fileName = "champions-" + suffix + ".toml";
     modContext.registerConfig(Type.SERVER, spec, fileName);
     File defaults = FMLPaths.GAMEDIR.get().resolve("defaultconfigs").resolve(fileName).toFile();
