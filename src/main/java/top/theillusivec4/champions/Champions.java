@@ -89,7 +89,8 @@ public class Champions {
   public static boolean scalingHealthLoaded = false;
   public static boolean gameStagesLoaded = false;
 
-  public Champions(FMLJavaModLoadingContext modContext) {
+  public Champions() {
+    var modContext = FMLJavaModLoadingContext.get();
     IEventBus eventBus = modContext.getModEventBus();
     eventBus.addListener(this::enqueueIMC);
     modContext.registerConfig(Type.CLIENT, ClientChampionsConfig.CLIENT_SPEC);
