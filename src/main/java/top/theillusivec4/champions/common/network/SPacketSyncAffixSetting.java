@@ -25,7 +25,7 @@ public record SPacketSyncAffixSetting(Map<ResourceLocation, AffixSetting> map) {
   /**
    * Apply setting and category map from datapack
    */
-  private static void handelSettingMainThread() {
+  public static void handelSettingMainThread() {
     Champions.getDataLoader().getLoadedData().forEach((resourceLocation, affixSetting) ->
       Champions.API.getAffix(affixSetting.type()).ifPresent(affix -> {
         affix.applySetting(affixSetting);

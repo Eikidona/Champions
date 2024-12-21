@@ -241,8 +241,9 @@ public class Champions {
   private void onDatapackSync(OnDatapackSyncEvent event) {
     // send to single player login or reload for all relevant players.
     var relevantPlayers = event.getPlayers();
-    // sync datapack to client
     var syncAffixSetting = new SPacketSyncAffixSetting(getDataLoader().getLoadedData());
+    // apply setting on server, and sync affix settings to client
+    SPacketSyncAffixSetting.handelSettingMainThread();
     relevantPlayers.forEach(player -> NetworkHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), syncAffixSetting));
   }
 }
