@@ -8,6 +8,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.*;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -95,6 +96,11 @@ public class ChampionsConfig {
   public static List<? extends String> entityStages;
   public static List<? extends String> tierStages;
   public static List<? extends String> bossBarBlackList;
+  public static AttributeModifier.Operation maxHealthModifierOperation;
+  public static AttributeModifier.Operation attackModifierOperation;
+  public static AttributeModifier.Operation armorModifierOperation;
+  public static AttributeModifier.Operation armorToughnessModifierOperation;
+  public static AttributeModifier.Operation knockbackResistanceModifierOperation;
 
   static {
     final Pair<ServerConfig, ForgeConfigSpec> specPair = new Builder()
@@ -106,6 +112,7 @@ public class ChampionsConfig {
     STAGE_SPEC = specPair2.getRight();
     STAGE = specPair2.getLeft();
   }
+
   static {
     final Pair<CommonConfig, ForgeConfigSpec> specPair = new Builder()
       .configure(CommonConfig::new);
@@ -136,7 +143,8 @@ public class ChampionsConfig {
     ENTITIES.entities = new ObjectConverter().toObject(configData, EntitiesConfig::new);
     entities = ENTITIES.entities.entities;
   }
-  public static void bakeCommon(){
+
+  public static void bakeCommon() {
     beaconProtectionRange = COMMON.beaconProtectionRange.get();
     championSpawners = COMMON.championSpawners.get();
     deathMessageTier = COMMON.deathMessageTier.get();
@@ -149,6 +157,7 @@ public class ChampionsConfig {
     enableTOPIntegration = COMMON.enableTOPIntegration.get();
     bossBarBlackList = COMMON.bossBarBlackList.get();
   }
+
   public static void bake() {
 
     fakeLoot = SERVER.fakeLoot.get();
@@ -157,10 +166,15 @@ public class ChampionsConfig {
     ConfigLoot.parse(SERVER.lootDrops.get());
 
     healthGrowth = SERVER.healthGrowth.get();
+    maxHealthModifierOperation = SERVER.maxHealthModifierOperation.get();
     attackGrowth = SERVER.attackGrowth.get();
+    attackModifierOperation = SERVER.attackModifierOperation.get();
     armorGrowth = SERVER.armorGrowth.get();
+    armorModifierOperation = SERVER.armorModifierOperation.get();
     toughnessGrowth = SERVER.toughnessGrowth.get();
+    armorToughnessModifierOperation = SERVER.armorToughnessModifierOperation.get();
     knockbackResistanceGrowth = SERVER.knockbackResistanceGrowth.get();
+    knockbackResistanceModifierOperation = SERVER.knockbackResistanceModifierOperation.get();
     experienceGrowth = SERVER.experienceGrowth.get();
     explosionGrowth = SERVER.explosionGrowth.get();
 
@@ -367,6 +381,11 @@ public class ChampionsConfig {
     public final DoubleValue armorGrowth;
     public final DoubleValue toughnessGrowth;
     public final DoubleValue knockbackResistanceGrowth;
+    public final EnumValue<AttributeModifier.Operation> maxHealthModifierOperation;
+    public final EnumValue<AttributeModifier.Operation> attackModifierOperation;
+    public final EnumValue<AttributeModifier.Operation> armorModifierOperation;
+    public final EnumValue<AttributeModifier.Operation> armorToughnessModifierOperation;
+    public final EnumValue<AttributeModifier.Operation> knockbackResistanceModifierOperation;
     public final IntValue experienceGrowth;
     public final IntValue explosionGrowth;
 
@@ -449,24 +468,49 @@ public class ChampionsConfig {
         .translation(CONFIG_PREFIX + "healthGrowth")
         .defineInRange("healthGrowth", 0.35D, 0.0D, Double.MAX_VALUE);
 
+      maxHealthModifierOperation = builder
+        .comment("The healthGrowth operation. Effect how health growth calculate (More info you can find here: https://minecraft.fandom.com/wiki/Attribute#Modifiers)")
+        .translation(CONFIG_PREFIX + "maxHealthModifierOperation")
+        .defineEnum("maxHealthModifierOperation", AttributeModifier.Operation.MULTIPLY_TOTAL, AttributeModifier.Operation.values());
+
       attackGrowth = builder
         .comment("The percent increase in attack damage multiplied by the growth factor")
         .translation(CONFIG_PREFIX + "attackGrowth")
         .defineInRange("attackGrowth", 0.5D, 0.0D, Double.MAX_VALUE);
 
+      attackModifierOperation = builder
+        .comment("The attackGrowth operation. Effect how attack growth calculate")
+        .translation(CONFIG_PREFIX + "attackModifierOperation")
+        .defineEnum("attackModifierOperation", AttributeModifier.Operation.MULTIPLY_TOTAL, AttributeModifier.Operation.values());
+
       armorGrowth = builder.comment("The increase in armor multiplied by the growth factor")
         .translation(CONFIG_PREFIX + "armorGrowth")
         .defineInRange("armorGrowth", 2.0D, 0.0D, 30.0D);
+
+      armorModifierOperation = builder
+        .comment("The armorGrowth operation. Effect how armor growth calculate")
+        .translation(CONFIG_PREFIX + "armorModifierOperation")
+        .defineEnum("armorModifierOperation", AttributeModifier.Operation.ADDITION, AttributeModifier.Operation.values());
 
       toughnessGrowth = builder
         .comment("The increase in armor toughness multiplied by the growth factor")
         .translation(CONFIG_PREFIX + "toughnessGrowth")
         .defineInRange("toughnessGrowth", 1.0D, 0.0D, 30.0D);
 
+      armorToughnessModifierOperation = builder
+        .comment("The toughnessGrowth operation. Effect how toughness growth calculate")
+        .translation(CONFIG_PREFIX + "armorToughnessModifierOperation")
+        .defineEnum("armorToughnessModifierOperation", AttributeModifier.Operation.ADDITION, AttributeModifier.Operation.values());
+
       knockbackResistanceGrowth = builder
         .comment("The increase in knockback resistance multiplied by the growth factor")
         .translation(CONFIG_PREFIX + "knockbackResistanceGrowth")
         .defineInRange("knockbackResistanceGrowth", 0.05D, 0.0D, 1.0D);
+
+      knockbackResistanceModifierOperation = builder
+        .comment("The knockbackResistanceGrowth operation. Effect how knockbackResistance growth calculate")
+        .translation(CONFIG_PREFIX + "knockbackResistanceModifierOperation")
+        .defineEnum("knockbackResistanceModifierOperation", AttributeModifier.Operation.ADDITION, AttributeModifier.Operation.values());
 
       experienceGrowth = builder
         .comment("The increase in experience multiplied by the growth factor")

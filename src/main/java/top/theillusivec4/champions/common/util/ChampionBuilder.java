@@ -155,11 +155,11 @@ public class ChampionBuilder {
     if (growthFactor < 1) {
       return;
     }
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.MAX_HEALTH), MAX_HEALTH_MODIFIER, ChampionsConfig.healthGrowth * growthFactor, AttributeModifier.Operation.MULTIPLY_TOTAL);
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ATTACK_DAMAGE), ATTACK_DAMAGE_MODIFIER, ChampionsConfig.attackGrowth * growthFactor, AttributeModifier.Operation.MULTIPLY_TOTAL);
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ARMOR), ARMOR_MODIFIER, ChampionsConfig.armorGrowth * growthFactor, AttributeModifier.Operation.ADDITION);
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ARMOR_TOUGHNESS), ARMOR_TOUGHNESS_MODIFIER, ChampionsConfig.toughnessGrowth * growthFactor, AttributeModifier.Operation.ADDITION);
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.KNOCKBACK_RESISTANCE), KNOCKBACK_RESISTANCE_MODIFIER, ChampionsConfig.knockbackResistanceGrowth * growthFactor, AttributeModifier.Operation.ADDITION);
+    applyAttributeModifier(livingEntity, Holder.direct(Attributes.MAX_HEALTH), MAX_HEALTH_MODIFIER, ChampionsConfig.healthGrowth * growthFactor,  ChampionsConfig.maxHealthModifierOperation);
+    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ATTACK_DAMAGE), ATTACK_DAMAGE_MODIFIER, ChampionsConfig.attackGrowth * growthFactor,  ChampionsConfig.attackModifierOperation);
+    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ARMOR), ARMOR_MODIFIER, ChampionsConfig.armorGrowth * growthFactor,  ChampionsConfig.armorModifierOperation);
+    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ARMOR_TOUGHNESS), ARMOR_TOUGHNESS_MODIFIER, ChampionsConfig.toughnessGrowth * growthFactor, ChampionsConfig.armorToughnessModifierOperation);
+    applyAttributeModifier(livingEntity, Holder.direct(Attributes.KNOCKBACK_RESISTANCE), KNOCKBACK_RESISTANCE_MODIFIER, ChampionsConfig.knockbackResistanceGrowth * growthFactor, ChampionsConfig.knockbackResistanceModifierOperation);
   }
 
   public static void applyAttributeModifier(LivingEntity livingEntity, Holder<Attribute> attribute, ResourceLocation modifierId, double amount, AttributeModifier.Operation operation) {
