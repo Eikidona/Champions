@@ -1,6 +1,7 @@
 package top.theillusivec4.champions.common.util;
 
 import com.google.common.collect.ImmutableSortedMap;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -21,11 +22,11 @@ import java.util.*;
 
 public class ChampionBuilder {
   private static final RandomSource RAND = RandomSource.createNewThreadLocalInstance();
-  private static final ResourceLocation MAX_HEALTH_MODIFIER = Champions.getLocation("max_health_modifier");
-  private static final ResourceLocation ATTACK_DAMAGE_MODIFIER = Champions.getLocation("attack_damage_modifier");
-  private static final ResourceLocation ARMOR_MODIFIER = Champions.getLocation("armor_modifier");
-  private static final ResourceLocation ARMOR_TOUGHNESS_MODIFIER = Champions.getLocation("armor_toughness_modifier");
-  private static final ResourceLocation KNOCKBACK_RESISTANCE_MODIFIER = Champions.getLocation("knock_back_resistance_modifier");
+  private static final Pair<UUID, ResourceLocation> MAX_HEALTH_MODIFIER = Pair.of(UUID.fromString("95db225d-7fbe-49fd-bdc0-ade9314f1e94"), Champions.getLocation("max_health_modifier"));
+  private static final Pair<UUID, ResourceLocation> ATTACK_DAMAGE_MODIFIER = Pair.of(UUID.fromString("afb5121b-7312-4a0b-adc8-f2d5a5315512"), Champions.getLocation("attack_damage_modifier"));
+  private static final Pair<UUID, ResourceLocation> ARMOR_MODIFIER = Pair.of(UUID.fromString("0be904a7-d381-40b5-a487-90e384069abc"), Champions.getLocation("armor_modifier"));
+  private static final Pair<UUID, ResourceLocation> ARMOR_TOUGHNESS_MODIFIER = Pair.of(UUID.fromString("de50a57a-87ec-4e08-9429-9a5cdcb97212"), Champions.getLocation("armor_toughness_modifier"));
+  private static final Pair<UUID, ResourceLocation> KNOCKBACK_RESISTANCE_MODIFIER = Pair.of(UUID.fromString("a9120ba0-98bb-48db-8e52-7ce9d80c7f10"), Champions.getLocation("knock_back_resistance_modifier"));
 
   public static void spawn(final IChampion champion) {
 
@@ -34,11 +35,13 @@ public class ChampionBuilder {
     }
     LivingEntity entity = champion.getLivingEntity();
     Rank newRank = ChampionBuilder.createRank(entity);
-    champion.getServer().setRank(newRank);
-    ChampionBuilder.applyGrowth(entity, newRank.getGrowthFactor());
-    List<IAffix> newAffixes = ChampionBuilder.createAffixes(newRank, champion);
-    champion.getServer().setAffixes(newAffixes);
-    newAffixes.forEach(affix -> affix.onInitialSpawn(champion));
+    if (newRank != null && newRank.getTier() >= 1) {
+      champion.getServer().setRank(newRank);
+      ChampionBuilder.applyGrowth(entity, newRank.getGrowthFactor());
+      List<IAffix> newAffixes = ChampionBuilder.createAffixes(newRank, champion);
+      champion.getServer().setAffixes(newAffixes);
+      newAffixes.forEach(affix -> affix.onInitialSpawn(champion));
+    }
   }
 
   public static void spawnPreset(final IChampion champion, int tier, List<IAffix> affixes) {
@@ -155,18 +158,18 @@ public class ChampionBuilder {
     if (growthFactor < 1) {
       return;
     }
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.MAX_HEALTH), MAX_HEALTH_MODIFIER, ChampionsConfig.healthGrowth * growthFactor,  ChampionsConfig.maxHealthModifierOperation);
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ATTACK_DAMAGE), ATTACK_DAMAGE_MODIFIER, ChampionsConfig.attackGrowth * growthFactor,  ChampionsConfig.attackModifierOperation);
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ARMOR), ARMOR_MODIFIER, ChampionsConfig.armorGrowth * growthFactor,  ChampionsConfig.armorModifierOperation);
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ARMOR_TOUGHNESS), ARMOR_TOUGHNESS_MODIFIER, ChampionsConfig.toughnessGrowth * growthFactor, ChampionsConfig.armorToughnessModifierOperation);
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.KNOCKBACK_RESISTANCE), KNOCKBACK_RESISTANCE_MODIFIER, ChampionsConfig.knockbackResistanceGrowth * growthFactor, ChampionsConfig.knockbackResistanceModifierOperation);
+    applyAttributeModifier(livingEntity, Holder.direct(Attributes.MAX_HEALTH), MAX_HEALTH_MODIFIER.getFirst(), MAX_HEALTH_MODIFIER.getSecond(), ChampionsConfig.healthGrowth * growthFactor, ChampionsConfig.maxHealthModifierOperation);
+    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ATTACK_DAMAGE), ATTACK_DAMAGE_MODIFIER.getFirst(), ATTACK_DAMAGE_MODIFIER.getSecond(), ChampionsConfig.attackGrowth * growthFactor, ChampionsConfig.attackModifierOperation);
+    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ARMOR), ARMOR_MODIFIER.getFirst(), ARMOR_MODIFIER.getSecond(), ChampionsConfig.armorGrowth * growthFactor, ChampionsConfig.armorModifierOperation);
+    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ARMOR_TOUGHNESS), ARMOR_TOUGHNESS_MODIFIER.getFirst(), ARMOR_TOUGHNESS_MODIFIER.getSecond(), ChampionsConfig.toughnessGrowth * growthFactor, ChampionsConfig.armorToughnessModifierOperation);
+    applyAttributeModifier(livingEntity, Holder.direct(Attributes.KNOCKBACK_RESISTANCE), KNOCKBACK_RESISTANCE_MODIFIER.getFirst(), KNOCKBACK_RESISTANCE_MODIFIER.getSecond(), ChampionsConfig.knockbackResistanceGrowth * growthFactor, ChampionsConfig.knockbackResistanceModifierOperation);
   }
 
-  public static void applyAttributeModifier(LivingEntity livingEntity, Holder<Attribute> attribute, ResourceLocation modifierId, double amount, AttributeModifier.Operation operation) {
+  public static void applyAttributeModifier(LivingEntity livingEntity, Holder<Attribute> attribute, UUID modifierUuid, ResourceLocation modifierName, double amount, AttributeModifier.Operation operation) {
     var attributeInstance = livingEntity.getAttributes().getInstance(attribute);
-    var attributeModifier = new AttributeModifier(modifierId.toString(), amount, operation);
+    var attributeModifier = new AttributeModifier(modifierUuid, modifierName.toString(), amount, operation);
     if (attributeInstance != null && !attributeInstance.hasModifier(attributeModifier)) {
-      attributeInstance.addPermanentModifier(new AttributeModifier(modifierId.toString(), amount, operation));
+      attributeInstance.addPermanentModifier(attributeModifier);
       if (attributeInstance.getAttribute() == Attributes.MAX_HEALTH) {
         livingEntity.setHealth(livingEntity.getMaxHealth());
       }
