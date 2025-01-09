@@ -16,10 +16,8 @@ import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.rank.Rank;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public record LootItemChampionPropertyCondition(LootContext.EntityTarget target,
                                                 MinMaxBounds.Ints tier, AffixesPredicate affixes)
@@ -79,99 +77,6 @@ public record LootItemChampionPropertyCondition(LootContext.EntityTarget target,
       return new LootItemChampionPropertyCondition(
         GsonHelper.getAsObject(json, "entity", context, LootContext.EntityTarget.class), tier,
         affixes);
-    }
-  }
-
-  public record AffixesPredicate(Set<String> values, MinMaxBounds.Ints matches,
-                                  MinMaxBounds.Ints count) {
-
-    private static final AffixesPredicate ANY =
-      new AffixesPredicate(new HashSet<>(), MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY);
-
-    private static AffixesPredicate fromJson(JsonElement json) {
-
-      if (json != null && !json.isJsonNull()) {
-
-        if (json.isJsonArray()) {
-          JsonArray jsonArray = GsonHelper.convertToJsonArray(json, "affixes");
-          Set<String> affixes = new HashSet<>();
-
-          for (JsonElement jsonElement : jsonArray) {
-
-            if (jsonElement.isJsonPrimitive()) {
-              affixes.add(jsonElement.getAsString());
-            }
-          }
-          return new AffixesPredicate(affixes, MinMaxBounds.Ints.atLeast(1), MinMaxBounds.Ints.ANY);
-        } else {
-          JsonObject jsonObject = json.getAsJsonObject();
-          Set<String> affixes = new HashSet<>();
-
-          if (jsonObject.has("values")) {
-            JsonArray jsonArray = GsonHelper.getAsJsonArray(jsonObject, "values");
-
-            for (JsonElement jsonElement : jsonArray) {
-
-              if (jsonElement.isJsonPrimitive()) {
-                affixes.add(jsonElement.getAsString());
-              }
-            }
-          }
-          MinMaxBounds.Ints matches = MinMaxBounds.Ints.atLeast(1);
-
-          if (jsonObject.has("matches")) {
-            matches = MinMaxBounds.Ints.fromJson(jsonObject.get("matches"));
-          }
-          MinMaxBounds.Ints count = MinMaxBounds.Ints.ANY;
-
-          if (jsonObject.has("count")) {
-            count = MinMaxBounds.Ints.fromJson(jsonObject.get("count"));
-          }
-          return new AffixesPredicate(affixes, matches, count);
-        }
-      }
-      return ANY;
-    }
-
-    private boolean matches(List<IAffix> input) {
-
-      if (this.values.isEmpty()) {
-        return this.count.matches(input.size());
-      } else {
-        Set<String> affixes = input.stream().map(IAffix::toString).collect(Collectors.toSet());
-        int found = 0;
-
-        for (String affix : this.values) {
-
-          if (affixes.contains(affix)) {
-            found++;
-          }
-        }
-        return this.matches.matches(found) && this.count.matches(input.size());
-      }
-    }
-
-    public JsonElement serializeToJson() {
-      if (this.values.isEmpty() && this.count.isAny() && this.matches.isAny()) {
-        return JsonNull.INSTANCE;
-      } else {
-        JsonObject jsonObject = new JsonObject();
-        JsonArray jsonArray = new JsonArray();
-
-        for (String value : this.values) {
-          jsonArray.add(value);
-        }
-        Integer min = this.count.getMin();
-        Integer max = this.count.getMax();
-
-        if (min != null && min == 1 && max == null) {
-          return jsonArray;
-        }
-        jsonObject.add("values", jsonArray);
-        jsonObject.add("matches", this.matches.serializeToJson());
-        jsonObject.add("count", this.count.serializeToJson());
-        return jsonObject;
-      }
     }
   }
 }

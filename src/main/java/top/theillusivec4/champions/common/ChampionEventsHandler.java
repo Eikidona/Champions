@@ -44,6 +44,7 @@ public class ChampionEventsHandler {
   @SubscribeEvent
   public void onAddReloadListener(AddReloadListenerEvent event) {
     event.addListener(Champions.getDataLoader());
+    event.addListener(Champions.API.getAttributesModifierDataLoader());
   }
 
   @SubscribeEvent

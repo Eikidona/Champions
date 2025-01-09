@@ -9,11 +9,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
-import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.rank.RankManager;
 import top.theillusivec4.champions.common.util.EntityManager.EntitySettings;
@@ -22,11 +22,6 @@ import java.util.*;
 
 public class ChampionBuilder {
   private static final RandomSource RAND = RandomSource.createNewThreadLocalInstance();
-  private static final Pair<UUID, ResourceLocation> MAX_HEALTH_MODIFIER = Pair.of(UUID.fromString("95db225d-7fbe-49fd-bdc0-ade9314f1e94"), Champions.getLocation("max_health_modifier"));
-  private static final Pair<UUID, ResourceLocation> ATTACK_DAMAGE_MODIFIER = Pair.of(UUID.fromString("afb5121b-7312-4a0b-adc8-f2d5a5315512"), Champions.getLocation("attack_damage_modifier"));
-  private static final Pair<UUID, ResourceLocation> ARMOR_MODIFIER = Pair.of(UUID.fromString("0be904a7-d381-40b5-a487-90e384069abc"), Champions.getLocation("armor_modifier"));
-  private static final Pair<UUID, ResourceLocation> ARMOR_TOUGHNESS_MODIFIER = Pair.of(UUID.fromString("de50a57a-87ec-4e08-9429-9a5cdcb97212"), Champions.getLocation("armor_toughness_modifier"));
-  private static final Pair<UUID, ResourceLocation> KNOCKBACK_RESISTANCE_MODIFIER = Pair.of(UUID.fromString("a9120ba0-98bb-48db-8e52-7ce9d80c7f10"), Champions.getLocation("knock_back_resistance_modifier"));
 
   public static void spawn(final IChampion champion) {
 
@@ -37,7 +32,7 @@ public class ChampionBuilder {
     Rank newRank = ChampionBuilder.createRank(entity);
     if (newRank != null && newRank.getTier() >= 1) {
       champion.getServer().setRank(newRank);
-      ChampionBuilder.applyGrowth(entity, newRank.getGrowthFactor());
+      ChampionBuilder.applyGrowth(champion, newRank.getGrowthFactor());
       List<IAffix> newAffixes = ChampionBuilder.createAffixes(newRank, champion);
       champion.getServer().setAffixes(newAffixes);
       newAffixes.forEach(affix -> affix.onInitialSpawn(champion));
@@ -45,10 +40,9 @@ public class ChampionBuilder {
   }
 
   public static void spawnPreset(final IChampion champion, int tier, List<IAffix> affixes) {
-    LivingEntity entity = champion.getLivingEntity();
     Rank newRank = RankManager.getRank(tier);
     champion.getServer().setRank(newRank);
-    ChampionBuilder.applyGrowth(entity, newRank.getGrowthFactor());
+    ChampionBuilder.applyGrowth(champion, newRank.getGrowthFactor());
     affixes = affixes.isEmpty() ? ChampionBuilder.createAffixes(newRank, champion) : affixes;
     champion.getServer().setAffixes(affixes);
     affixes.forEach(affix -> affix.onInitialSpawn(champion));
@@ -153,16 +147,24 @@ public class ChampionBuilder {
     return RankManager.getEmptyRank();
   }
 
-  public static void applyGrowth(final LivingEntity livingEntity, float growthFactor) {
-
-    if (growthFactor < 1) {
-      return;
+  public static void applyGrowth(final IChampion champion, float growthFactor) {
+    var livingEntity = champion.getLivingEntity();
+    if (growthFactor != 0) {
+      Champions.API.getAttributesModifierDataLoader().getLoadedData().forEach((identifier, value) -> {
+        if (value.enable()) {
+          var attribute = ForgeRegistries.ATTRIBUTES.getDelegate(value.attributeType());
+          var setting = value.setting();
+          var matches = value.modifierCondition().map(championModifierCondition -> championModifierCondition.test(champion)).orElse(true);
+          if (matches) {
+            attribute.ifPresent(attributeValue -> applyAttributeModifier(livingEntity, attributeValue, identifier, setting, growthFactor));
+          }
+        }
+      });
     }
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.MAX_HEALTH), MAX_HEALTH_MODIFIER.getFirst(), MAX_HEALTH_MODIFIER.getSecond(), ChampionsConfig.healthGrowth * growthFactor, ChampionsConfig.maxHealthModifierOperation);
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ATTACK_DAMAGE), ATTACK_DAMAGE_MODIFIER.getFirst(), ATTACK_DAMAGE_MODIFIER.getSecond(), ChampionsConfig.attackGrowth * growthFactor, ChampionsConfig.attackModifierOperation);
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ARMOR), ARMOR_MODIFIER.getFirst(), ARMOR_MODIFIER.getSecond(), ChampionsConfig.armorGrowth * growthFactor, ChampionsConfig.armorModifierOperation);
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.ARMOR_TOUGHNESS), ARMOR_TOUGHNESS_MODIFIER.getFirst(), ARMOR_TOUGHNESS_MODIFIER.getSecond(), ChampionsConfig.toughnessGrowth * growthFactor, ChampionsConfig.armorToughnessModifierOperation);
-    applyAttributeModifier(livingEntity, Holder.direct(Attributes.KNOCKBACK_RESISTANCE), KNOCKBACK_RESISTANCE_MODIFIER.getFirst(), KNOCKBACK_RESISTANCE_MODIFIER.getSecond(), ChampionsConfig.knockbackResistanceGrowth * growthFactor, ChampionsConfig.knockbackResistanceModifierOperation);
+  }
+
+  private static void applyAttributeModifier(LivingEntity livingEntity, Holder.Reference<Attribute> attributeValue, ResourceLocation modifierId, Pair<Double, AttributeModifier.Operation> setting, float growthFactor) {
+    applyAttributeModifier(livingEntity, attributeValue, UUID.randomUUID(), Champions.getLocation(modifierId.getNamespace() + "_" + modifierId.getPath().split("\\.json")[0] + "_modifier"), setting.getFirst() * growthFactor, setting.getSecond());
   }
 
   public static void applyAttributeModifier(LivingEntity livingEntity, Holder<Attribute> attribute, UUID modifierUuid, ResourceLocation modifierName, double amount, AttributeModifier.Operation operation) {
@@ -181,7 +183,7 @@ public class ChampionBuilder {
     IChampion.Server newServer = newChampion.getServer();
     Rank rank = oldServer.getRank().orElse(RankManager.getLowestRank());
     newServer.setRank(rank);
-    ChampionBuilder.applyGrowth(newChampion.getLivingEntity(), rank.getGrowthFactor());
+    ChampionBuilder.applyGrowth(newChampion, rank.getGrowthFactor());
     List<IAffix> oldAffixes = oldChampion.getServer().getAffixes();
     newServer.setAffixes(oldAffixes);
     oldAffixes.forEach(affix -> affix.onInitialSpawn(newChampion));

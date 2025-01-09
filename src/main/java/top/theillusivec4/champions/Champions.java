@@ -228,6 +228,7 @@ public class Champions {
 //    generator.addProvider(event.includeServer(),  new ModGlobalLootModifierProvider(generator));
     generator.addProvider(event.includeServer(), new ModDamageTypeTagsProvider(packOutput, datapackProvider.getRegistryProvider(), existingFileHelper));
     generator.addProvider(event.includeServer(), new AffixConfigProvider(packOutput, datapackProvider.getRegistryProvider()));
+    generator.addProvider(event.includeServer(), new AttributesModifierDataProvider(packOutput, datapackProvider.getRegistryProvider()));
     generator.addProvider(event.includeServer(), new ModEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
     // translate
     generator.addProvider(event.includeClient(), new ModLanguageProvider(packOutput));

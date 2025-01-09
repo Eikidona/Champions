@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 public class ChampionsApiImpl implements IChampionsApi {
   private static final ConcurrentHashMap<AffixCategory, List<IAffix>> categories = new ConcurrentHashMap<>();
+  private static final AttributesModifierDataLoader ATTRIBUTES_MODIFIER_DATA_LOADER = new AttributesModifierDataLoader();
   private static final Logger LOGGER = LogManager.getLogger();
   private static ChampionsApiImpl instance = null;
 
@@ -72,5 +73,10 @@ public class ChampionsApiImpl implements IChampionsApi {
   @Override
   public void addCategory(AffixCategory category, IAffix affix) {
     categories.get(category).add(affix);
+  }
+
+  @Override
+  public AttributesModifierDataLoader getAttributesModifierDataLoader() {
+    return ATTRIBUTES_MODIFIER_DATA_LOADER;
   }
 }

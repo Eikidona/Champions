@@ -48,4 +48,6 @@ public interface IChampionsApi {
   Map<AffixCategory, List<IAffix>> getCategoryMap();
 
   void addCategory(AffixCategory category, IAffix affix);
+
+  AttributesModifierDataLoader getAttributesModifierDataLoader();
 }
