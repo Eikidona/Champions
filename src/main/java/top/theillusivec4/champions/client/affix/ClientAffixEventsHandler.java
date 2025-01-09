@@ -8,11 +8,11 @@ import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.common.registry.ModMobEffects;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = Champions.MODID)
+@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Champions.MODID)
 public class ClientAffixEventsHandler {
 
   @SubscribeEvent
-  public void handleJailing(MovementInputUpdateEvent evt) {
+  public static void handleJailing(MovementInputUpdateEvent evt) {
     if (evt.getEntity().hasEffect(ModMobEffects.PARALYSIS_EFFECT_TYPE.get())) {
       Input input = evt.getInput();
       input.shiftKeyDown = false;
