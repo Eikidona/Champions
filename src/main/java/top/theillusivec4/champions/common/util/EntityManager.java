@@ -35,14 +35,14 @@ public class EntityManager {
         return;
       }
       EntityType<?> type = ForgeRegistries.ENTITY_TYPES
-          .getValue(new ResourceLocation(entityConfig.entity));
+        .getValue(new ResourceLocation(entityConfig.entity));
 
       if (type == null) {
         Champions.LOGGER.error("Invalid identifier while building entity settings, skipping...");
         return;
       }
       EntitySettings settings = new EntitySettings(type, entityConfig.minTier, entityConfig.maxTier,
-          entityConfig.presetAffixes, entityConfig.affixList, entityConfig.affixPermission);
+        entityConfig.presetAffixes, entityConfig.affixList, entityConfig.affixPermission);
       SETTINGS.put(type, settings);
     });
   }
@@ -77,7 +77,7 @@ public class EntityManager {
       if (affixList != null) {
 
         for (String s : affixList) {
-          Champions.API.getAffix(s).ifPresent(this.affixList::add);
+          Champions.API.getAffix(s).ifPresentOrElse(this.affixList::add, () -> logInvalidAffix(s));
         }
       }
       Permission permission = Permission.BLACKLIST;
@@ -88,6 +88,10 @@ public class EntityManager {
         Champions.LOGGER.error("Invalid permission value {}", affixPermission);
       }
       this.affixPermission = permission;
+    }
+
+    private void logInvalidAffix(String invalidAffix) {
+      Champions.LOGGER.error("This affix doesn't exist {}, skipping...", invalidAffix);
     }
 
     public boolean canApply(IAffix affix) {
