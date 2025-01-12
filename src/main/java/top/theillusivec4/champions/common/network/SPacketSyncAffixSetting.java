@@ -15,33 +15,33 @@ import java.util.function.Supplier;
 
 public record SPacketSyncAffixSetting(Map<ResourceLocation, AffixSetting> map) {
 
-  private static final Codec<Map<ResourceLocation, AffixSetting>> MAPPER =
-    Codec.unboundedMap(ResourceLocation.CODEC, AffixSetting.CODEC);
+    private static final Codec<Map<ResourceLocation, AffixSetting>> MAPPER =
+            Codec.unboundedMap(ResourceLocation.CODEC, AffixSetting.CODEC);
 
-  public static SPacketSyncAffixSetting decode(FriendlyByteBuf buf) {
-    return new SPacketSyncAffixSetting(MAPPER.parse(NbtOps.INSTANCE, buf.readNbt()).result().orElse(new HashMap<>()));
-  }
-
-  /**
-   * Apply setting and category map from datapack
-   */
-  public static void handelSettingMainThread() {
-    Champions.getDataLoader().getLoadedData().forEach((resourceLocation, affixSetting) ->
-      Champions.API.getAffix(affixSetting.type()).ifPresent(affix -> {
-        affix.applySetting(affixSetting);
-        Champions.API.addCategory(affix.getCategory(), affix);
-      }));
-  }
-
-  public void encode(FriendlyByteBuf buf) {
-    buf.writeNbt((CompoundTag) MAPPER.encodeStart(NbtOps.INSTANCE, this.map).result().orElse(new CompoundTag()));
-  }
-
-  public void handle(Supplier<NetworkEvent.Context> ctx) {
-    if (ctx.get().getDirection().getReceptionSide().isClient()) {
-      ctx.get().enqueueWork(() -> Champions.getDataLoader().cache(this.map));
+    public static SPacketSyncAffixSetting decode(FriendlyByteBuf buf) {
+        return new SPacketSyncAffixSetting(MAPPER.parse(NbtOps.INSTANCE, buf.readNbt()).result().orElse(new HashMap<>()));
     }
-    ctx.get().enqueueWork(SPacketSyncAffixSetting::handelSettingMainThread);
-    ctx.get().setPacketHandled(true);
-  }
+
+    /**
+     * Apply setting and category map from datapack
+     */
+    public static void handelSettingMainThread() {
+        Champions.getDataLoader().getLoadedData().forEach((resourceLocation, affixSetting) ->
+                Champions.API.getAffix(affixSetting.type()).ifPresent(affix -> {
+                    affix.applySetting(affixSetting);
+                    Champions.API.addCategory(affix.getCategory(), affix);
+                }));
+    }
+
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeNbt((CompoundTag) MAPPER.encodeStart(NbtOps.INSTANCE, this.map).result().orElse(new CompoundTag()));
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        if (ctx.get().getDirection().getReceptionSide().isClient()) {
+            ctx.get().enqueueWork(() -> Champions.getDataLoader().cache(this.map));
+        }
+        ctx.get().enqueueWork(SPacketSyncAffixSetting::handelSettingMainThread);
+        ctx.get().setPacketHandled(true);
+    }
 }

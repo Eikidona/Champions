@@ -7,47 +7,48 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface IChampionsApi {
-  /**
-   * Get affix by string id
-   *
-   * @param id Affix's String id
-   * @return an Optional IAffix
-   */
-  Optional<IAffix> getAffix(String id);
+    /**
+     * Get affix by string id
+     *
+     * @param id Affix's String id
+     * @return an Optional IAffix
+     */
+    Optional<IAffix> getAffix(String id);
 
-  Optional<IAffix> getAffix(ResourceLocation id);
-  Optional<ResourceLocation> getAffixId(IAffix affix);
+    Optional<IAffix> getAffix(ResourceLocation id);
 
-  /**
-   * Get all registered affixes copies
-   *
-   * @return List of IAffix
-   */
-  List<IAffix> getAffixes();
+    Optional<ResourceLocation> getAffixId(IAffix affix);
 
-  /**
-   * Get List of IAffix by Affix Category
-   *
-   * @param category Affix's Category
-   * @return List of IAffix
-   */
-  List<IAffix> getAffixes(AffixCategory category);
+    /**
+     * Get all registered affixes copies
+     *
+     * @return List of IAffix
+     */
+    List<IAffix> getAffixes();
 
-  /**
-   * Get all Categories list
-   *
-   * @return Array of AffixCategory
-   */
-  AffixCategory[] getCategories();
+    /**
+     * Get List of IAffix by Affix Category
+     *
+     * @param category Affix's Category
+     * @return List of IAffix
+     */
+    List<IAffix> getAffixes(AffixCategory category);
 
-  /**
-   * Get Relation of AffixCategory and IAffix Map copies
-   *
-   * @return Map of AffixCategory and List of IAffix
-   */
-  Map<AffixCategory, List<IAffix>> getCategoryMap();
+    /**
+     * Get all Categories list
+     *
+     * @return Array of AffixCategory
+     */
+    AffixCategory[] getCategories();
 
-  void addCategory(AffixCategory category, IAffix affix);
+    /**
+     * Get Relation of AffixCategory and IAffix Map copies
+     *
+     * @return Map of AffixCategory and List of IAffix
+     */
+    Map<AffixCategory, List<IAffix>> getCategoryMap();
 
-  AttributesModifierDataLoader getAttributesModifierDataLoader();
+    void addCategory(AffixCategory category, IAffix affix);
+
+    AttributesModifierDataLoader getAttributesModifierDataLoader();
 }

@@ -10,11 +10,11 @@ import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.common.loot.ChampionLootModifier;
 
 public class ModLootModifiers {
-  public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIER_SERIALIZERS =
-    DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, Champions.MODID);
-  public static final RegistryObject<Codec<ChampionLootModifier>> CHAMPION_LOOT = LOOT_MODIFIER_SERIALIZERS.register("champion_loot", () -> ChampionLootModifier.CODEC);
+    public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIER_SERIALIZERS =
+            DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, Champions.MODID);
+    public static final RegistryObject<Codec<ChampionLootModifier>> CHAMPION_LOOT = LOOT_MODIFIER_SERIALIZERS.register("champion_loot", () -> ChampionLootModifier.CODEC);
 
-  public static void register(IEventBus bus) {
-    LOOT_MODIFIER_SERIALIZERS.register(bus);
-  }
+    public static void register(IEventBus bus) {
+        LOOT_MODIFIER_SERIALIZERS.register(bus);
+    }
 }

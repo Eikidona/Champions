@@ -20,39 +20,39 @@ import top.theillusivec4.champions.common.rank.Rank;
 import java.util.ArrayList;
 
 public enum ChampionComponentProvider implements IEntityComponentProvider {
-  INSTANCE;
+    INSTANCE;
 
-  private static Component getChampionName(Tuple<Integer, String> rank, IChampion champion) {
-    return Component.translatable("rank.champions.title." + rank.getA()).append(" " + champion.getLivingEntity().getName().getString()).withStyle(Style.EMPTY.withColor(Rank.getColor(rank.getB())));
-  }
+    private static Component getChampionName(Tuple<Integer, String> rank, IChampion champion) {
+        return Component.translatable("rank.champions.title." + rank.getA()).append(" " + champion.getLivingEntity().getName().getString()).withStyle(Style.EMPTY.withColor(Rank.getColor(rank.getB())));
+    }
 
-  private static Component getChampionDescription(IAffix affix) {
-    return Component.translatable(affix.toLanguageKey());
-  }
+    private static Component getChampionDescription(IAffix affix) {
+        return Component.translatable(affix.toLanguageKey());
+    }
 
-  @Override
-  public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
-    ChampionCapability.getCapability(entityAccessor.getEntity()).ifPresent(champion -> {
-      champion.getClient().getRank().ifPresent(rank -> iTooltip.get(0, IElement.Align.LEFT).set(0, new TextElement(getChampionName(rank,champion))));
-      var affixes = champion.getClient().getAffixes();
-      ArrayList<Component> components = new ArrayList<>();
-      StringBuilder line = new StringBuilder();
-      for (int i = 0; i < affixes.size(); i++) {
-        line.append(getChampionDescription(affixes.get(i)).getString());
-        if ((i + 1) % ClientChampionsConfig.lineCount == 0 || i == affixes.size() - 1) {
-          // 达到指定数量或是最后一个词条时添加行并清空
-          components.add(Component.literal(line.toString()));
-          line.setLength(0); // 清空 StringBuilder
-        } else {
-          line.append(" "); // 添加空格分隔符
-        }
-      }
-      iTooltip.addAll(components);
-    });
-  }
+    @Override
+    public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
+        ChampionCapability.getCapability(entityAccessor.getEntity()).ifPresent(champion -> {
+            champion.getClient().getRank().ifPresent(rank -> iTooltip.get(0, IElement.Align.LEFT).set(0, new TextElement(getChampionName(rank, champion))));
+            var affixes = champion.getClient().getAffixes();
+            ArrayList<Component> components = new ArrayList<>();
+            StringBuilder line = new StringBuilder();
+            for (int i = 0; i < affixes.size(); i++) {
+                line.append(getChampionDescription(affixes.get(i)).getString());
+                if ((i + 1) % ClientChampionsConfig.lineCount == 0 || i == affixes.size() - 1) {
+                    // 达到指定数量或是最后一个词条时添加行并清空
+                    components.add(Component.literal(line.toString()));
+                    line.setLength(0); // 清空 StringBuilder
+                } else {
+                    line.append(" "); // 添加空格分隔符
+                }
+            }
+            iTooltip.addAll(components);
+        });
+    }
 
-  @Override
-  public ResourceLocation getUid() {
-    return Champions.getLocation("enable_affix_compact");
-  }
+    @Override
+    public ResourceLocation getUid() {
+        return Champions.getLocation("enable_affix_compact");
+    }
 }

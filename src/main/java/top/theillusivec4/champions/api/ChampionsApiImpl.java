@@ -9,74 +9,74 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 public class ChampionsApiImpl implements IChampionsApi {
-  private static final ConcurrentHashMap<AffixCategory, List<IAffix>> categories = new ConcurrentHashMap<>();
-  private static final AttributesModifierDataLoader ATTRIBUTES_MODIFIER_DATA_LOADER = new AttributesModifierDataLoader();
-  private static final Logger LOGGER = LogManager.getLogger();
-  private static ChampionsApiImpl instance = null;
+    private static final ConcurrentHashMap<AffixCategory, List<IAffix>> categories = new ConcurrentHashMap<>();
+    private static final AttributesModifierDataLoader ATTRIBUTES_MODIFIER_DATA_LOADER = new AttributesModifierDataLoader();
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static ChampionsApiImpl instance = null;
 
-  private ChampionsApiImpl() {
-  }
-
-  public static IChampionsApi getInstance() {
-    if (instance == null) {
-      instance = new ChampionsApiImpl();
-      categories.clear();
-
-      for (AffixCategory value : AffixCategory.values()) {
-        categories.put(value, new ArrayList<>());
-      }
+    private ChampionsApiImpl() {
     }
-    return instance;
-  }
 
-  @Override
-  public Optional<IAffix> getAffix(String id) {
-    return getAffix(new ResourceLocation(id));
-  }
+    public static IChampionsApi getInstance() {
+        if (instance == null) {
+            instance = new ChampionsApiImpl();
+            categories.clear();
 
-  @Override
-  public Optional<IAffix> getAffix(ResourceLocation id) {
-    return Optional.ofNullable(AffixRegistry.getRegistry().getValue(id));
-  }
+            for (AffixCategory value : AffixCategory.values()) {
+                categories.put(value, new ArrayList<>());
+            }
+        }
+        return instance;
+    }
 
-  @Override
-  public Optional<ResourceLocation> getAffixId(IAffix affix) {
-    return Optional.ofNullable(AffixRegistry.getRegistry().getKey(affix));
-  }
+    @Override
+    public Optional<IAffix> getAffix(String id) {
+        return getAffix(new ResourceLocation(id));
+    }
 
-  @Override
-  public List<IAffix> getAffixes() {
-    return getAffixStream().toList();
-  }
+    @Override
+    public Optional<IAffix> getAffix(ResourceLocation id) {
+        return Optional.ofNullable(AffixRegistry.getRegistry().getValue(id));
+    }
 
-  public Stream<IAffix> getAffixStream() {
-    return AffixRegistry.getRegistry().getValues().stream();
-  }
+    @Override
+    public Optional<ResourceLocation> getAffixId(IAffix affix) {
+        return Optional.ofNullable(AffixRegistry.getRegistry().getKey(affix));
+    }
 
-  @Override
-  public List<IAffix> getAffixes(AffixCategory category) {
-    return getAffixStream().filter(affix -> affix.sameCategory(category)).toList();
-  }
+    @Override
+    public List<IAffix> getAffixes() {
+        return getAffixStream().toList();
+    }
 
-  @Override
-  public AffixCategory[] getCategories() {
-    return AffixCategory.values();
-  }
+    public Stream<IAffix> getAffixStream() {
+        return AffixRegistry.getRegistry().getValues().stream();
+    }
 
-  @Override
-  public Map<AffixCategory, List<IAffix>> getCategoryMap() {
-    Map<AffixCategory, List<IAffix>> copy = new HashMap<>();
-    categories.forEach((k, v) -> copy.put(k, Collections.unmodifiableList(v)));
-    return Collections.unmodifiableMap(copy);
-  }
+    @Override
+    public List<IAffix> getAffixes(AffixCategory category) {
+        return getAffixStream().filter(affix -> affix.sameCategory(category)).toList();
+    }
 
-  @Override
-  public void addCategory(AffixCategory category, IAffix affix) {
-    categories.get(category).add(affix);
-  }
+    @Override
+    public AffixCategory[] getCategories() {
+        return AffixCategory.values();
+    }
 
-  @Override
-  public AttributesModifierDataLoader getAttributesModifierDataLoader() {
-    return ATTRIBUTES_MODIFIER_DATA_LOADER;
-  }
+    @Override
+    public Map<AffixCategory, List<IAffix>> getCategoryMap() {
+        Map<AffixCategory, List<IAffix>> copy = new HashMap<>();
+        categories.forEach((k, v) -> copy.put(k, Collections.unmodifiableList(v)));
+        return Collections.unmodifiableMap(copy);
+    }
+
+    @Override
+    public void addCategory(AffixCategory category, IAffix affix) {
+        categories.get(category).add(affix);
+    }
+
+    @Override
+    public AttributesModifierDataLoader getAttributesModifierDataLoader() {
+        return ATTRIBUTES_MODIFIER_DATA_LOADER;
+    }
 }

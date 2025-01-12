@@ -12,74 +12,74 @@ import java.util.Objects;
 
 public class Rank {
 
-  private final int tier;
-  private final String defaultColor;
-  private final int numAffixes;
-  private final int growthFactor;
-  private final int weight;
-  private final List<Tuple<Holder<MobEffect>, Integer>> effects;
-  private final List<IAffix> presetAffixes;
+    private final int tier;
+    private final String defaultColor;
+    private final int numAffixes;
+    private final int growthFactor;
+    private final int weight;
+    private final List<Tuple<Holder<MobEffect>, Integer>> effects;
+    private final List<IAffix> presetAffixes;
 
-  public Rank() {
-    this(0, 0, 0, 0, "#FF000000", new ArrayList<>(), new ArrayList<>());
-  }
+    public Rank() {
+        this(0, 0, 0, 0, "#FF000000", new ArrayList<>(), new ArrayList<>());
+    }
 
-  public Rank(int tier, int numAffixes, int growthFactor, int weight, String defaultColor,
-              List<Tuple<Holder<MobEffect>, Integer>> effects, List<IAffix> presetAffixes) {
-    this.tier = tier;
-    this.numAffixes = numAffixes;
-    this.growthFactor = growthFactor;
-    this.weight = weight;
-    this.defaultColor = defaultColor;
-    this.effects = effects;
-    this.presetAffixes = presetAffixes;
-  }
+    public Rank(int tier, int numAffixes, int growthFactor, int weight, String defaultColor,
+                List<Tuple<Holder<MobEffect>, Integer>> effects, List<IAffix> presetAffixes) {
+        this.tier = tier;
+        this.numAffixes = numAffixes;
+        this.growthFactor = growthFactor;
+        this.weight = weight;
+        this.defaultColor = defaultColor;
+        this.effects = effects;
+        this.presetAffixes = presetAffixes;
+    }
 
-  public static int getColor(String color) {
-    return Objects.requireNonNull(TextColor.parseColor(color)).getValue();
-  }
+    public static int getColor(String color) {
+        return Objects.requireNonNull(TextColor.parseColor(color)).getValue();
+    }
 
-  public int getTier() {
-    return tier;
-  }
+    public int getTier() {
+        return tier;
+    }
 
-  public TextColor getDefaultColor() {
-    return Objects.requireNonNull(TextColor.parseColor(defaultColor));
-  }
+    public TextColor getDefaultColor() {
+        return Objects.requireNonNull(TextColor.parseColor(defaultColor));
+    }
 
-  public int getNumAffixes() {
-    return numAffixes;
-  }
+    public int getNumAffixes() {
+        return numAffixes;
+    }
 
-  public int getGrowthFactor() {
-    return growthFactor;
-  }
+    public int getGrowthFactor() {
+        return growthFactor;
+    }
 
-  public int getWeight() {
-    return weight;
-  }
+    public int getWeight() {
+        return weight;
+    }
 
-  public List<Tuple<Holder<MobEffect>, Integer>> getEffects() {
-    return effects;
-  }
+    public List<Tuple<Holder<MobEffect>, Integer>> getEffects() {
+        return effects;
+    }
 
-  public List<IAffix> getPresetAffixes() {
-    return presetAffixes;
-  }
+    public List<IAffix> getPresetAffixes() {
+        return presetAffixes;
+    }
 
-  @Override
-  public boolean equals(Object obj) {
-    return obj == this || obj != null && obj.getClass() == this.getClass();
-  }
+    @Override
+    public boolean equals(Object obj) {
+        return obj == this || obj != null && obj.getClass() == this.getClass();
+    }
 
-  @Override
-  public int hashCode() {
-    return 1;
-  }
+    @Override
+    public int hashCode() {
+        return 1;
+    }
 
-  @Override
-  public String toString() {
-    return "Rank[]";
-  }
+    @Override
+    public String toString() {
+        return "Rank[]";
+    }
 
 }

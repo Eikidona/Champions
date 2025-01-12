@@ -10,14 +10,14 @@ import top.theillusivec4.champions.common.loot.ChampionLootModifier;
 import top.theillusivec4.champions.common.loot.LootItemChampionPropertyCondition;
 
 public class ModGlobalLootModifierProvider extends GlobalLootModifierProvider {
-  public ModGlobalLootModifierProvider(DataGenerator output) {
-    super(output.getPackOutput(), Champions.MODID);
-  }
+    public ModGlobalLootModifierProvider(DataGenerator output) {
+        super(output.getPackOutput(), Champions.MODID);
+    }
 
-  @Override
-  protected void start() {
-    this.add("champion_loot_modifier", new ChampionLootModifier(new LootItemCondition[]{
-      new LootItemChampionPropertyCondition(LootContext.EntityTarget.THIS, MinMaxBounds.Ints.ANY, null)
-    }));
-  }
+    @Override
+    protected void start() {
+        this.add("champion_loot_modifier", new ChampionLootModifier(new LootItemCondition[]{
+                new LootItemChampionPropertyCondition(LootContext.EntityTarget.THIS, MinMaxBounds.Ints.ANY, null)
+        }));
+    }
 }

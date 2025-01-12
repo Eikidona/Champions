@@ -15,32 +15,32 @@ import java.util.concurrent.CompletableFuture;
 
 public class AffixConfigProvider implements DataProvider {
 
-  private final PackOutput packOutput;
-  private final CompletableFuture<HolderLookup.Provider> lookupProvider;
+    private final PackOutput packOutput;
+    private final CompletableFuture<HolderLookup.Provider> lookupProvider;
 
-  public AffixConfigProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
-    this.packOutput = packOutput;
-    this.lookupProvider = lookupProvider;
-  }
+    public AffixConfigProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        this.packOutput = packOutput;
+        this.lookupProvider = lookupProvider;
+    }
 
-  @Override
-  public CompletableFuture<?> run(CachedOutput cachedOutput) {
-    List<CompletableFuture<?>> futures = new ArrayList<>();
-    Champions.API.getAffixes().forEach(affix -> {
-      var affixId = affix.getIdentifier();
+    @Override
+    public CompletableFuture<?> run(CachedOutput cachedOutput) {
+        List<CompletableFuture<?>> futures = new ArrayList<>();
+        Champions.API.getAffixes().forEach(affix -> {
+            var affixId = affix.getIdentifier();
 
-      Path outputPath = packOutput.getOutputFolder()
-        .resolve("data/" + affixId.getNamespace() + "/affix_setting/" + affixId.getPath() + ".json");
-      futures.add(lookupProvider.thenCompose(provider ->
-        DataProvider.saveStable(cachedOutput, AffixSetting.CODEC.encodeStart(JsonOps.INSTANCE, affix.getSetting()).get().orThrow().getAsJsonObject(), outputPath)
-      ));
-    });
+            Path outputPath = packOutput.getOutputFolder()
+                    .resolve("data/" + affixId.getNamespace() + "/affix_setting/" + affixId.getPath() + ".json");
+            futures.add(lookupProvider.thenCompose(provider ->
+                    DataProvider.saveStable(cachedOutput, AffixSetting.CODEC.encodeStart(JsonOps.INSTANCE, affix.getSetting()).get().orThrow().getAsJsonObject(), outputPath)
+            ));
+        });
 
-    return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
-  }
+        return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
+    }
 
-  @Override
-  public String getName() {
-    return "Affix_configs";
-  }
+    @Override
+    public String getName() {
+        return "Affix_configs";
+    }
 }

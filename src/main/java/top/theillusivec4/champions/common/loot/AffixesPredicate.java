@@ -22,97 +22,97 @@ public record AffixesPredicate(Set<ResourceLocation> values, MinMaxBounds.Ints m
                                MinMaxBounds.Ints count) {
 
     public static final Codec<AffixesPredicate> CODEC = RecordCodecBuilder.create(instance ->
-      instance.group(ChampionModifierCondition.setOf(ResourceLocation.CODEC).fieldOf("values").forGetter(AffixesPredicate::values),
-        AffixSetting.INTS_CODEC.fieldOf("matches").forGetter(AffixesPredicate::matches),
-        AffixSetting.INTS_CODEC.fieldOf("count").forGetter(AffixesPredicate::count)
-      ).apply(instance, AffixesPredicate::new));
+            instance.group(ChampionModifierCondition.setOf(ResourceLocation.CODEC).fieldOf("values").forGetter(AffixesPredicate::values),
+                    AffixSetting.INTS_CODEC.fieldOf("matches").forGetter(AffixesPredicate::matches),
+                    AffixSetting.INTS_CODEC.fieldOf("count").forGetter(AffixesPredicate::count)
+            ).apply(instance, AffixesPredicate::new));
 
     private static final AffixesPredicate ANY =
-      new AffixesPredicate(new HashSet<>(), MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY);
+            new AffixesPredicate(new HashSet<>(), MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY);
 
     public static AffixesPredicate fromJson(JsonElement json) {
 
-      if (json != null && !json.isJsonNull()) {
+        if (json != null && !json.isJsonNull()) {
 
-        if (json.isJsonArray()) {
-          JsonArray jsonArray = GsonHelper.convertToJsonArray(json, "affixes");
-          Set<ResourceLocation> affixes = new HashSet<>();
+            if (json.isJsonArray()) {
+                JsonArray jsonArray = GsonHelper.convertToJsonArray(json, "affixes");
+                Set<ResourceLocation> affixes = new HashSet<>();
 
-          for (JsonElement jsonElement : jsonArray) {
+                for (JsonElement jsonElement : jsonArray) {
 
-            if (jsonElement.isJsonPrimitive()) {
-              affixes.add(ResourceLocation.tryParse(jsonElement.getAsString()));
+                    if (jsonElement.isJsonPrimitive()) {
+                        affixes.add(ResourceLocation.tryParse(jsonElement.getAsString()));
+                    }
+                }
+                return new AffixesPredicate(affixes, MinMaxBounds.Ints.atLeast(1), MinMaxBounds.Ints.ANY);
+            } else {
+                JsonObject jsonObject = json.getAsJsonObject();
+                Set<ResourceLocation> affixes = new HashSet<>();
+
+                if (jsonObject.has("values")) {
+                    JsonArray jsonArray = GsonHelper.getAsJsonArray(jsonObject, "values");
+
+                    for (JsonElement jsonElement : jsonArray) {
+
+                        if (jsonElement.isJsonPrimitive()) {
+                            affixes.add(ResourceLocation.tryParse(jsonElement.getAsString()));
+                        }
+                    }
+                }
+                MinMaxBounds.Ints matches = MinMaxBounds.Ints.atLeast(1);
+
+                if (jsonObject.has("matches")) {
+                    matches = MinMaxBounds.Ints.fromJson(jsonObject.get("matches"));
+                }
+                MinMaxBounds.Ints count = MinMaxBounds.Ints.ANY;
+
+                if (jsonObject.has("count")) {
+                    count = MinMaxBounds.Ints.fromJson(jsonObject.get("count"));
+                }
+                return new AffixesPredicate(affixes, matches, count);
             }
-          }
-          return new AffixesPredicate(affixes, MinMaxBounds.Ints.atLeast(1), MinMaxBounds.Ints.ANY);
-        } else {
-          JsonObject jsonObject = json.getAsJsonObject();
-          Set<ResourceLocation> affixes = new HashSet<>();
-
-          if (jsonObject.has("values")) {
-            JsonArray jsonArray = GsonHelper.getAsJsonArray(jsonObject, "values");
-
-            for (JsonElement jsonElement : jsonArray) {
-
-              if (jsonElement.isJsonPrimitive()) {
-                affixes.add(ResourceLocation.tryParse(jsonElement.getAsString()));
-              }
-            }
-          }
-          MinMaxBounds.Ints matches = MinMaxBounds.Ints.atLeast(1);
-
-          if (jsonObject.has("matches")) {
-            matches = MinMaxBounds.Ints.fromJson(jsonObject.get("matches"));
-          }
-          MinMaxBounds.Ints count = MinMaxBounds.Ints.ANY;
-
-          if (jsonObject.has("count")) {
-            count = MinMaxBounds.Ints.fromJson(jsonObject.get("count"));
-          }
-          return new AffixesPredicate(affixes, matches, count);
         }
-      }
-      return ANY;
+        return ANY;
     }
 
     public boolean matches(List<IAffix> input) {
 
-      if (this.values.isEmpty()) {
-        return this.count.matches(input.size());
-      } else {
-        Set<ResourceLocation> affixes = input.stream().map(IAffix::getIdentifier).collect(Collectors.toSet());
-        int found = 0;
+        if (this.values.isEmpty()) {
+            return this.count.matches(input.size());
+        } else {
+            Set<ResourceLocation> affixes = input.stream().map(IAffix::getIdentifier).collect(Collectors.toSet());
+            int found = 0;
 
-        for (var affix : this.values) {
+            for (var affix : this.values) {
 
-          if (affixes.contains(affix)) {
-            found++;
-          }
+                if (affixes.contains(affix)) {
+                    found++;
+                }
+            }
+            return this.matches.matches(found) && this.count.matches(input.size());
         }
-        return this.matches.matches(found) && this.count.matches(input.size());
-      }
     }
 
     public JsonElement serializeToJson() {
-      if (this.values.isEmpty() && this.count.isAny() && this.matches.isAny()) {
-        return JsonNull.INSTANCE;
-      } else {
-        JsonObject jsonObject = new JsonObject();
-        JsonArray jsonArray = new JsonArray();
+        if (this.values.isEmpty() && this.count.isAny() && this.matches.isAny()) {
+            return JsonNull.INSTANCE;
+        } else {
+            JsonObject jsonObject = new JsonObject();
+            JsonArray jsonArray = new JsonArray();
 
-        for (var value : this.values) {
-          jsonArray.add(value.toString());
-        }
-        Integer min = this.count.getMin();
-        Integer max = this.count.getMax();
+            for (var value : this.values) {
+                jsonArray.add(value.toString());
+            }
+            Integer min = this.count.getMin();
+            Integer max = this.count.getMax();
 
-        if (min != null && min == 1 && max == null) {
-          return jsonArray;
+            if (min != null && min == 1 && max == null) {
+                return jsonArray;
+            }
+            jsonObject.add("values", jsonArray);
+            jsonObject.add("matches", this.matches.serializeToJson());
+            jsonObject.add("count", this.count.serializeToJson());
+            return jsonObject;
         }
-        jsonObject.add("values", jsonArray);
-        jsonObject.add("matches", this.matches.serializeToJson());
-        jsonObject.add("count", this.count.serializeToJson());
-        return jsonObject;
-      }
     }
-  }
+}

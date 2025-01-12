@@ -11,10 +11,10 @@ import top.theillusivec4.champions.server.command.AffixArgumentInfo;
 import top.theillusivec4.champions.server.command.AffixArgumentType;
 
 public class ModArgumentTypes {
-  private static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPES = DeferredRegister.create(ForgeRegistries.COMMAND_ARGUMENT_TYPES, Champions.MODID);
-  public static final RegistryObject<AffixArgumentInfo> AFFIX_ARGUMENT_TYPE = ARGUMENT_TYPES.register("affixes", () -> ArgumentTypeInfos.registerByClass(AffixArgumentType.class, new AffixArgumentInfo()));
+    private static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPES = DeferredRegister.create(ForgeRegistries.COMMAND_ARGUMENT_TYPES, Champions.MODID);
+    public static final RegistryObject<AffixArgumentInfo> AFFIX_ARGUMENT_TYPE = ARGUMENT_TYPES.register("affixes", () -> ArgumentTypeInfos.registerByClass(AffixArgumentType.class, new AffixArgumentInfo()));
 
-  public static void register(IEventBus bus) {
-    ARGUMENT_TYPES.register(bus);
-  }
+    public static void register(IEventBus bus) {
+        ARGUMENT_TYPES.register(bus);
+    }
 }

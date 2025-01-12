@@ -9,16 +9,16 @@ import top.theillusivec4.champions.Champions;
 
 public class ChampionsStats {
 
-  public static ResourceLocation CHAMPION_MOBS_KILLED;
+    public static ResourceLocation CHAMPION_MOBS_KILLED;
 
-  public static void setup() {
-    CHAMPION_MOBS_KILLED = makeCustomStat("champion_mobs_killed", StatFormatter.DEFAULT);
-  }
+    public static void setup() {
+        CHAMPION_MOBS_KILLED = makeCustomStat("champion_mobs_killed", StatFormatter.DEFAULT);
+    }
 
-  private static ResourceLocation makeCustomStat(String key, StatFormatter formatter) {
-    ResourceLocation resourcelocation = Champions.getLocation(key);
-    Registry.register(BuiltInRegistries.CUSTOM_STAT, resourcelocation.toString(), resourcelocation);
-    Stats.CUSTOM.get(resourcelocation, formatter);
-    return resourcelocation;
-  }
+    private static ResourceLocation makeCustomStat(String key, StatFormatter formatter) {
+        ResourceLocation resourcelocation = Champions.getLocation(key);
+        Registry.register(BuiltInRegistries.CUSTOM_STAT, resourcelocation.toString(), resourcelocation);
+        Stats.CUSTOM.get(resourcelocation, formatter);
+        return resourcelocation;
+    }
 }

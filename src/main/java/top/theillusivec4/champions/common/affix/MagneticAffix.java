@@ -16,58 +16,58 @@ import java.util.List;
 
 public class MagneticAffix extends GoalAffix {
 
-  @Override
-  public List<Tuple<Integer, Goal>> getGoals(IChampion champion) {
-    return Collections.singletonList(
-        new Tuple<>(0, new PullGoal((Mob) champion.getLivingEntity())));
-  }
-
-  public static class PullGoal extends Goal {
-    final Mob mobEntity;
-    LivingEntity target = null;
-
-    public PullGoal(final Mob mobEntity) {
-      this.mobEntity = mobEntity;
-    }
-
     @Override
-    public void start() {
-      target = mobEntity.getTarget();
-      super.start();
+    public List<Tuple<Integer, Goal>> getGoals(IChampion champion) {
+        return Collections.singletonList(
+                new Tuple<>(0, new PullGoal((Mob) champion.getLivingEntity())));
     }
 
-    @Override
-    public void stop() {
-      target = null;
-      super.stop();
-    }
+    public static class PullGoal extends Goal {
+        final Mob mobEntity;
+        LivingEntity target = null;
 
-    @Override
-    public boolean canUse() {
-      return mobEntity.getTarget() != null && BasicAffix
-          .canTarget(mobEntity, mobEntity.getTarget(), true)
-          && mobEntity.tickCount % 40 == 0 && mobEntity.getRandom().nextDouble() < 0.4D;
-    }
+        public PullGoal(final Mob mobEntity) {
+            this.mobEntity = mobEntity;
+        }
 
-    @Override
-    public boolean canContinueToUse() {
-      return mobEntity.tickCount % 40 != 0 || mobEntity.getRandom().nextDouble() > 0.7D;
-    }
+        @Override
+        public void start() {
+            target = mobEntity.getTarget();
+            super.start();
+        }
 
-    @Override
-    public void tick() {
-      double x = mobEntity.position().x;
-      double y = mobEntity.position().y;
-      double z = mobEntity.position().z;
-      double strength = ChampionsConfig.magneticStrength;
-      Vec3 vec = new Vec3(x, y, z).subtract(
-              new Vec3(target.position().x, target.position().y, target.position().z)).normalize()
-          .scale(strength);
-      target.setDeltaMovement(vec);
+        @Override
+        public void stop() {
+            target = null;
+            super.stop();
+        }
 
-      if (target instanceof Player) {
-        target.hurtMarked = true;
-      }
+        @Override
+        public boolean canUse() {
+            return mobEntity.getTarget() != null && BasicAffix
+                    .canTarget(mobEntity, mobEntity.getTarget(), true)
+                    && mobEntity.tickCount % 40 == 0 && mobEntity.getRandom().nextDouble() < 0.4D;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return mobEntity.tickCount % 40 != 0 || mobEntity.getRandom().nextDouble() > 0.7D;
+        }
+
+        @Override
+        public void tick() {
+            double x = mobEntity.position().x;
+            double y = mobEntity.position().y;
+            double z = mobEntity.position().z;
+            double strength = ChampionsConfig.magneticStrength;
+            Vec3 vec = new Vec3(x, y, z).subtract(
+                            new Vec3(target.position().x, target.position().y, target.position().z)).normalize()
+                    .scale(strength);
+            target.setDeltaMovement(vec);
+
+            if (target instanceof Player) {
+                target.hurtMarked = true;
+            }
+        }
     }
-  }
 }

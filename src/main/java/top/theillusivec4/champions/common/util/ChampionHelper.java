@@ -23,127 +23,127 @@ import java.util.Set;
 
 public class ChampionHelper {
 
-  private static final Set<BlockPos> BEACON_POS = new HashSet<>();
+    private static final Set<BlockPos> BEACON_POS = new HashSet<>();
 
-  private static MinecraftServer server = null;
+    private static MinecraftServer server = null;
 
-  /**
-   * check entity is LivingEntity & Enemy
-   */
-  public static boolean isValidChampion(final Entity entity) {
-    return entity instanceof LivingEntity && entity instanceof Enemy;
-  }
-
-  /**
-   * @param client champion to check
-   * @return True if champion is valid Champion(Has ranks and affixes), else false.
-   */
-  public static boolean isValidChampion(IChampion.Client client) {
-    var rank = client.getRank();
-    return rank.isPresent() && rank.map(Tuple::getA).orElse(0) > 0 && !client.getAffixes().isEmpty();
-  }
-
-  /**
-   * @param server champion to check
-   * @return True if champion is valid Champion(Has ranks and affixes), else false.
-   */
-  public static boolean isValidChampion(IChampion.Server server) {
-    var rank = server.getRank();
-    return rank.isPresent() && rank.map(Rank::getTier).orElse(-1) > 0 && !server.getAffixes().isEmpty();
-  }
-
-  /**
-   * Check LivingEntity is potential champion entity.(can have data and spawn etc...)
-   *
-   * @param livingEntity that will check for.
-   * @return True if this is not potential champion, else false.
-   */
-  public static boolean notPotential(final LivingEntity livingEntity) {
-    return !isValidEntity(livingEntity) ||
-      !isValidDimension(livingEntity.level().dimension().location()) ||
-      nearActiveBeacon(livingEntity);
-  }
-
-  public static void addBeacon(BlockPos pos) {
-
-    if (server != null) {
-      BEACON_POS.add(pos);
-    }
-  }
-
-  private static boolean isValidEntity(final LivingEntity livingEntity) {
-    ResourceLocation rl = ForgeRegistries.ENTITY_TYPES.getDelegateOrThrow(livingEntity.getType()).key().location();
-
-    String entity = rl.toString();
-
-    if (ChampionsConfig.entitiesPermission == Permission.BLACKLIST) {
-      return !ChampionsConfig.entitiesList.contains(entity);
-    } else {
-      return ChampionsConfig.entitiesList.contains(entity);
-    }
-  }
-
-  public static boolean areEntitiesNearby(BlockPos pos, List<LivingEntity> livingEntities, EntityType<?> entityType) {
-    for (LivingEntity livingentity : livingEntities) {
-      if (livingentity.isAlive()
-        && !livingentity.isRemoved()
-        && pos.closerToCenterThan(livingentity.position(), 32.0)
-        && livingentity.getType() == entityType) {
-        return true;
-      }
+    /**
+     * check entity is LivingEntity & Enemy
+     */
+    public static boolean isValidChampion(final Entity entity) {
+        return entity instanceof LivingEntity && entity instanceof Enemy;
     }
 
-    return false;
-  }
-
-  private static boolean isValidDimension(final ResourceLocation resourceLocation) {
-    String dimension = resourceLocation.toString();
-
-    if (ChampionsConfig.dimensionPermission == Permission.BLACKLIST) {
-      return !ChampionsConfig.dimensionList.contains(dimension);
-    } else {
-      return ChampionsConfig.dimensionList.contains(dimension);
+    /**
+     * @param client champion to check
+     * @return True if champion is valid Champion(Has ranks and affixes), else false.
+     */
+    public static boolean isValidChampion(IChampion.Client client) {
+        var rank = client.getRank();
+        return rank.isPresent() && rank.map(Tuple::getA).orElse(0) > 0 && !client.getAffixes().isEmpty();
     }
-  }
 
-  private static boolean nearActiveBeacon(final LivingEntity livingEntity) {
-    int range = ChampionsConfig.beaconProtectionRange;
-
-    if (range <= 0) {
-      return false;
+    /**
+     * @param server champion to check
+     * @return True if champion is valid Champion(Has ranks and affixes), else false.
+     */
+    public static boolean isValidChampion(IChampion.Server server) {
+        var rank = server.getRank();
+        return rank.isPresent() && rank.map(Rank::getTier).orElse(-1) > 0 && !server.getAffixes().isEmpty();
     }
-    Set<BlockPos> toRemove = new HashSet<>();
 
-    for (BlockPos pos : BEACON_POS) {
-      Level level = livingEntity.level();
+    /**
+     * Check LivingEntity is potential champion entity.(can have data and spawn etc...)
+     *
+     * @param livingEntity that will check for.
+     * @return True if this is not potential champion, else false.
+     */
+    public static boolean notPotential(final LivingEntity livingEntity) {
+        return !isValidEntity(livingEntity) ||
+                !isValidDimension(livingEntity.level().dimension().location()) ||
+                nearActiveBeacon(livingEntity);
+    }
 
-      if (!level.isLoaded(pos)) {
-        continue;
-      }
-      BlockEntity blockEntity = level.getBlockEntity(pos);
+    public static void addBeacon(BlockPos pos) {
 
-      if (blockEntity instanceof BeaconBlockEntity beaconBlockEntity && !blockEntity.isRemoved()) {
+        if (server != null) {
+            BEACON_POS.add(pos);
+        }
+    }
 
-        if (livingEntity.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) <= range * range) {
+    private static boolean isValidEntity(final LivingEntity livingEntity) {
+        ResourceLocation rl = ForgeRegistries.ENTITY_TYPES.getDelegateOrThrow(livingEntity.getType()).key().location();
 
-          if (beaconBlockEntity.levels > 0) {
-            return true;
-          }
+        String entity = rl.toString();
+
+        if (ChampionsConfig.entitiesPermission == Permission.BLACKLIST) {
+            return !ChampionsConfig.entitiesList.contains(entity);
+        } else {
+            return ChampionsConfig.entitiesList.contains(entity);
+        }
+    }
+
+    public static boolean areEntitiesNearby(BlockPos pos, List<LivingEntity> livingEntities, EntityType<?> entityType) {
+        for (LivingEntity livingentity : livingEntities) {
+            if (livingentity.isAlive()
+                    && !livingentity.isRemoved()
+                    && pos.closerToCenterThan(livingentity.position(), 32.0)
+                    && livingentity.getType() == entityType) {
+                return true;
+            }
         }
 
-      } else {
-        toRemove.add(pos);
-      }
+        return false;
     }
-    BEACON_POS.removeAll(toRemove);
-    return false;
-  }
 
-  public static void clearBeacons() {
-    BEACON_POS.clear();
-  }
+    private static boolean isValidDimension(final ResourceLocation resourceLocation) {
+        String dimension = resourceLocation.toString();
 
-  public static void setServer(MinecraftServer serverIn) {
-    server = serverIn;
-  }
+        if (ChampionsConfig.dimensionPermission == Permission.BLACKLIST) {
+            return !ChampionsConfig.dimensionList.contains(dimension);
+        } else {
+            return ChampionsConfig.dimensionList.contains(dimension);
+        }
+    }
+
+    private static boolean nearActiveBeacon(final LivingEntity livingEntity) {
+        int range = ChampionsConfig.beaconProtectionRange;
+
+        if (range <= 0) {
+            return false;
+        }
+        Set<BlockPos> toRemove = new HashSet<>();
+
+        for (BlockPos pos : BEACON_POS) {
+            Level level = livingEntity.level();
+
+            if (!level.isLoaded(pos)) {
+                continue;
+            }
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+
+            if (blockEntity instanceof BeaconBlockEntity beaconBlockEntity && !blockEntity.isRemoved()) {
+
+                if (livingEntity.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) <= range * range) {
+
+                    if (beaconBlockEntity.levels > 0) {
+                        return true;
+                    }
+                }
+
+            } else {
+                toRemove.add(pos);
+            }
+        }
+        BEACON_POS.removeAll(toRemove);
+        return false;
+    }
+
+    public static void clearBeacons() {
+        BEACON_POS.clear();
+    }
+
+    public static void setServer(MinecraftServer serverIn) {
+        server = serverIn;
+    }
 }
