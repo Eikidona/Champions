@@ -14,7 +14,6 @@ import net.minecraftforge.common.ForgeConfigSpec.*;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.champions.Champions;
-import top.theillusivec4.champions.common.config.AffixesConfig.AffixConfig;
 import top.theillusivec4.champions.common.config.ConfigEnums.LootSource;
 import top.theillusivec4.champions.common.config.ConfigEnums.Permission;
 import top.theillusivec4.champions.common.config.EntitiesConfig.EntityConfig;
@@ -39,7 +38,6 @@ public class ChampionsConfig {
     public static final Entities ENTITIES;
     private static final String CONFIG_PREFIX = "gui." + Champions.MODID + ".config.";
     public static List<RankConfig> ranks;
-    public static List<AffixConfig> affixes;
     public static List<EntityConfig> entities;
     public static int beaconProtectionRange;
     public static boolean championSpawners;
