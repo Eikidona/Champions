@@ -11,14 +11,14 @@ import top.theillusivec4.champions.common.registry.ModMobEffects;
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Champions.MODID)
 public class ClientAffixEventsHandler {
 
-  @SubscribeEvent
-  public static void handleJailing(MovementInputUpdateEvent evt) {
-    if (evt.getEntity().hasEffect(ModMobEffects.PARALYSIS_EFFECT_TYPE.get())) {
-      Input input = evt.getInput();
-      input.shiftKeyDown = false;
-      input.jumping = false;
-      input.forwardImpulse = 0;
-      input.leftImpulse = 0;
+    @SubscribeEvent
+    public static void handleJailing(MovementInputUpdateEvent evt) {
+        if (evt.getEntity().hasEffect(ModMobEffects.PARALYSIS_EFFECT_TYPE.get())) {
+            Input input = evt.getInput();
+            input.shiftKeyDown = false;
+            input.jumping = false;
+            input.forwardImpulse = 0;
+            input.leftImpulse = 0;
+        }
     }
-  }
 }

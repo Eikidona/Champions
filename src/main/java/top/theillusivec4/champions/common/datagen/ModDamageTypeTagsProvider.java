@@ -16,13 +16,13 @@ import java.util.concurrent.CompletableFuture;
 
 public class ModDamageTypeTagsProvider extends TagsProvider<DamageType> {
 
-  public ModDamageTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> future, ExistingFileHelper helper) {
-    super(output, Registries.DAMAGE_TYPE, future, Champions.MODID, helper);
-  }
+    public ModDamageTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> future, ExistingFileHelper helper) {
+        super(output, Registries.DAMAGE_TYPE, future, Champions.MODID, helper);
+    }
 
-  @Override
-  protected void addTags(@NotNull HolderLookup.Provider provider) {
-    tag(DamageTypeTags.IS_FIRE).add(ModDamageTypes.ENKINDLING_BULLET);
-  }
+    @Override
+    protected void addTags(@NotNull HolderLookup.Provider provider) {
+        tag(DamageTypeTags.IS_FIRE).add(ModDamageTypes.ENKINDLING_BULLET);
+    }
 
 }

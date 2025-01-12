@@ -12,41 +12,41 @@ import java.util.Set;
 
 public interface IChampion {
 
-  Client getClient();
+    Client getClient();
 
-  Server getServer();
+    Server getServer();
 
-  LivingEntity getLivingEntity();
+    LivingEntity getLivingEntity();
 
-  interface Client {
+    interface Client {
 
-    Optional<Tuple<Integer, String>> getRank();
+        Optional<Tuple<Integer, String>> getRank();
 
-    void setRank(Tuple<Integer, String> rank);
+        void setRank(Tuple<Integer, String> rank);
 
-    List<IAffix> getAffixes();
+        List<IAffix> getAffixes();
 
-    void setAffixes(Set<ResourceLocation> affixIds);
+        void setAffixes(Set<ResourceLocation> affixIds);
 
-    Optional<IAffix> getAffix(String id);
+        Optional<IAffix> getAffix(String id);
 
-    void setData(String identifier, CompoundTag data);
+        void setData(String identifier, CompoundTag data);
 
-    CompoundTag getData(String identifier);
-  }
+        CompoundTag getData(String identifier);
+    }
 
-  interface Server {
+    interface Server {
 
-    Optional<Rank> getRank();
+        Optional<Rank> getRank();
 
-    void setRank(Rank rank);
+        void setRank(Rank rank);
 
-    List<IAffix> getAffixes();
+        List<IAffix> getAffixes();
 
-    void setAffixes(List<IAffix> affixes);
+        void setAffixes(List<IAffix> affixes);
 
-    CompoundTag getData(String identifier);
+        CompoundTag getData(String identifier);
 
-    void setData(String identifier, CompoundTag data);
-  }
+        void setData(String identifier, CompoundTag data);
+    }
 }

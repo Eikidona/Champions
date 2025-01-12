@@ -20,71 +20,71 @@ import java.util.Set;
 
 public class EntityIsChampion implements LootItemCondition {
 
-  public static LootItemConditionType type =
-    new LootItemConditionType(new EntityIsChampion.Serializer());
+    public static LootItemConditionType type =
+            new LootItemConditionType(new EntityIsChampion.Serializer());
 
-  @Nullable
-  private final Integer minTier;
-  @Nullable
-  private final Integer maxTier;
-  private final LootContext.EntityTarget target;
+    @Nullable
+    private final Integer minTier;
+    @Nullable
+    private final Integer maxTier;
+    private final LootContext.EntityTarget target;
 
-  private EntityIsChampion(@Nullable Integer minTier, @Nullable Integer maxTier,
-                           LootContext.EntityTarget targetIn) {
-    this.minTier = minTier;
-    this.maxTier = maxTier;
-    this.target = targetIn;
-  }
-
-  @NotNull
-  @Override
-  public Set<LootContextParam<?>> getReferencedContextParams() {
-    return ImmutableSet.of(this.target.getParam());
-  }
-
-  @Override
-  public boolean test(LootContext context) {
-    Entity entity = context.getParamOrNull(this.target.getParam());
-
-    if (entity == null) {
-      return false;
-    } else {
-      return ChampionCapability.getCapability(entity).map(champion -> {
-        int tier = champion.getServer().getRank().map(Rank::getTier).orElse(0);
-        boolean aboveMin = minTier == null ? tier >= 1 : tier >= minTier;
-        boolean belowMax = maxTier == null || tier <= maxTier;
-        return aboveMin && belowMax;
-      }).orElse(false);
+    private EntityIsChampion(@Nullable Integer minTier, @Nullable Integer maxTier,
+                             LootContext.EntityTarget targetIn) {
+        this.minTier = minTier;
+        this.maxTier = maxTier;
+        this.target = targetIn;
     }
-  }
 
-  @Nonnull
-  @Override
-  public LootItemConditionType getType() {
-    return type;
-  }
-
-  public static class Serializer
-    implements net.minecraft.world.level.storage.loot.Serializer<EntityIsChampion> {
+    @NotNull
+    @Override
+    public Set<LootContextParam<?>> getReferencedContextParams() {
+        return ImmutableSet.of(this.target.getParam());
+    }
 
     @Override
-    public void serialize(final JsonObject json, final EntityIsChampion value,
-                          final JsonSerializationContext context) {
-      json.addProperty("maxTier", value.maxTier);
-      json.addProperty("minTier", value.minTier);
-      json.add("entity", context.serialize(value.target));
+    public boolean test(LootContext context) {
+        Entity entity = context.getParamOrNull(this.target.getParam());
+
+        if (entity == null) {
+            return false;
+        } else {
+            return ChampionCapability.getCapability(entity).map(champion -> {
+                int tier = champion.getServer().getRank().map(Rank::getTier).orElse(0);
+                boolean aboveMin = minTier == null ? tier >= 1 : tier >= minTier;
+                boolean belowMax = maxTier == null || tier <= maxTier;
+                return aboveMin && belowMax;
+            }).orElse(false);
+        }
     }
 
     @Nonnull
     @Override
-    public EntityIsChampion deserialize(
-      JsonObject json,
-      @Nonnull JsonDeserializationContext context) {
-      Integer minTier = json.has("minTier") ? GsonHelper.getAsInt(json, "minTier") : null;
-      Integer maxTier = json.has("maxTier") ? GsonHelper.getAsInt(json, "maxTier") : null;
-
-      return new EntityIsChampion(minTier, maxTier,
-        GsonHelper.getAsObject(json, "entity", context, LootContext.EntityTarget.class));
+    public LootItemConditionType getType() {
+        return type;
     }
-  }
+
+    public static class Serializer
+            implements net.minecraft.world.level.storage.loot.Serializer<EntityIsChampion> {
+
+        @Override
+        public void serialize(final JsonObject json, final EntityIsChampion value,
+                              final JsonSerializationContext context) {
+            json.addProperty("maxTier", value.maxTier);
+            json.addProperty("minTier", value.minTier);
+            json.add("entity", context.serialize(value.target));
+        }
+
+        @Nonnull
+        @Override
+        public EntityIsChampion deserialize(
+                JsonObject json,
+                @Nonnull JsonDeserializationContext context) {
+            Integer minTier = json.has("minTier") ? GsonHelper.getAsInt(json, "minTier") : null;
+            Integer maxTier = json.has("maxTier") ? GsonHelper.getAsInt(json, "maxTier") : null;
+
+            return new EntityIsChampion(minTier, maxTier,
+                    GsonHelper.getAsObject(json, "entity", context, LootContext.EntityTarget.class));
+        }
+    }
 }

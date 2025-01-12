@@ -4,25 +4,25 @@ import net.minecraft.util.StringRepresentable;
 
 public class ConfigEnums {
 
-  public enum Permission implements StringRepresentable {
-    BLACKLIST("blacklist"),
-    WHITELIST("whitelist");
-    final String name;
+    public enum Permission implements StringRepresentable {
+        BLACKLIST("blacklist"),
+        WHITELIST("whitelist");
+        final String name;
 
-    Permission(String name) {
-      this.name = name;
+        Permission(String name) {
+            this.name = name;
+        }
+
+
+        @Override
+        public String getSerializedName() {
+            return this.name;
+        }
     }
 
-
-    @Override
-    public String getSerializedName() {
-      return this.name;
+    public enum LootSource {
+        CONFIG,
+        LOOT_TABLE,
+        CONFIG_AND_LOOT_TABLE
     }
-  }
-
-  public enum LootSource {
-    CONFIG,
-    LOOT_TABLE,
-    CONFIG_AND_LOOT_TABLE
-  }
 }

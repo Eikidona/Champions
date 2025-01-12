@@ -13,26 +13,26 @@ import top.theillusivec4.champions.common.registry.ModMobEffects;
 
 public class WoundingAffix extends BasicAffix {
 
-  @SubscribeEvent
-  public void onHeal(LivingHealEvent evt) {
-    if (evt.getEntity().hasEffect(ModMobEffects.WOUND_EFFECT_TYPE.get())) {
-      evt.setAmount(evt.getAmount() * 0.5F);
+    @SubscribeEvent
+    public void onHeal(LivingHealEvent evt) {
+        if (evt.getEntity().hasEffect(ModMobEffects.WOUND_EFFECT_TYPE.get())) {
+            evt.setAmount(evt.getAmount() * 0.5F);
+        }
     }
-  }
 
-  @SubscribeEvent
-  public void onDamage(LivingDamageEvent evt) {
-    if (evt.getEntity().hasEffect(ModMobEffects.WOUND_EFFECT_TYPE.get())) {
-      evt.setAmount(evt.getAmount() * 1.5F);
+    @SubscribeEvent
+    public void onDamage(LivingDamageEvent evt) {
+        if (evt.getEntity().hasEffect(ModMobEffects.WOUND_EFFECT_TYPE.get())) {
+            evt.setAmount(evt.getAmount() * 1.5F);
+        }
     }
-  }
 
-  @Override
-  public boolean onAttack(IChampion champion, LivingEntity target, DamageSource source,
-                          float amount) {
-    if (target.getRandom().nextFloat() < ChampionsConfig.woundingChance) {
-      target.addEffect(new MobEffectInstance(ModMobEffects.WOUND_EFFECT_TYPE.get(), 200, 0));
+    @Override
+    public boolean onAttack(IChampion champion, LivingEntity target, DamageSource source,
+                            float amount) {
+        if (target.getRandom().nextFloat() < ChampionsConfig.woundingChance) {
+            target.addEffect(new MobEffectInstance(ModMobEffects.WOUND_EFFECT_TYPE.get(), 200, 0));
+        }
+        return true;
     }
-    return true;
-  }
 }

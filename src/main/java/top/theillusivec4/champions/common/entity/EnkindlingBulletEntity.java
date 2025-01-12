@@ -14,33 +14,33 @@ import javax.annotation.Nonnull;
 
 public class EnkindlingBulletEntity extends BaseBulletEntity {
 
-  public EnkindlingBulletEntity(Level level) {
-    super(ModEntityTypes.ENKINDLING_BULLET.get(), level);
-  }
-
-  public EnkindlingBulletEntity(Level level, LivingEntity livingEntity, @Nonnull Entity entity,
-                                Direction.Axis axis) {
-    super(ModEntityTypes.ENKINDLING_BULLET.get(), level, livingEntity, entity, axis);
-
-  }
-
-  public EnkindlingBulletEntity(EntityType<? extends EnkindlingBulletEntity> enkindlingBulletEntityEntityType, Level level) {
-    super(enkindlingBulletEntityEntityType, level);
-  }
-
-  @Override
-  protected void bulletEffect(LivingEntity target) {
-
-    if (this.getOwner() != null) {
-      target.hurt(ModDamageTypes.of(ModDamageTypes.ENKINDLING_BULLET, this, this.getOwner()), 1);
-    } else {
-      target.hurt(ModDamageTypes.of(ModDamageTypes.ENKINDLING_BULLET, this), 1);
+    public EnkindlingBulletEntity(Level level) {
+        super(ModEntityTypes.ENKINDLING_BULLET.get(), level);
     }
-    target.setSecondsOnFire(8);
-  }
 
-  @Override
-  protected ParticleOptions getParticle() {
-    return ParticleTypes.FLAME;
-  }
+    public EnkindlingBulletEntity(Level level, LivingEntity livingEntity, @Nonnull Entity entity,
+                                  Direction.Axis axis) {
+        super(ModEntityTypes.ENKINDLING_BULLET.get(), level, livingEntity, entity, axis);
+
+    }
+
+    public EnkindlingBulletEntity(EntityType<? extends EnkindlingBulletEntity> enkindlingBulletEntityEntityType, Level level) {
+        super(enkindlingBulletEntityEntityType, level);
+    }
+
+    @Override
+    protected void bulletEffect(LivingEntity target) {
+
+        if (this.getOwner() != null) {
+            target.hurt(ModDamageTypes.of(ModDamageTypes.ENKINDLING_BULLET, this, this.getOwner()), 1);
+        } else {
+            target.hurt(ModDamageTypes.of(ModDamageTypes.ENKINDLING_BULLET, this), 1);
+        }
+        target.setSecondsOnFire(8);
+    }
+
+    @Override
+    protected ParticleOptions getParticle() {
+        return ParticleTypes.FLAME;
+    }
 }

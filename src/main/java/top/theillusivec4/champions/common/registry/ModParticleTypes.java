@@ -9,9 +9,10 @@ import net.minecraftforge.registries.RegistryObject;
 import top.theillusivec4.champions.Champions;
 
 public class ModParticleTypes {
-  private static final DeferredRegister<ParticleType<?>> PARTICLE_TYPE = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, Champions.MODID);
-  public static final RegistryObject<SimpleParticleType> RANK_PARTICLE_TYPE = PARTICLE_TYPE.register("rank", () -> new SimpleParticleType(true));
-  public static void register(IEventBus bus) {
-    PARTICLE_TYPE.register(bus);
-  }
+    private static final DeferredRegister<ParticleType<?>> PARTICLE_TYPE = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, Champions.MODID);
+    public static final RegistryObject<SimpleParticleType> RANK_PARTICLE_TYPE = PARTICLE_TYPE.register("rank", () -> new SimpleParticleType(true));
+
+    public static void register(IEventBus bus) {
+        PARTICLE_TYPE.register(bus);
+    }
 }

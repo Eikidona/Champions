@@ -15,45 +15,45 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AttributesModifierDataLoader extends SimplePreparableReloadListener<Map<ResourceLocation, ModifierSetting>> {
-  private static final String FOLDER = "modifier_setting";
-  private final Map<ResourceLocation, ModifierSetting> loadedData = new HashMap<>();
+    private static final String FOLDER = "modifier_setting";
+    private final Map<ResourceLocation, ModifierSetting> loadedData = new HashMap<>();
 
-  public static String getFolder() {
-    return FOLDER;
-  }
-
-  @Override
-  protected Map<ResourceLocation, ModifierSetting> prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
-    return listResources(resourceManager, profilerFiller);
-  }
-
-  @Override
-  protected void apply(Map<ResourceLocation, ModifierSetting> attributeModifierMap, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
-    attributeModifierMap.putAll(loadedData);
-  }
-
-  public Map<ResourceLocation, ModifierSetting> listResources(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
-    pProfiler.startTick();
-    for (Map.Entry<ResourceLocation, Resource> resource : pResourceManager.listResources(FOLDER, p -> p.getPath().endsWith(".json")).entrySet()) {
-      try (Reader reader = resource.getValue().openAsReader()) {
-        JsonElement element = JsonParser.parseReader(reader);
-        ModifierSetting.MAP_CODEC.codec().parse(JsonOps.INSTANCE, element)
-          .resultOrPartial(error -> Champions.LOGGER.debug("Failed to parse Attributes Modifier setting {}", error))
-          .ifPresent(itemValues -> loadedData.put(resource.getKey(), itemValues));
-      } catch (Exception e) {
-        Champions.LOGGER.error("Failed to load custom data pack: {}", resource.getKey(), e);
-      }
+    public static String getFolder() {
+        return FOLDER;
     }
-    pProfiler.endTick();
-    return loadedData;
-  }
 
-  public void cache(Map<ResourceLocation, ModifierSetting> attributeModifierMap) {
-    loadedData.clear();
-    loadedData.putAll(attributeModifierMap);
-  }
+    @Override
+    protected Map<ResourceLocation, ModifierSetting> prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+        return listResources(resourceManager, profilerFiller);
+    }
 
-  public Map<ResourceLocation, ModifierSetting> getLoadedData() {
-    return loadedData;
-  }
+    @Override
+    protected void apply(Map<ResourceLocation, ModifierSetting> attributeModifierMap, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+        attributeModifierMap.putAll(loadedData);
+    }
+
+    public Map<ResourceLocation, ModifierSetting> listResources(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
+        pProfiler.startTick();
+        for (Map.Entry<ResourceLocation, Resource> resource : pResourceManager.listResources(FOLDER, p -> p.getPath().endsWith(".json")).entrySet()) {
+            try (Reader reader = resource.getValue().openAsReader()) {
+                JsonElement element = JsonParser.parseReader(reader);
+                ModifierSetting.MAP_CODEC.codec().parse(JsonOps.INSTANCE, element)
+                        .resultOrPartial(error -> Champions.LOGGER.debug("Failed to parse Attributes Modifier setting {}", error))
+                        .ifPresent(itemValues -> loadedData.put(resource.getKey(), itemValues));
+            } catch (Exception e) {
+                Champions.LOGGER.error("Failed to load custom data pack: {}", resource.getKey(), e);
+            }
+        }
+        pProfiler.endTick();
+        return loadedData;
+    }
+
+    public void cache(Map<ResourceLocation, ModifierSetting> attributeModifierMap) {
+        loadedData.clear();
+        loadedData.putAll(attributeModifierMap);
+    }
+
+    public Map<ResourceLocation, ModifierSetting> getLoadedData() {
+        return loadedData;
+    }
 }

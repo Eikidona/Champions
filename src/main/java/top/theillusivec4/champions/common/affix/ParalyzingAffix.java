@@ -9,15 +9,15 @@ import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.registry.ModMobEffects;
 
 public class ParalyzingAffix extends BasicAffix {
-  @Override
-  public boolean onAttack(
-    IChampion champion, LivingEntity target, DamageSource source,
-    float amount) {
+    @Override
+    public boolean onAttack(
+            IChampion champion, LivingEntity target, DamageSource source,
+            float amount) {
 
-    if (target.getRandom().nextFloat() < ChampionsConfig.paralyzingChance && !target.hasEffect(
-      ModMobEffects.PARALYSIS_EFFECT_TYPE.get())) {
-      target.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS_EFFECT_TYPE.get(), 60, 0));
+        if (target.getRandom().nextFloat() < ChampionsConfig.paralyzingChance && !target.hasEffect(
+                ModMobEffects.PARALYSIS_EFFECT_TYPE.get())) {
+            target.addEffect(new MobEffectInstance(ModMobEffects.PARALYSIS_EFFECT_TYPE.get(), 60, 0));
+        }
+        return true;
     }
-    return true;
-  }
 }

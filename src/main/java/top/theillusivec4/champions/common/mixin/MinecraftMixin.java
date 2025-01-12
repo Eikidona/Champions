@@ -13,28 +13,28 @@ import top.theillusivec4.champions.server.command.ChampionsCommand;
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
 
-  @ModifyVariable(
-    method = "pickBlock", // 目标方法
-    at = @At(value = "STORE", target = "Lnet/minecraft/world/entity/player/Inventory;setPickedItem(Lnet/minecraft/world/item/ItemStack;)V")
-  )
-  private ItemStack modifyItemStack(ItemStack original) {
-    var pickedEntity = Minecraft.getInstance().crosshairPickEntity;
-    var player = Minecraft.getInstance().player;
-    var gameMode = Minecraft.getInstance().gameMode;
-    if (pickedEntity != null && player != null && gameMode != null) {
-      var championOptional = ChampionCapability.getCapability(pickedEntity);
-      if (championOptional.isPresent()) {
-        var champion = championOptional.orElseThrow(IllegalStateException::new);
-        var clientChampion = champion.getClient();
+    @ModifyVariable(
+            method = "pickBlock", // 目标方法
+            at = @At(value = "STORE", target = "Lnet/minecraft/world/entity/player/Inventory;setPickedItem(Lnet/minecraft/world/item/ItemStack;)V")
+    )
+    private ItemStack modifyItemStack(ItemStack original) {
+        var pickedEntity = Minecraft.getInstance().crosshairPickEntity;
+        var player = Minecraft.getInstance().player;
+        var gameMode = Minecraft.getInstance().gameMode;
+        if (pickedEntity != null && player != null && gameMode != null) {
+            var championOptional = ChampionCapability.getCapability(pickedEntity);
+            if (championOptional.isPresent()) {
+                var champion = championOptional.orElseThrow(IllegalStateException::new);
+                var clientChampion = champion.getClient();
 
-        if (ChampionHelper.isValidChampion(clientChampion)) {
-          var type = champion.getLivingEntity().getType();
-          var tier = clientChampion.getRank().map(Tuple::getA).orElseThrow();
-          var affixes = clientChampion.getAffixes();
-          return ChampionsCommand.createEgg(type, tier, affixes);
+                if (ChampionHelper.isValidChampion(clientChampion)) {
+                    var type = champion.getLivingEntity().getType();
+                    var tier = clientChampion.getRank().map(Tuple::getA).orElseThrow();
+                    var affixes = clientChampion.getAffixes();
+                    return ChampionsCommand.createEgg(type, tier, affixes);
+                }
+            }
         }
-      }
+        return original;
     }
-    return original;
-  }
 }
