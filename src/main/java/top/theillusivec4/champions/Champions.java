@@ -190,15 +190,19 @@ public class Champions {
                 if (evt instanceof ModConfigEvent.Loading) {
                     ChampionsConfig.bake();
                     // 重建管理器
-                    if (spec == ChampionsConfig.RANKS_SPEC) {
-                        ChampionsConfig.transformRanks(commentedConfig);
-                        RankManager.buildRanks();
-                    } else if (spec == ChampionsConfig.ENTITIES_SPEC) {
-                        ChampionsConfig.transformEntities(commentedConfig);
-                        EntityManager.buildEntitySettings();
-                    } else if (spec == ChampionsConfig.STAGE_SPEC && Champions.gameStagesLoaded) {
-                        ChampionsConfig.entityStages = ChampionsConfig.STAGE.entityStages.get();
-                        ChampionsConfig.tierStages = ChampionsConfig.STAGE.tierStages.get();
+                    try {
+                        if (spec == ChampionsConfig.RANKS_SPEC) {
+                            ChampionsConfig.transformRanks(commentedConfig);
+                            RankManager.buildRanks();
+                        } else if (spec == ChampionsConfig.ENTITIES_SPEC) {
+                            ChampionsConfig.transformEntities(commentedConfig);
+                            EntityManager.buildEntitySettings();
+                        } else if (spec == ChampionsConfig.STAGE_SPEC && Champions.gameStagesLoaded) {
+                            ChampionsConfig.entityStages = ChampionsConfig.STAGE.entityStages.get();
+                            ChampionsConfig.tierStages = ChampionsConfig.STAGE.tierStages.get();
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("Error loading config, please remove this file or check the format is correct: {}", evt.getConfig().getFullPath(), e);
                     }
                 }
             }
