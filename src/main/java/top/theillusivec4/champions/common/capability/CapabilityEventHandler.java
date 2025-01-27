@@ -30,7 +30,7 @@ public class CapabilityEventHandler {
     public void attachCapabilities(final AttachCapabilitiesEvent<Entity> evt) {
         Entity entity = evt.getObject();
 
-        if (ChampionHelper.isValidChampion(entity)) {
+        if (ChampionHelper.isValidChampionEntity(entity)) {
             evt.addCapability(ChampionCapability.ID,
                     ChampionCapability.createProvider((LivingEntity) entity));
         }

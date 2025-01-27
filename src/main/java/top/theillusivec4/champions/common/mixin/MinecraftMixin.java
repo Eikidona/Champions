@@ -17,7 +17,7 @@ public abstract class MinecraftMixin {
             method = "pickBlock", // 目标方法
             at = @At(value = "STORE", target = "Lnet/minecraft/world/entity/player/Inventory;setPickedItem(Lnet/minecraft/world/item/ItemStack;)V")
     )
-    private ItemStack modifyItemStack(ItemStack original) {
+    private ItemStack champions$modifyItemStack(ItemStack original) {
         var pickedEntity = Minecraft.getInstance().crosshairPickEntity;
         var player = Minecraft.getInstance().player;
         var gameMode = Minecraft.getInstance().gameMode;

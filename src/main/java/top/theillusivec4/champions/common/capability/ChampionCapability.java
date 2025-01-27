@@ -55,7 +55,7 @@ public class ChampionCapability {
 
     public static LazyOptional<IChampion> getCapability(final Entity entity) {
 
-        if (!ChampionHelper.isValidChampion(entity)) {
+        if (!ChampionHelper.isValidChampionEntity(entity)) {
             return LazyOptional.empty();
         }
         return entity.getCapability(CHAMPION_CAP);

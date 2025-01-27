@@ -99,7 +99,7 @@ public class Champions {
         modContext.registerConfig(Type.COMMON, ChampionsConfig.COMMON_SPEC);
         createServerConfig(modContext, ChampionsConfig.RANKS_SPEC, "ranks");
         createServerConfig(modContext, ChampionsConfig.ENTITIES_SPEC, "entities");
-        gameStagesLoaded = ModList.get().isLoaded("gamestages");
+        gameStagesLoaded = isModLoaded("gamestages");
 
         if (gameStagesLoaded) {
             modContext.registerConfig(Type.SERVER, ChampionsConfig.STAGE_SPEC, "champions-gamestages.toml");
@@ -112,7 +112,11 @@ public class Champions {
         MinecraftForge.EVENT_BUS.addListener(this::onDatapackSync);
         MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
         ChampionsRegistry.register(eventBus);
-        scalingHealthLoaded = ModList.get().isLoaded("scalinghealth");
+        scalingHealthLoaded = isModLoaded("scalinghealth");
+    }
+
+    public static boolean isModLoaded(String modid) {
+        return ModList.get().isLoaded(modid);
     }
 
     private static void createServerConfig(ModLoadingContext modContext, ForgeConfigSpec spec, String suffix) {
