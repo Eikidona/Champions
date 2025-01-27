@@ -4,6 +4,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingConversionEvent;
@@ -36,6 +37,10 @@ public class CapabilityEventHandler {
         }
     }
 
+    /**
+     * Preset of special spawn ranks
+     * @param evt the finalizeSpawn event
+     */
     @SubscribeEvent
     public void onSpecialSpawn(MobSpawnEvent.FinalizeSpawn evt) {
         LivingEntity entity = evt.getEntity();
@@ -45,11 +50,9 @@ public class CapabilityEventHandler {
                 IChampion.Server serverChampion = champion.getServer();
 
                 if (serverChampion.getRank().isEmpty()) {
-
-                    if (!ChampionsConfig.championSpawners && evt.getSpawner() != null) {
+                    // Todo: Custom entity spawn rank base on mob spawn type
+                    if (!ChampionsConfig.championSpawners && evt.getSpawnType() == MobSpawnType.SPAWNER) {
                         serverChampion.setRank(RankManager.getLowestRank());
-                    } else {
-                        ChampionBuilder.spawn(champion);
                     }
                 }
             });
