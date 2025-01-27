@@ -41,7 +41,6 @@ public class ChampionsConfig {
     public static List<EntityConfig> entities;
     public static int beaconProtectionRange;
     public static boolean championSpawners;
-    public static boolean enableCataclysmCompat;
     public static int deathMessageTier;
     public static List<? extends String> dimensionList;
     public static Permission dimensionPermission;
@@ -153,7 +152,6 @@ public class ChampionsConfig {
         entitiesPermission = COMMON.entitiesPermission.get();
         showHud = COMMON.showHud.get();
         showParticles = COMMON.showParticles.get();
-        enableCataclysmCompat = COMMON.enableCataclysmCompat.get();
         enableTOPIntegration = COMMON.enableTOPIntegration.get();
         bossBarBlackList = COMMON.bossBarBlackList.get();
     }
@@ -302,7 +300,6 @@ public class ChampionsConfig {
     public static class CommonConfig {
         public final IntValue beaconProtectionRange;
         public final BooleanValue championSpawners;
-        public final BooleanValue enableCataclysmCompat;
         public final IntValue deathMessageTier;
         public final ConfigValue<List<? extends String>> dimensionList;
         public final EnumValue<Permission> dimensionPermission;
@@ -365,10 +362,6 @@ public class ChampionsConfig {
             enableTOPIntegration =
                     builder.comment("Set to true to show champion tier and affixes in The One Probe overlay")
                             .translation(CONFIG_PREFIX + "enableTOPIntegration").define("enableTOPIntegration", true);
-            enableCataclysmCompat =
-                    builder.comment("Set to true to enable cataclysm compatibility when spawning bosses")
-                            .translation(CONFIG_PREFIX + "enableTOPIntegration").define("enableCataclysmCompat", true);
-
             builder.pop();
         }
     }
