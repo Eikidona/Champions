@@ -12,19 +12,22 @@ import top.theillusivec4.champions.client.util.HUDHelper;
 import java.util.Objects;
 
 public class StarElement extends Element {
-    private final int rank;
-    private final int spacing;
-    private final float r;
-    private final float g;
-    private final float b;
+    private final int starCount;  // 记录星星的数量
+    private final int spacing;    // 间距
+    private final float r, g, b;  // 颜色
 
-    public StarElement(final int rank, final String colorCode, int spacing) {
+    StarElement(int starCount, final String colorCode, int spacing) {
         int color = Objects.requireNonNull(TextColor.parseColor(colorCode)).getValue();
-        this.rank = rank;
+        this.starCount = starCount;
         this.spacing = spacing;
+
         r = FastColor.ARGB32.red(color) / 255.0F;
         g = FastColor.ARGB32.green(color) / 255.0F;
         b = FastColor.ARGB32.blue(color) / 255.0F;
+    }
+
+    public static StarElement of(int starCount, final String colorCode, int spacing) {
+        return new StarElement(starCount, colorCode, spacing);
     }
 
     public ResourceLocation getTexture() {
@@ -33,30 +36,24 @@ public class StarElement extends Element {
 
     @Override
     public Vec2 getSize() {
-        // 返回固定大小 9x9
-        return new Vec2(9, 9);
+        // 宽度 = (9px * 星星数) + (间距 * (星星数 - 1))
+        return new Vec2(starCount * 9 + (starCount - 1) * spacing, 9);
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
-        // 设置渲染状态
+        // set render element color
         RenderSystem.setShaderColor(r, g, b, 1.0F);
-
-        // 渲染图标
-        for (int i = 0; i < rank; i++) {
+        for (int i = 0; i < starCount; i++) {
             guiGraphics.blit(
                     getTexture(),
-                    (int) x + (9 + spacing) * i,      // 屏幕X位置
-                    (int) y,      // 屏幕Y位置
-                    0,           // UV的X坐标
-                    0,           // UV的Y坐标
-                    9,           // 渲染宽度
-                    9,           // 渲染高度
-                    9,           // 材质宽度
-                    9           // 材质高度
+                    (int) (x + i * (9 + spacing)), // 计算 X 偏移量
+                    (int) y, // Y 坐标不变
+                    0, 0,
+                    9, 9, 9, 9
             );
         }
-
+        // reset color
         RenderSystem.setShaderColor(1F, 1F, 1F, 1.0F);
 
     }
