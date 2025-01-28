@@ -33,7 +33,11 @@ public enum ChampionComponentProvider implements IEntityComponentProvider {
     @Override
     public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
         ChampionCapability.getCapability(entityAccessor.getEntity()).ifPresent(champion -> {
-            champion.getClient().getRank().ifPresent(rank -> iTooltip.get(0, IElement.Align.LEFT).set(0, new TextElement(getChampionName(rank, champion))));
+            champion.getClient().getRank().ifPresent(rank -> {
+                // add star to jade, based on rank
+                iTooltip.add(new StarElement(rank.getA(), rank.getB(), ClientChampionsConfig.jadeStarSpacing));
+                iTooltip.get(0, IElement.Align.LEFT).set(0, new TextElement(getChampionName(rank, champion)));
+            });
             var affixes = champion.getClient().getAffixes();
             ArrayList<Component> components = new ArrayList<>();
             StringBuilder line = new StringBuilder();
