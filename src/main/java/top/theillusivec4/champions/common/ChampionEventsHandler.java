@@ -79,7 +79,7 @@ public class ChampionEventsHandler {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onLivingJoinWorld(EntityJoinLevelEvent evt) {
         Entity entity = evt.getEntity();
 
