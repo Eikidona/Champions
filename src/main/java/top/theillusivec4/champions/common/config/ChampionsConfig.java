@@ -100,6 +100,8 @@ public class ChampionsConfig {
     public static AttributeModifier.Operation armorToughnessModifierOperation;
     public static AttributeModifier.Operation knockbackResistanceModifierOperation;
     public static boolean enableDebug;
+    public static boolean allowChampionsList;
+    public static Permission allowChampionsPermission;
 
     static {
         final Pair<ServerConfig, ForgeConfigSpec> specPair = new Builder()
@@ -156,6 +158,8 @@ public class ChampionsConfig {
         enableTOPIntegration = COMMON.enableTOPIntegration.get();
         bossBarBlackList = COMMON.bossBarBlackList.get();
         enableDebug = COMMON.enableDebug.get();
+        allowChampionsList = COMMON.allowChampionsList.get();
+        allowChampionsPermission = COMMON.allowChampionsPermission.get();
     }
 
     public static void bake() {
@@ -312,6 +316,8 @@ public class ChampionsConfig {
         public final BooleanValue enableTOPIntegration;
         public final ConfigValue<List<? extends String>> bossBarBlackList;
         public final BooleanValue enableDebug;
+        public final BooleanValue allowChampionsList;
+        public final EnumValue<Permission> allowChampionsPermission;
 
         public CommonConfig(Builder builder) {
             builder.push("general");
@@ -368,6 +374,12 @@ public class ChampionsConfig {
             enableTOPIntegration =
                     builder.comment("Set to true to show champion tier and affixes in The One Probe overlay")
                             .translation(CONFIG_PREFIX + "enableTOPIntegration").define("enableTOPIntegration", true);
+            allowChampionsList =
+                    builder.comment("Set to true to enable champions entity allow list configuration by datapack")
+                            .translation(CONFIG_PREFIX + "allowChampionsList").define("allowChampionsList", true);
+            allowChampionsPermission =
+                    builder.comment("The permission of champions entity allow list datapack.")
+                            .translation(CONFIG_PREFIX + "allowChampionsPermission").defineEnum("allowChampionsPermission", Permission.WHITELIST, Permission.values());
             builder.pop();
         }
     }
