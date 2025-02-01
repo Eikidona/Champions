@@ -2,14 +2,13 @@ package top.theillusivec4.champions.common.integration.jade;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.ui.Element;
+import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.client.util.HUDHelper;
-
-import java.util.Objects;
+import top.theillusivec4.champions.common.rank.Rank;
 
 public class StarElement extends Element {
     private final int starCount;  // 记录星星的数量
@@ -17,7 +16,7 @@ public class StarElement extends Element {
     private final float r, g, b;  // 颜色
 
     StarElement(int starCount, final String colorCode, int spacing) {
-        int color = Objects.requireNonNull(TextColor.parseColor(colorCode)).getValue();
+        int color = Rank.getColor(colorCode);
         this.starCount = starCount;
         this.spacing = spacing;
 
@@ -37,7 +36,7 @@ public class StarElement extends Element {
     @Override
     public Vec2 getSize() {
         // 宽度 = (9px * 星星数) + (间距 * (星星数 - 1))
-        return new Vec2(starCount * 9 + (starCount - 1) * spacing, 9);
+        return new Vec2(starCount * 9 + (starCount - 1) * spacing, 9 + ClientChampionsConfig.jadeStarBottomPadding);
     }
 
     @Override

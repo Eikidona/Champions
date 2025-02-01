@@ -27,9 +27,6 @@ public record AffixesPredicate(Set<ResourceLocation> values, MinMaxBounds.Ints m
                     AffixSetting.INTS_CODEC.fieldOf("count").forGetter(AffixesPredicate::count)
             ).apply(instance, AffixesPredicate::new));
 
-    private static final AffixesPredicate ANY =
-            new AffixesPredicate(new HashSet<>(), MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY);
-
     public static AffixesPredicate fromJson(JsonElement json) {
 
         if (json != null && !json.isJsonNull()) {
@@ -72,7 +69,11 @@ public record AffixesPredicate(Set<ResourceLocation> values, MinMaxBounds.Ints m
                 return new AffixesPredicate(affixes, matches, count);
             }
         }
-        return ANY;
+        return getAny();
+    }
+
+    public static AffixesPredicate getAny() {
+        return new AffixesPredicate(new HashSet<>(), MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY);
     }
 
     public boolean matches(List<IAffix> input) {

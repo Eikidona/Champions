@@ -99,6 +99,7 @@ public class ChampionsConfig {
     public static AttributeModifier.Operation armorModifierOperation;
     public static AttributeModifier.Operation armorToughnessModifierOperation;
     public static AttributeModifier.Operation knockbackResistanceModifierOperation;
+    public static boolean enableDebug;
 
     static {
         final Pair<ServerConfig, ForgeConfigSpec> specPair = new Builder()
@@ -154,6 +155,7 @@ public class ChampionsConfig {
         showParticles = COMMON.showParticles.get();
         enableTOPIntegration = COMMON.enableTOPIntegration.get();
         bossBarBlackList = COMMON.bossBarBlackList.get();
+        enableDebug = COMMON.enableDebug.get();
     }
 
     public static void bake() {
@@ -309,9 +311,13 @@ public class ChampionsConfig {
         public final BooleanValue showParticles;
         public final BooleanValue enableTOPIntegration;
         public final ConfigValue<List<? extends String>> bossBarBlackList;
+        public final BooleanValue enableDebug;
 
         public CommonConfig(Builder builder) {
             builder.push("general");
+            enableDebug = builder.comment("Enable debug for game testing")
+                    .translation(CONFIG_PREFIX + "enableDebug")
+                    .define("enableDebug", false);
 
             beaconProtectionRange = builder
                     .comment("The range from an active beacon where no champions will spawn (0 to disable)")

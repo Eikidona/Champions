@@ -16,6 +16,7 @@ public class ClientChampionsConfig {
     public static int lineCount;
     public static boolean enableWailaIntegration;
     public static int jadeStarSpacing;
+    public static int jadeStarBottomPadding;
 
     static {
         final Pair<Client, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder()
@@ -29,6 +30,7 @@ public class ClientChampionsConfig {
         hudYOffset = CLIENT.hudYOffset.get();
         hudRange = CLIENT.hudRange.get();
         jadeStarSpacing = CLIENT.jadeStarSpacing.get();
+        jadeStarBottomPadding = CLIENT.jadeStarBottomPadding.get();
         enableWailaIntegration = CLIENT.enableWailaIntegration.get();
         lineCount = CLIENT.lineCount.get();
     }
@@ -41,6 +43,7 @@ public class ClientChampionsConfig {
         public final ForgeConfigSpec.BooleanValue enableWailaIntegration;
         public final ForgeConfigSpec.IntValue lineCount;
         public final ForgeConfigSpec.IntValue jadeStarSpacing;
+        public final ForgeConfigSpec.IntValue jadeStarBottomPadding;
 
         public Client(ForgeConfigSpec.Builder builder) {
             builder.push("hud");
@@ -60,6 +63,7 @@ public class ClientChampionsConfig {
                             .define("enableWailaIntegration", true);
             lineCount = builder.comment("The affix line count of the jade compact").defineInRange("lineCount", 5, 1, 20);
             jadeStarSpacing = builder.comment("The Jade Star spacing, when rendering star.").defineInRange("jadeStarSpacing", 2, 0, 25);
+            jadeStarBottomPadding = builder.comment("The Jade Star bottom padding, when rendering star.").defineInRange("jadeStarBottomPadding", 3, 0, 100);
             builder.pop();
         }
     }

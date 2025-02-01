@@ -16,6 +16,7 @@ import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.rank.Rank;
+import top.theillusivec4.champions.common.util.ChampionHelper;
 
 import java.util.ArrayList;
 
@@ -33,28 +34,31 @@ public enum ChampionComponentProvider implements IEntityComponentProvider {
     @Override
     public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
         ChampionCapability.getCapability(entityAccessor.getEntity()).ifPresent(champion -> {
-            champion.getClient().getRank().ifPresent(rank -> {
-                // replace champion name from original name
-                iTooltip.get(0, IElement.Align.LEFT).set(0, new TextElement(getChampionName(rank, champion)));
-                // add star to jade, based on rank
-                var starElement = StarElement.of(rank.getA(), rank.getB(), ClientChampionsConfig.jadeStarSpacing);
-                // add new line for star element(bellow name, at heart info top)
-                iTooltip.add(1, starElement);
-            });
-            var affixes = champion.getClient().getAffixes();
-            ArrayList<Component> components = new ArrayList<>();
-            StringBuilder line = new StringBuilder();
-            for (int i = 0; i < affixes.size(); i++) {
-                line.append(getChampionDescription(affixes.get(i)).getString());
-                if ((i + 1) % ClientChampionsConfig.lineCount == 0 || i == affixes.size() - 1) {
-                    // 达到指定数量或是最后一个词条时添加行并清空
-                    components.add(Component.literal(line.toString()));
-                    line.setLength(0); // 清空 StringBuilder
-                } else {
-                    line.append(" "); // 添加空格分隔符
+            var clientChampion = champion.getClient();
+            if (ChampionHelper.isValidChampion(clientChampion)) {
+                champion.getClient().getRank().ifPresent(rank -> {
+                    // replace champion name from original name
+                    iTooltip.get(0, IElement.Align.LEFT).set(0, new TextElement(getChampionName(rank, champion)));
+                    // add star to jade, based on rank
+                    var starElement = StarElement.of(rank.getA(), rank.getB(), ClientChampionsConfig.jadeStarSpacing);
+                    // add new line for star element(bellow name, at heart info top)
+                    iTooltip.add(1, starElement);
+                });
+                var affixes = champion.getClient().getAffixes();
+                ArrayList<Component> components = new ArrayList<>();
+                StringBuilder line = new StringBuilder();
+                for (int i = 0; i < affixes.size(); i++) {
+                    line.append(getChampionDescription(affixes.get(i)).getString());
+                    if ((i + 1) % ClientChampionsConfig.lineCount == 0 || i == affixes.size() - 1) {
+                        // 达到指定数量或是最后一个词条时添加行并清空
+                        components.add(Component.literal(line.toString()));
+                        line.setLength(0); // 清空 StringBuilder
+                    } else {
+                        line.append(" "); // 添加空格分隔符
+                    }
                 }
+                iTooltip.addAll(components);
             }
-            iTooltip.addAll(components);
         });
     }
 
