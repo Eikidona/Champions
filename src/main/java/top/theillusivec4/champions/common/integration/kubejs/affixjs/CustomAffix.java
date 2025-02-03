@@ -6,6 +6,8 @@ import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.AbstractBasicAffix;
 import top.theillusivec4.champions.common.integration.kubejs.affixjs.AffixCallbacks.*;
 
+import javax.annotation.ParametersAreNullableByDefault;
+
 public class CustomAffix extends AbstractBasicAffix {
 	private final OnInitialSpawnCallback onInitialSpawnCallback;
 	private final OnSpawnCallback onSpawnCallback;
@@ -17,7 +19,8 @@ public class CustomAffix extends AbstractBasicAffix {
 	private final OnHealCallback onHealCallback;
 	private final OnDamageCallback onDamageCallback;
 	private final OnDeathCallback onDeathCallback;
-	
+
+	@ParametersAreNullableByDefault
 	public CustomAffix(OnInitialSpawnCallback onInitialSpawnCallback,
 					   OnSpawnCallback onSpawnCallback,
 					   OnServerUpdateCallback onServerUpdateCallback,
@@ -117,7 +120,7 @@ public class CustomAffix extends AbstractBasicAffix {
 		return super.onDeath(champion, source);
 	}
 	
-	public static class CustomAffixBuilder {
+	public static class Builder {
 		private OnInitialSpawnCallback onInitialSpawnCallback;
 		private OnSpawnCallback onSpawnCallback;
 		private OnServerUpdateCallback onServerUpdateCallback;
@@ -129,56 +132,56 @@ public class CustomAffix extends AbstractBasicAffix {
 		private OnDamageCallback onDamageCallback;
 		private OnDeathCallback onDeathCallback;
 		
-		public CustomAffixBuilder() {
+		public Builder() {
 		
 		}
 		
-		public CustomAffixBuilder onInitialSpawn(OnInitialSpawnCallback callback){
+		public Builder onInitialSpawn(OnInitialSpawnCallback callback){
 			this.onInitialSpawnCallback = callback;
 			return this;
 		}
 		
-		public CustomAffixBuilder onSpawn(OnSpawnCallback callback){
+		public Builder onSpawn(OnSpawnCallback callback){
 			this.onSpawnCallback = callback;
 			return this;
 		}
 		
-		public CustomAffixBuilder onServerUpdate(OnServerUpdateCallback callback){
+		public Builder onServerUpdate(OnServerUpdateCallback callback){
 			this.onServerUpdateCallback = callback;
 			return this;
 		}
 		
-		public CustomAffixBuilder onClientUpdate(OnClientUpdateCallback callback){
+		public Builder onClientUpdate(OnClientUpdateCallback callback){
 			this.onClientUpdateCallback = callback;
 			return this;
 		}
 		
-		public CustomAffixBuilder onAttack(OnAttackCallback callback){
+		public Builder onAttack(OnAttackCallback callback){
 			this.onAttackCallback = callback;
 			return this;
 		}
 		
-		public CustomAffixBuilder onAttacked(OnAttackedCallback callback){
+		public Builder onAttacked(OnAttackedCallback callback){
 			this.onAttackedCallback = callback;
 			return this;
 		}
 		
-		public CustomAffixBuilder onHurt(OnHurtCallback callback){
+		public Builder onHurt(OnHurtCallback callback){
 			this.onHurtCallback = callback;
 			return this;
 		}
 		
-		public CustomAffixBuilder onHeal(OnHealCallback callback){
+		public Builder onHeal(OnHealCallback callback){
 			this.onHealCallback = callback;
 			return this;
 		}
 		
-		public CustomAffixBuilder onDamage(OnDamageCallback callback){
+		public Builder onDamage(OnDamageCallback callback){
 			this.onDamageCallback = callback;
 			return this;
 		}
 		
-		public CustomAffixBuilder onDeath(OnDeathCallback callback){
+		public Builder onDeath(OnDeathCallback callback){
 			this.onDeathCallback = callback;
 			return this;
 		}
