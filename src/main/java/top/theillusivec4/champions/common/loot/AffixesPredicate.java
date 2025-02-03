@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public record AffixesPredicate(Set<ResourceLocation> values, MinMaxBounds.Ints matches,
                                MinMaxBounds.Ints count) {
 
-    public static final Codec<AffixesPredicate> CODEC = RecordCodecBuilder.create(instance ->
+    public static Codec<AffixesPredicate> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(ChampionModifierCondition.setOf(ResourceLocation.CODEC).fieldOf("values").forGetter(AffixesPredicate::values),
                     AffixSetting.INTS_CODEC.fieldOf("matches").forGetter(AffixesPredicate::matches),
                     AffixSetting.INTS_CODEC.fieldOf("count").forGetter(AffixesPredicate::count)
@@ -70,6 +70,18 @@ public record AffixesPredicate(Set<ResourceLocation> values, MinMaxBounds.Ints m
             }
         }
         return getAny();
+    }
+    
+    public static Codec<AffixesPredicate> codec() {
+        if (CODEC == null) {
+            CODEC = RecordCodecBuilder.create(instance ->
+                                                               instance.group(
+                                                                       ChampionModifierCondition.setOf(ResourceLocation.CODEC).fieldOf("values").forGetter(AffixesPredicate::values),
+                                                                       AffixSetting.INTS_CODEC.fieldOf("matches").forGetter(AffixesPredicate::matches),
+                                                                       AffixSetting.INTS_CODEC.fieldOf("count").forGetter(AffixesPredicate::count)
+                                                               ).apply(instance, AffixesPredicate::new));
+        }
+        return CODEC;
     }
 
     public static AffixesPredicate getAny() {

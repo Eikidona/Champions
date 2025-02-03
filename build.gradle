@@ -1,24 +1,25 @@
 buildscript {
-  repositories {
-    maven { url = 'https://files.minecraftforge.net/maven' }
-    maven { url = 'https://plugins.gradle.org/m2/' }
-    maven { url = 'https://maven.parchmentmc.org' }
-    maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
-    maven {
-      url "https://plugins.gradle.org/m2/"
+    repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://plugins.gradle.org/m2/' }
+        maven { url = 'https://maven.parchmentmc.org' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
-  }
-  dependencies {
-    classpath group: "org.spongepowered", name: "mixingradle", version: "${mixingradle_version}"
-    classpath group: 'org.parchmentmc', name: 'librarian', version: '1.+'
-  }
+    dependencies {
+        classpath group: "org.spongepowered", name: "mixingradle", version: "${mixingradle_version}"
+        classpath group: 'org.parchmentmc', name: 'librarian', version: '1.+'
+    }
 }
 
+
 plugins {
-  id 'idea'
-  id 'maven-publish'
-  id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-  id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
 apply plugin: 'net.minecraftforge.gradle'
@@ -29,150 +30,179 @@ version = "${mod_version}"
 group = "${mod_group_id}"
 
 base {
-  archivesName = mod_id + "-forge"
+    archivesName = mod_id + "-forge"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-  mappings channel: mapping_channel, version: mapping_version
-  accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    mappings channel: mapping_channel, version: mapping_version
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
-  runs {
-    client {
-      workingDirectory project.file('run')
+    runs {
+        client {
+            workingDirectory project.file('run')
 
-      property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-      property 'forge.logging.console.level', 'debug'
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
 
-      mods {
-        "${modid}" {
-          source sourceSets.main
+            mods {
+                "${modid}" {
+                    source sourceSets.main
+                }
+            }
+
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            // should be analogue for any other runs you have
         }
-      }
-    }
 
-    server {
-      workingDirectory project.file('run')
+        server {
+            workingDirectory project.file('run')
 
-      property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-      property 'forge.logging.console.level', 'debug'
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
 
-      mods {
-        "${modid}" {
-          source sourceSets.main
+            mods {
+                "${modid}" {
+                    source sourceSets.main
+                }
+            }
         }
-      }
-    }
 
-    data {
-      // example of overriding the workingDirectory set in configureEach above
-      workingDirectory project.file('run-data')
+        data {
+            // example of overriding the workingDirectory set in configureEach above
+            workingDirectory project.file('run-data')
 
-      // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-      args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+        }
     }
-  }
 }
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 mixin {
-  add sourceSets.main, "${mod_id}.refmap.json"
-  config "${mod_id}.mixins.json"
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
 }
 
 repositories {
 
-  maven {
-    name = "CurseMaven"
-    url = "https://www.cursemaven.com"
-  }
-  maven {
-    name = "GameStages"
-    url = "https://maven.blamejared.com"
-  }
-  mavenLocal()
-  mavenCentral()
+    maven {
+        name = "CurseMaven"
+        url = "https://www.cursemaven.com"
+    }
+    maven {
+        name = "GameStages"
+        url = "https://maven.blamejared.com"
+    }
+    mavenLocal()
+    mavenCentral()
+
+    maven {
+        // Shedaniel's maven (Architectury API)
+        url = "https://maven.architectury.dev"
+        content {
+            includeGroup "dev.architectury"
+        }
+    }
+
+    maven {
+        // saps.dev Maven (KubeJS and Rhino)
+        url = "https://maven.saps.dev/minecraft"
+        content {
+            includeGroup "dev.latvian.mods"
+        }
+    }
+
+
 }
 
 dependencies {
-  minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    implementation fg.deobf("dev.latvian.mods:kubejs-forge:2001.6.5-build.16")
+    implementation fg.deobf("dev.latvian.mods:rhino-forge:2001.2.3-build.6")
+    implementation fg.deobf("dev.architectury:architectury-forge:9.2.14")
+
+
+
 
 
 //  implementation fg.deobf("net.darkhax.gamestages:GameStages-Forge-1.18.2:${gamestages_version}")
-  compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
-  if (rootMod.toBoolean()) {
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}")) {
-      transitive = false
-      jarJar.ranged(it, "[${mixin_extras_version},)")
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
+    if (rootMod.toBoolean()) {
+        implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}")) {
+            transitive = false
+            jarJar.ranged(it, "[${mixin_extras_version},)")
+        }
+    } else {
+        implementation("io.github.llamalad7.mixinextras:mixinextras-forge:${mixin_extras_version}")
     }
-  } else {
-    implementation("io.github.llamalad7.mixinextras:mixinextras-forge:${mixin_extras_version}")
-  }
 
-  annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
+    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
 
-  compileOnly fg.deobf("curse.maven:silent-lib-242998:${cf_silentlib}")
-  compileOnly fg.deobf("curse.maven:scalinghealth-248027:${cf_scalinghealth}")
-  compileOnly fg.deobf("curse.maven:TOP-245211:${cf_theoneprobe}")
-  compileOnly fg.deobf("curse.maven:jade-324717:${cf_jade}")
-  implementation fg.deobf("curse.maven:jade-324717:${cf_jade}")
-  compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-${minecraft_version}:${gamestages_version}")
-  compileOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-1.20.1:${bookshelf_version}")
-  runtimeOnly fg.deobf("curse.maven:curios-309927:5367944")
-  implementation fg.deobf("curse.maven:lionfish-api-1001614:5922047")
-  implementation fg.deobf("curse.maven:lendercataclysm-551586:5924796")
-  // test for dummy mod
-  runtimeOnly fg.deobf("curse.maven:selene-499980:5731106")
-  runtimeOnly fg.deobf("curse.maven:mmmmmmmmmmmm-225738:5737040")
-  implementation fg.deobf("curse.maven:attributefix-280510:4911084")
-  runtimeOnly fg.deobf("curse.maven:atomicstrykers-infernal-mobs-227875:6130372")
+    compileOnly fg.deobf("curse.maven:silent-lib-242998:${cf_silentlib}")
+    compileOnly fg.deobf("curse.maven:scalinghealth-248027:${cf_scalinghealth}")
+    compileOnly fg.deobf("curse.maven:TOP-245211:${cf_theoneprobe}")
+    compileOnly fg.deobf("curse.maven:jade-324717:${cf_jade}")
+    implementation fg.deobf("curse.maven:jade-324717:${cf_jade}")
+    compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-${minecraft_version}:${gamestages_version}")
+    compileOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-1.20.1:${bookshelf_version}")
+    runtimeOnly fg.deobf("curse.maven:curios-309927:5367944")
+    implementation fg.deobf("curse.maven:lionfish-api-1001614:5922047")
+    implementation fg.deobf("curse.maven:lendercataclysm-551586:5924796")
+    // test for dummy mod
+    runtimeOnly fg.deobf("curse.maven:selene-499980:5731106")
+    runtimeOnly fg.deobf("curse.maven:mmmmmmmmmmmm-225738:5737040")
+    implementation fg.deobf("curse.maven:attributefix-280510:4911084")
+    runtimeOnly fg.deobf("curse.maven:atomicstrykers-infernal-mobs-227875:6130372")
 //  implementation fg.deobf("curse.maven:xl-packets-391640:4426828")
 //  implementation fg.deobf("curse.maven:serverconfig-updater-365281:4612683")
 }
 
 
 tasks.named('processResources', ProcessResources).configure {
-  var replaceProperties = [
-    minecraft_version          : minecraft_version, minecraft_version_range: minecraft_version_range,
-    forge_version              : forge_version, forge_version_range: forge_version_range,
-    loader_version_range       : loader_version_range,
-    mod_id                     : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-    mod_authors                : mod_authors, mod_description: mod_description,
-    scalinghealth_version_range: scalinghealth_version_range
-  ]
-  inputs.properties replaceProperties
+    var replaceProperties = [
+            minecraft_version          : minecraft_version, minecraft_version_range: minecraft_version_range,
+            forge_version              : forge_version, forge_version_range: forge_version_range,
+            loader_version_range       : loader_version_range,
+            mod_id                     : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+            mod_authors                : mod_authors, mod_description: mod_description,
+            scalinghealth_version_range: scalinghealth_version_range
+    ]
+    inputs.properties replaceProperties
 
-  filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-    expand replaceProperties + [project: project]
-  }
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
 tasks.named('jar', Jar).configure {
-  manifest {
-    attributes([
-      'Specification-Title'     : mod_id,
-      'Specification-Vendor'    : mod_authors,
-      'Specification-Version'   : '1', // We are version 1 of ourselves
-      'Implementation-Title'    : project.name,
-      'Implementation-Version'  : project.jar.archiveVersion,
-      'Implementation-Vendor'   : mod_authors,
-      'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-    ])
-  }
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : mod_authors,
+                'Specification-Version'   : '1', // We are version 1 of ourselves
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : mod_authors,
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
 
-  // This is the preferred method to reobfuscate your jar file
-  finalizedBy 'reobfJar'
+    // This is the preferred method to reobfuscate your jar file
+    finalizedBy 'reobfJar'
 }
 
 tasks.register('sourcesJar', Jar) {
-  archiveClassifier.set('sources')
-  from sourceSets.main.allJava
+    archiveClassifier.set('sources')
+    from sourceSets.main.allJava
 }
 
 artifacts {
-  archives sourcesJar
+    archives sourcesJar
 }
 
