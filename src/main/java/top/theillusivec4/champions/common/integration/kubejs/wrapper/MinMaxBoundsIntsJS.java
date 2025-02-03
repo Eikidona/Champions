@@ -9,7 +9,7 @@ import javax.json.JsonArray;
 public class MinMaxBoundsIntsJS {
 	public static MinMaxBounds.Ints of(@Nullable Object object){
 		if(object == null){
-			return null;
+			return MinMaxBounds.Ints.ANY;
 		}else if(object instanceof MinMaxBounds.Ints ints){
 			return ints;
 		}else if(object instanceof JsonArray jsonArray){
@@ -20,12 +20,12 @@ public class MinMaxBoundsIntsJS {
 			}else if(jsonArray.size() == 1){
 				return MinMaxBounds.Ints.exactly(jsonArray.getInt(0));
 			}else {
-				return null; // JsonArray size == 0 应该允许这种情况吗?
+				return MinMaxBounds.Ints.ANY; // JsonArray size == 0 应该允许这种情况吗?
 			}
 		}else if(object instanceof JsonElement jsonElement){
 			return MinMaxBounds.Ints.fromJson(jsonElement);
 		}
 		
-		return null;
+		return MinMaxBounds.Ints.ANY;
 	}
 }
