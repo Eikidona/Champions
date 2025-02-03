@@ -8,13 +8,11 @@ import top.theillusivec4.champions.api.AffixRegistry;
 
 @Mod.EventBusSubscriber(modid = Champions.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EventJSHandler {
-	
-	@SubscribeEvent
-	public static void registerAffix(RegisterEvent event){
-		event.register(AffixRegistry.AFFIXES_REGISTRY_KEY, helper ->{
-			EventJSFactory.registerAffixTypes().entrySet().forEach(entry -> {
-				helper.register(entry.getKey(), entry.getValue().build());
-			});
-		});
-	}
+
+    @SubscribeEvent
+    public static void registerAffix(RegisterEvent event) {
+        event.register(AffixRegistry.AFFIXES_REGISTRY_KEY, helper -> {
+            EventJSFactory.registerAffixTypes().forEach((key, value) -> helper.register(key, value.build()));
+        });
+    }
 }
