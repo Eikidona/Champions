@@ -291,14 +291,14 @@ public class ChampionsConfig {
         public StageConfig(Builder builder) {
             entityStages = builder
                     .comment("""
-                            A builders of entity stages in the format: "stage;modid:entity" or "stage;modid:entity;modid:dimension"
+                            A list of entity stages in the format: "stage;modid:entity" or "stage;modid:entity;modid:dimension"
                             Example: "test_stage;minecraft:zombie" or "test_stage;minecraft:spider;minecraft:the_nether\"""")
                     .translation(CONFIG_PREFIX + "entityStages")
                     .defineListAllowEmpty("entityStages", new ArrayList<>(), s -> s instanceof String);
 
             tierStages = builder
                     .comment("""
-                            A builders of tier stages in the format: "stage;tier" or "stage;tier;modid:dimension"
+                            A list of tier stages in the format: "stage;tier" or "stage;tier;modid:dimension"
                             Example: "test_stage;2" or "test_stage;3;minecraft:the_nether\"""")
                     .translation(CONFIG_PREFIX + "tierStages")
                     .defineListAllowEmpty("tierStages", new ArrayList<>(), s -> s instanceof String);
@@ -341,23 +341,23 @@ public class ChampionsConfig {
                     .defineInRange("deathMessageTier", 0, 0, Integer.MAX_VALUE);
 
             dimensionList = builder
-                    .comment("A builders of dimension names that are blacklisted/whitelisted for champions")
+                    .comment("A list of dimension names that are blacklisted/whitelisted for champions")
                     .translation(CONFIG_PREFIX + "dimensionList")
                     .defineListAllowEmpty("dimensionList", new ArrayList<>(), s -> s instanceof String);
 
             dimensionPermission = builder
-                    .comment("Set whether the dimension builders is a blacklist or whitelist")
+                    .comment("Set whether the dimension list is a blacklist or whitelist")
                     .translation(CONFIG_PREFIX + "dimensionPermission")
                     .defineEnum("dimensionPermission", Permission.BLACKLIST);
 
             entitiesList = builder
-                    .comment("A builders of entities that are blacklisted/whitelisted for champions")
+                    .comment("A list of entities that are blacklisted/whitelisted for champions")
                     .translation(CONFIG_PREFIX + "entitiesList")
                     .defineListAllowEmpty(Lists.newArrayList("entitiesList"), ArrayList::new,
                             s -> s instanceof String);
 
             entitiesPermission = builder
-                    .comment("Set whether the entities builders is a blacklist or whitelist")
+                    .comment("Set whether the entities list is a blacklist or whitelist")
                     .translation(CONFIG_PREFIX + "entitiesPermission")
                     .defineEnum("entitiesPermission", Permission.BLACKLIST);
 
@@ -377,10 +377,10 @@ public class ChampionsConfig {
                     builder.comment("Set to true to show champion tier and affixes in The One Probe overlay")
                             .translation(CONFIG_PREFIX + "enableTOPIntegration").define("enableTOPIntegration", true);
             allowChampionsList =
-                    builder.comment("Set to true to enable champions entity allow builders configuration by datapack")
+                    builder.comment("Set to true to enable champions entity allow list configuration by datapack")
                             .translation(CONFIG_PREFIX + "allowChampionsList").define("allowChampionsList", true);
             allowChampionsPermission =
-                    builder.comment("The permission of champions entity allow builders datapack.")
+                    builder.comment("The permission of champions entity allow list datapack.")
                             .translation(CONFIG_PREFIX + "allowChampionsPermission").defineEnum("allowChampionsPermission", Permission.WHITELIST, Permission.values());
             builder.pop();
         }

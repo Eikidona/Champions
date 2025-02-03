@@ -24,7 +24,7 @@ This project uses MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 - Added Game Stages integration through the new `champions-gamestages.toml` configuration file [#135](https://github.com/TheIllusiveC4/Champions/issues/135)
 ### Changed
 - Updated Russian `ru_ru` localization (thanks MiniRaptor!) [#127](https://github.com/TheIllusiveC4/Champions/pull/127)
-- Changed Reflective affix's reflected damage to builders the champion as the source rather than the player to avoid recursive [#133](https://github.com/TheIllusiveC4/Champions/issues/133)
+- Changed Reflective affix's reflected damage to list the champion as the source rather than the player to avoid recursive [#133](https://github.com/TheIllusiveC4/Champions/issues/133)
 player effects
 ### Fixed
 - Fixed experience drop growth from champions stacking incorrectly with other mods [#134](https://github.com/TheIllusiveC4/Champions/issues/134)
