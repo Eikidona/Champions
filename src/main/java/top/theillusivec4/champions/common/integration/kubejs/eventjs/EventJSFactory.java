@@ -1,4 +1,4 @@
-package top.theillusivec4.champions.common.compat.kubejs.eventjs;
+package top.theillusivec4.champions.common.integration.kubejs.eventjs;
 
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.resources.ResourceLocation;

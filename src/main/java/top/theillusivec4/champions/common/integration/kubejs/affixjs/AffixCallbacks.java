@@ -1,4 +1,4 @@
-package top.theillusivec4.champions.common.compat.kubejs.affixjs;
+package top.theillusivec4.champions.common.integration.kubejs.affixjs;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;

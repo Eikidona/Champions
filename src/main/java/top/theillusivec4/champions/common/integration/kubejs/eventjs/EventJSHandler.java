@@ -1,4 +1,4 @@
-package top.theillusivec4.champions.common.compat.kubejs.eventjs;
+package top.theillusivec4.champions.common.integration.kubejs.eventjs;
 
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

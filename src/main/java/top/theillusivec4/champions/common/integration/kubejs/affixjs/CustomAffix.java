@@ -1,10 +1,10 @@
-package top.theillusivec4.champions.common.compat.kubejs.affixjs;
+package top.theillusivec4.champions.common.integration.kubejs.affixjs;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.affix.core.AbstractBasicAffix;
-import top.theillusivec4.champions.common.compat.kubejs.affixjs.AffixCallbacks.*;
+import top.theillusivec4.champions.common.integration.kubejs.affixjs.AffixCallbacks.*;
 
 public class CustomAffix extends AbstractBasicAffix {
 	private final OnInitialSpawnCallback onInitialSpawnCallback;
