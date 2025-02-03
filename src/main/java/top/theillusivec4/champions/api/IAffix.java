@@ -72,7 +72,7 @@ public interface IAffix {
      * @param champion to Spawning
      */
     default void onSpawn(IChampion champion) {
-
+    
     }
 
     /**
@@ -90,7 +90,7 @@ public interface IAffix {
      * @param champion to render effects
      */
     default void onClientUpdate(IChampion champion) {
-
+    
     }
 
     /**

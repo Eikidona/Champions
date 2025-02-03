@@ -27,6 +27,7 @@ import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.client.ChampionsOverlay;
@@ -41,6 +42,7 @@ import top.theillusivec4.champions.common.util.ChampionHelper;
 import java.util.List;
 import java.util.Optional;
 
+@Mod.EventBusSubscriber
 public class ChampionEventsHandler {
     @SubscribeEvent
     public void onAddReloadListener(AddReloadListenerEvent event) {
