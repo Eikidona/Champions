@@ -20,6 +20,7 @@ public class CustomAffix extends AbstractBasicAffix {
 	private final OnDamageCallback onDamageCallback;
 	private final OnDeathCallback onDeathCallback;
 
+
 	@ParametersAreNullableByDefault
 	public CustomAffix(OnInitialSpawnCallback onInitialSpawnCallback,
 					   OnSpawnCallback onSpawnCallback,
@@ -120,6 +121,7 @@ public class CustomAffix extends AbstractBasicAffix {
 		return super.onDeath(champion, source);
 	}
 	
+
 	public static class Builder {
 		private OnInitialSpawnCallback onInitialSpawnCallback;
 		private OnSpawnCallback onSpawnCallback;
@@ -141,47 +143,57 @@ public class CustomAffix extends AbstractBasicAffix {
 			return this;
 		}
 		
+
 		public Builder onSpawn(OnSpawnCallback callback){
 			this.onSpawnCallback = callback;
 			return this;
 		}
 		
+
 		public Builder onServerUpdate(OnServerUpdateCallback callback){
 			this.onServerUpdateCallback = callback;
 			return this;
 		}
 		
+
 		public Builder onClientUpdate(OnClientUpdateCallback callback){
 			this.onClientUpdateCallback = callback;
 			return this;
 		}
 		
+
 		public Builder onAttack(OnAttackCallback callback){
 			this.onAttackCallback = callback;
 			return this;
 		}
 		
+
 		public Builder onAttacked(OnAttackedCallback callback){
 			this.onAttackedCallback = callback;
 			return this;
 		}
 		
+
 		public Builder onHurt(OnHurtCallback callback){
 			this.onHurtCallback = callback;
 			return this;
 		}
 		
+
 		public Builder onHeal(OnHealCallback callback){
 			this.onHealCallback = callback;
 			return this;
 		}
 		
+
 		public Builder onDamage(OnDamageCallback callback){
 			this.onDamageCallback = callback;
 			return this;
 		}
 		
+
 		public Builder onDeath(OnDeathCallback callback){
+
 			this.onDeathCallback = callback;
 			return this;
 		}

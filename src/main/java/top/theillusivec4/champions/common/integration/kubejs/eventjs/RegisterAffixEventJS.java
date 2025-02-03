@@ -1,6 +1,7 @@
 package top.theillusivec4.champions.common.integration.kubejs.eventjs;
 
 import dev.latvian.mods.kubejs.event.EventJS;
+
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.resources.ResourceLocation;
 import top.theillusivec4.champions.api.AffixCategory;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class RegisterAffixEventJS extends EventJS {
+
 	/**
 	 * A map to store registered affix builders, keyed by their resource location.
 	 */
@@ -77,6 +79,7 @@ public class RegisterAffixEventJS extends EventJS {
 		builderMap.put(name, builder);
 		return builder;
 	}
+
 	/**
 	 * Retrieves the map of all registered affix builders.
 	 *
