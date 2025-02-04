@@ -157,9 +157,8 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:selene-499980:5731106")
     runtimeOnly fg.deobf("curse.maven:mmmmmmmmmmmm-225738:5737040")
     implementation fg.deobf("curse.maven:attributefix-280510:4911084")
-    runtimeOnly fg.deobf("curse.maven:atomicstrykers-infernal-mobs-227875:6130372")
-//  implementation fg.deobf("curse.maven:xl-packets-391640:4426828")
-//  implementation fg.deobf("curse.maven:serverconfig-updater-365281:4612683")
+    //runtimeOnly fg.deobf("curse.maven:atomicstrykers-infernal-mobs-227875:6130372")
+
 }
 
 
