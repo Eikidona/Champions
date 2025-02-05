@@ -38,8 +38,9 @@ public class ModEntityTypeTagsProvider extends TagsProvider<EntityType<?>> {
     }
 
     private HolderLookup<EntityType<?>> lookUpMonster(@NotNull HolderLookup.Provider provider) {
-        return provider.lookupOrThrow(Registries.ENTITY_TYPE).filterElements(entityType -> entityType.getCategory() == MobCategory.MONSTER);
+        return provider.lookupOrThrow(Registries.ENTITY_TYPE).filterElements(entityType -> entityType.getCategory() == MobCategory.MONSTER && EntityType.getKey(entityType).getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE));
     }
+
     private ResourceKey<EntityType<?>> create(String name) {
         return ResourceKey.create(Registries.ENTITY_TYPE, new ResourceLocation(name));
     }

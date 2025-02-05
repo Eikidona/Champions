@@ -151,12 +151,12 @@ dependencies {
     compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-${minecraft_version}:${gamestages_version}")
     compileOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-1.20.1:${bookshelf_version}")
     runtimeOnly fg.deobf("curse.maven:curios-309927:5367944")
-    compileOnly fg.deobf("curse.maven:lionfish-api-1001614:5922047")
-    compileOnly fg.deobf("curse.maven:lendercataclysm-551586:5924796")
+    implementation fg.deobf("curse.maven:lionfish-api-1001614:5922047")
+    implementation fg.deobf("curse.maven:lendercataclysm-551586:5924796")
     implementation fg.deobf("curse.maven:attributefix-280510:4911084")
     //runtimeOnly fg.deobf("curse.maven:atomicstrykers-infernal-mobs-227875:6130372")
-    compileOnly fg.deobf("curse.maven:citadel-331936:6002521")
-    compileOnly fg.deobf("curse.maven:ice-and-fire-dragons-264231:5633453")
+    implementation fg.deobf("curse.maven:citadel-331936:6002521")
+    implementation fg.deobf("curse.maven:ice-and-fire-dragons-264231:5633453")
 }
 
 
