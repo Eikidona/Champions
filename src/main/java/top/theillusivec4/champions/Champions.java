@@ -36,6 +36,7 @@ import top.theillusivec4.champions.common.registry.ChampionsRegistry;
 import top.theillusivec4.champions.common.util.Utils;
 
 @Mod(Champions.MODID)
+@SuppressWarnings("removal")
 public class Champions {
 
     public static final String MODID = "champions";
