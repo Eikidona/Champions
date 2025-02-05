@@ -12,9 +12,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.champions.Champions;
-import top.theillusivec4.champions.api.AffixCategory;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
+import top.theillusivec4.champions.api.data.AffixCategory;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 import top.theillusivec4.champions.common.network.NetworkHandler;
 import top.theillusivec4.champions.common.rank.Rank;
@@ -254,7 +254,7 @@ public class ChampionBuilder {
     }
 
     private static ResourceLocation getAttributeFormated(ResourceLocation modifierId) {
-        return Champions.getLocation(modifierId.getNamespace() + "_" + modifierId.getPath().split("\\.json")[0] + "_modifier");
+        return Utils.getLocation(modifierId.getNamespace() + "_" + modifierId.getPath().split("\\.json")[0] + "_modifier");
     }
 
     public static void applyAttributeModifier(LivingEntity livingEntity, Holder<Attribute> attribute, UUID modifierUuid, ResourceLocation modifierName, double amount, AttributeModifier.Operation operation) {

@@ -9,9 +9,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import top.theillusivec4.champions.api.AffixSetting;
-import top.theillusivec4.champions.api.ChampionModifierCondition;
 import top.theillusivec4.champions.api.IAffix;
+import top.theillusivec4.champions.api.data.AffixSetting;
+import top.theillusivec4.champions.api.data.ChampionModifierCondition;
 
 import java.util.HashSet;
 import java.util.List;

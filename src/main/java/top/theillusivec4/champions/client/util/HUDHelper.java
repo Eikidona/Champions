@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
-import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.client.ChampionsOverlay;
@@ -15,6 +14,7 @@ import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.capability.ChampionCapability;
 import top.theillusivec4.champions.common.rank.Rank;
 import top.theillusivec4.champions.common.util.ChampionHelper;
+import top.theillusivec4.champions.common.util.Utils;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class HUDHelper {
 
     private static final ResourceLocation GUI_BAR_TEXTURES = new ResourceLocation("textures/gui/bars.png");
-    private static final ResourceLocation GUI_STAR = Champions.getLocation("textures/gui/staricon.png");
+    private static final ResourceLocation GUI_STAR = Utils.getLocation("textures/gui/staricon.png");
 
     public static boolean renderHealthBar(GuiGraphics guiGraphics, final LivingEntity livingEntity) {
         return ChampionCapability.getCapability(livingEntity).map(champion -> {
