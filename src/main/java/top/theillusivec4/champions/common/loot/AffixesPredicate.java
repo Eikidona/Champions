@@ -10,8 +10,8 @@ import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import top.theillusivec4.champions.api.IAffix;
-import top.theillusivec4.champions.api.data.AffixSetting;
 import top.theillusivec4.champions.api.data.ChampionModifierCondition;
+import top.theillusivec4.champions.api.data.IntCodec;
 
 import java.util.HashSet;
 import java.util.List;
@@ -23,8 +23,8 @@ public record AffixesPredicate(Set<ResourceLocation> values, MinMaxBounds.Ints m
 
     public static Codec<AffixesPredicate> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(ChampionModifierCondition.setOf(ResourceLocation.CODEC).fieldOf("values").forGetter(AffixesPredicate::values),
-                    AffixSetting.INTS_CODEC.fieldOf("matches").forGetter(AffixesPredicate::matches),
-                    AffixSetting.INTS_CODEC.fieldOf("count").forGetter(AffixesPredicate::count)
+                    IntCodec.codec().fieldOf("matches").forGetter(AffixesPredicate::matches),
+                    IntCodec.codec().fieldOf("count").forGetter(AffixesPredicate::count)
             ).apply(instance, AffixesPredicate::new));
 
     public static AffixesPredicate fromJson(JsonElement json) {
@@ -71,15 +71,15 @@ public record AffixesPredicate(Set<ResourceLocation> values, MinMaxBounds.Ints m
         }
         return getAny();
     }
-    
+
     public static Codec<AffixesPredicate> codec() {
         if (CODEC == null) {
             CODEC = RecordCodecBuilder.create(instance ->
-                                                               instance.group(
-                                                                       ChampionModifierCondition.setOf(ResourceLocation.CODEC).fieldOf("values").forGetter(AffixesPredicate::values),
-                                                                       AffixSetting.INTS_CODEC.fieldOf("matches").forGetter(AffixesPredicate::matches),
-                                                                       AffixSetting.INTS_CODEC.fieldOf("count").forGetter(AffixesPredicate::count)
-                                                               ).apply(instance, AffixesPredicate::new));
+                    instance.group(
+                            ChampionModifierCondition.setOf(ResourceLocation.CODEC).fieldOf("values").forGetter(AffixesPredicate::values),
+                            IntCodec.codec().fieldOf("matches").forGetter(AffixesPredicate::matches),
+                            IntCodec.codec().fieldOf("count").forGetter(AffixesPredicate::count)
+                    ).apply(instance, AffixesPredicate::new));
         }
         return CODEC;
     }

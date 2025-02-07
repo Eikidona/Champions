@@ -22,7 +22,7 @@ public record ChampionModifierCondition(Optional<Set<ResourceLocation>> mobList,
                                         Optional<AffixesPredicate> affixes, ConfigEnums.Permission permission) {
     public static final MapCodec<ChampionModifierCondition> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             setOf(ResourceLocation.CODEC).optionalFieldOf("entity").forGetter(ChampionModifierCondition::mobList),
-            AffixSetting.INTS_CODEC.optionalFieldOf("tier").forGetter(ChampionModifierCondition::tier),
+            IntCodec.codec().optionalFieldOf("tier").forGetter(ChampionModifierCondition::tier),
             AffixesPredicate.codec().optionalFieldOf("affixes").forGetter(ChampionModifierCondition::affixes),
             StringRepresentable.fromEnum(ConfigEnums.Permission::values).fieldOf("permission").forGetter(ChampionModifierCondition::permission)
     ).apply(instance, ChampionModifierCondition::new));
