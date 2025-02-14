@@ -1,4 +1,4 @@
-package top.theillusivec4.champions.api;
+package top.theillusivec4.champions.api.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -14,31 +14,27 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AttributesModifierDataLoader extends SimplePreparableReloadListener<Map<ResourceLocation, ModifierSetting>> {
-    private static final String FOLDER = "modifier_setting";
-    private final Map<ResourceLocation, ModifierSetting> loadedData = new HashMap<>();
-
-    public static String getFolder() {
-        return FOLDER;
-    }
+public class AffixDataLoader extends SimplePreparableReloadListener<Map<ResourceLocation, AffixSetting>> {
+    private static final String FOLDER = "affix_setting";
+    private final Map<ResourceLocation, AffixSetting> loadedData = new HashMap<>();
 
     @Override
-    protected Map<ResourceLocation, ModifierSetting> prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+    protected Map<ResourceLocation, AffixSetting> prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
         return listResources(resourceManager, profilerFiller);
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, ModifierSetting> attributeModifierMap, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
-        attributeModifierMap.putAll(loadedData);
+    protected void apply(Map<ResourceLocation, AffixSetting> affixSettingMap, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+        affixSettingMap.putAll(loadedData);
     }
 
-    public Map<ResourceLocation, ModifierSetting> listResources(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
+    public Map<ResourceLocation, AffixSetting> listResources(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
         pProfiler.startTick();
         for (Map.Entry<ResourceLocation, Resource> resource : pResourceManager.listResources(FOLDER, p -> p.getPath().endsWith(".json")).entrySet()) {
             try (Reader reader = resource.getValue().openAsReader()) {
                 JsonElement element = JsonParser.parseReader(reader);
-                ModifierSetting.MAP_CODEC.codec().parse(JsonOps.INSTANCE, element)
-                        .resultOrPartial(error -> Champions.LOGGER.debug("Failed to parse Attributes Modifier setting {}", error))
+                AffixSetting.CODEC.parse(JsonOps.INSTANCE, element)
+                        .resultOrPartial(error -> Champions.LOGGER.debug("Failed to parse affix setting {}", error))
                         .ifPresent(itemValues -> loadedData.put(resource.getKey(), itemValues));
             } catch (Exception e) {
                 Champions.LOGGER.error("Failed to load custom data pack: {}", resource.getKey(), e);
@@ -48,12 +44,12 @@ public class AttributesModifierDataLoader extends SimplePreparableReloadListener
         return loadedData;
     }
 
-    public void cache(Map<ResourceLocation, ModifierSetting> attributeModifierMap) {
+    public void cache(Map<ResourceLocation, AffixSetting> affixSettings) {
         loadedData.clear();
-        loadedData.putAll(attributeModifierMap);
+        loadedData.putAll(affixSettings);
     }
 
-    public Map<ResourceLocation, ModifierSetting> getLoadedData() {
+    public Map<ResourceLocation, AffixSetting> getLoadedData() {
         return loadedData;
     }
 }

@@ -15,6 +15,7 @@ public class ClientChampionsConfig {
     public static int hudRange;
     public static int lineCount;
     public static boolean enableWailaIntegration;
+    public static boolean enablePlaguedParticle;
     public static int jadeStarSpacing;
     public static int jadeStarBottomPadding;
 
@@ -29,6 +30,7 @@ public class ClientChampionsConfig {
         hudXOffset = CLIENT.hudXOffset.get();
         hudYOffset = CLIENT.hudYOffset.get();
         hudRange = CLIENT.hudRange.get();
+        enablePlaguedParticle = CLIENT.enablePlaguedParticle.get();
         jadeStarSpacing = CLIENT.jadeStarSpacing.get();
         jadeStarBottomPadding = CLIENT.jadeStarBottomPadding.get();
         enableWailaIntegration = CLIENT.enableWailaIntegration.get();
@@ -41,6 +43,7 @@ public class ClientChampionsConfig {
         public final IntValue hudYOffset;
         public final IntValue hudRange;
         public final ForgeConfigSpec.BooleanValue enableWailaIntegration;
+        public final ForgeConfigSpec.BooleanValue enablePlaguedParticle;
         public final ForgeConfigSpec.IntValue lineCount;
         public final ForgeConfigSpec.IntValue jadeStarSpacing;
         public final ForgeConfigSpec.IntValue jadeStarBottomPadding;
@@ -61,6 +64,10 @@ public class ClientChampionsConfig {
                     builder.comment("Set to true to move the WAILA overlay underneath the champion HUD")
                             .translation(CONFIG_PREFIX + "enableWailaIntegration")
                             .define("enableWailaIntegration", true);
+            enablePlaguedParticle =
+                    builder.comment("Set false to close the plagued affix particle")
+                            .translation(CONFIG_PREFIX + "enablePlaguedParticle")
+                            .define("enablePlaguedParticle", true);
             lineCount = builder.comment("The affix line count of the jade compact").defineInRange("lineCount", 5, 1, 20);
             jadeStarSpacing = builder.comment("The Jade Star spacing, when rendering star.").defineInRange("jadeStarSpacing", 2, 0, 25);
             jadeStarBottomPadding = builder.comment("The Jade Star bottom padding, when rendering star.").defineInRange("jadeStarBottomPadding", 3, 0, 100);

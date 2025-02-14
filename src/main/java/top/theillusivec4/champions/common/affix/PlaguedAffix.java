@@ -7,6 +7,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import top.theillusivec4.champions.api.IChampion;
+import top.theillusivec4.champions.client.config.ClientChampionsConfig;
 import top.theillusivec4.champions.common.affix.core.BasicAffix;
 import top.theillusivec4.champions.common.config.ChampionsConfig;
 
@@ -16,6 +17,11 @@ public class PlaguedAffix extends BasicAffix {
 
     @Override
     public void onClientUpdate(IChampion champion) {
+
+        if (!ClientChampionsConfig.enablePlaguedParticle) {
+            return;
+        }
+
         LivingEntity livingEntity = champion.getLivingEntity();
         float radius = ChampionsConfig.plaguedRange;
         float circle = (float) Math.PI * radius * radius;

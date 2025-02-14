@@ -11,6 +11,7 @@ import net.minecraftforge.registries.RegistryObject;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.common.entity.ArcticBulletEntity;
 import top.theillusivec4.champions.common.entity.EnkindlingBulletEntity;
+import top.theillusivec4.champions.common.util.Utils;
 
 public class ModEntityTypes {
     private static final DeferredRegister<EntityType<?>> ENTITY_TYPE = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Champions.MODID);
@@ -25,7 +26,7 @@ public class ModEntityTypes {
         public static final TagKey<EntityType<?>> IS_ENDER = create("is_ender");
         public static final TagKey<EntityType<?>> ALLOW_CHAMPIONS = create("allow_champions");
         private static TagKey<EntityType<?>> create(String name) {
-            return TagKey.create(Registries.ENTITY_TYPE, Champions.getLocation(name));
+            return TagKey.create(Registries.ENTITY_TYPE, Utils.getLocation(name));
         }
     }
 }

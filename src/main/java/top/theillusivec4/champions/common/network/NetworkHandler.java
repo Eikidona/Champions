@@ -7,10 +7,10 @@ import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
-import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
 import top.theillusivec4.champions.common.rank.Rank;
+import top.theillusivec4.champions.common.util.Utils;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -26,7 +26,7 @@ public class NetworkHandler {
     private static int id = 0;
 
     public static void register() {
-        INSTANCE = NetworkRegistry.ChannelBuilder.named(Champions.getLocation("main"))
+        INSTANCE = NetworkRegistry.ChannelBuilder.named(Utils.getLocation("main"))
                 .networkProtocolVersion(() -> PTC_VERSION).clientAcceptedVersions(PTC_VERSION::equals)
                 .serverAcceptedVersions(PTC_VERSION::equals).simpleChannel();
 
@@ -46,10 +46,10 @@ public class NetworkHandler {
 
     public static void syncChampionDataToPlayerTrackingEntity(IChampion.Server championData, LivingEntity targetEntity) {
         INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> targetEntity),
-                        new SPacketSyncChampion(targetEntity.getId(),
-                                championData.getRank().map(Rank::getTier).orElse(0),
-                                championData.getRank().map(Rank::getDefaultColor).orElse(TextColor.fromRgb(0)).serialize(),
-                                championData.getAffixes().stream().map(IAffix::getIdentifier)
-                                        .collect(Collectors.toSet())));
+                new SPacketSyncChampion(targetEntity.getId(),
+                        championData.getRank().map(Rank::getTier).orElse(0),
+                        championData.getRank().map(Rank::getDefaultColor).orElse(TextColor.fromRgb(0)).serialize(),
+                        championData.getAffixes().stream().map(IAffix::getIdentifier)
+                                .collect(Collectors.toSet())));
     }
 }

@@ -5,7 +5,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.StatFormatter;
 import net.minecraft.stats.Stats;
-import top.theillusivec4.champions.Champions;
+import top.theillusivec4.champions.common.util.Utils;
 
 public class ChampionsStats {
 
@@ -16,7 +16,7 @@ public class ChampionsStats {
     }
 
     private static ResourceLocation makeCustomStat(String key, StatFormatter formatter) {
-        ResourceLocation resourcelocation = Champions.getLocation(key);
+        ResourceLocation resourcelocation = Utils.getLocation(key);
         Registry.register(BuiltInRegistries.CUSTOM_STAT, resourcelocation.toString(), resourcelocation);
         Stats.CUSTOM.get(resourcelocation, formatter);
         return resourcelocation;

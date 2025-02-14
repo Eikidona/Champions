@@ -20,6 +20,7 @@ import top.theillusivec4.champions.common.config.EntitiesConfig.EntityConfig;
 import top.theillusivec4.champions.common.config.RanksConfig.RankConfig;
 import top.theillusivec4.champions.common.integration.gamestages.GameStagesPlugin;
 import top.theillusivec4.champions.common.integration.scalinghealth.ScalingHealthPlugin;
+import top.theillusivec4.champions.common.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -261,11 +262,11 @@ public class ChampionsConfig {
         woundingChance = SERVER.woundingChance.get();
         shieldingChance = SERVER.shieldingChance.get();
 
-        if (Champions.scalingHealthLoaded) {
+        if (Utils.isScalingHealthLoaded()) {
             scalingHealthSpawnModifiers = SERVER.scalingHealthSpawnModifiers.get();
             ScalingHealthPlugin.buildModifiers();
         }
-        if (Champions.gameStagesLoaded) {
+        if (Utils.isGameStagesLoaded()) {
             entityStages = STAGE.entityStages.get();
             tierStages = STAGE.tierStages.get();
             GameStagesPlugin.buildStages();
